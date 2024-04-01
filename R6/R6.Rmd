@@ -1,0 +1,17 @@
+---
+title: "R6"
+author:
+  - Miguel Flores
+  - Andrea Barahona
+  - Fabián Encarnación
+  - Dario Quishpe
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    theme: journal
+    toc: True
+    toc_depth: 5
+    toc_float:  
+      collapsed: true     
+      smooth_scroll: true
+---
