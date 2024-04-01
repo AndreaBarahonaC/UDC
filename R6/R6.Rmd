@@ -24,6 +24,6 @@ https://r6.r-lib.org/articles/Introduction.html#basics (complementario)
 Puesto 1: Dario
 Puesto 2: Fabian
 Puesto 3: Andrea
-1. Object-oriented programming - Introduction, 14 R6, 14.1 Introduction
+1. Object-oriented programming - Introduction, 14 R6, 14.1 Introduction, 12 Base Types
 2. 14.2 Classes and methods
 3. 14.3 Controlling access, 14.4 Reference semantics, 14.5  Why R6
