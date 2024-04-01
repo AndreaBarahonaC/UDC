@@ -491,7 +491,7 @@ db_a$archivo$ruta == db_b$archivo$ruta
 
 Ahora, cada instancia de `DatabaseTemporal` tiene su propia instancia única de `ArchivoTemporal`, y por lo tanto, sus caminos de archivo son diferentes, como se espera. Esto garantiza que cada instancia de `DatabaseTemporal` tenga sus propios recursos independientes.
 
-# 14.5 ¿ Por qué R6 ?
+# ¿ Por qué R6 ?
 
 Este texto explica por qué el autor prefiere utilizar R6 en lugar de Reference Classes (RC), una sistema de programación orientada a objetos (OO) incorporado en R, debido a las siguientes razones:
 
