@@ -30,5 +30,8 @@ Puesto 3: Andrea
 
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 library(sloop)
+library(R6)
 ```
+
+# Clases y métodos
 
