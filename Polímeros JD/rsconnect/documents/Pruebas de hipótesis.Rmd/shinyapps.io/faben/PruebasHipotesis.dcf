@@ -1,0 +1,12 @@
+name: PruebasHipotesis
+title: PruebasHipotesis
+username: faben
+account: faben
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 11284022
+bundleId: 8278811
+url: https://faben.shinyapps.io/PruebasHipotesis/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

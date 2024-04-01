@@ -1,0 +1,944 @@
+---
+title: "Diseño Experimental"
+author:
+  - Miguel Flores
+  - Andrea Barahona
+  - Fabián Encarnación
+  - Dario Quishpe
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    theme: cerulean
+    toc: True
+    toc_depth: 5
+    toc_float:  
+      collapsed: true       # Salga solo el título y cuando aplastas los subtitulos
+      smooth_scroll: true
+runtime: shiny
+      
+      # Introducción
+      
+      # ANOVA
+      ## Para módulo de elasticidad
+      ## Para resistencia a la tensión
+      ## Para elongación a la rotura
+      ## Para tenacidad
+      
+      # Prueba Duncan
+      ## Para módulo de elasticidad
+      ## Para resistencia a la tensión
+      ## Para elongación a la rotura
+      ## Para tenacidad
+      
+      # Prueba Fisher (LSD)
+      ## Para módulo de elasticidad
+      ## Para resistencia a la tensión
+      ## Para elongación a la rotura
+      ## Para tenacidad
+      
+      # Prueba TURKEY (HSD)
+      ## Para módulo de elasticidad
+      ## Para resistencia a la tensión
+      ## Para elongación a la rotura
+      ## Para tenacidad
+      
+      # Prueba Bonferroni
+      ## Para módulo de elasticidad
+      ## Para resistencia a la tensión
+      ## Para elongación a la rotura
+      ## Para tenacidad
+
+      # Referencias
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(agricolae)
+library(dplyr)
+library(knitr)
+library(apaTables)
+library(radiant.data)
+library(shiny)
+library(tidyverse)
+library(highcharter)
+library(kableExtra)
+base_final <- read_excel("Prop Mec Raquis PE.xlsx", 
+                         sheet = '1', range = "B1:E58")
+base_final <- na.omit(base_final)
+base_final <- base_final[-nrow(base_final),]
+base_final <- cbind(base_final,Cont_fibra=rep(10,nrow(base_final)))
+base_final <- cbind(base_final,Tamiz=rep('ST',nrow(base_final)))
+base_final <- cbind(base_final,Formulacion=rep('PEADr',nrow(base_final)))
+for (i in 2:48) {
+  a<-as.character(i)
+  Prop_Mec_Raquis_PE <- read_excel("Prop Mec Raquis PE.xlsx", 
+                                   sheet = a, range = "B1:E58")
+  Prop_Mec_Raquis_PE <- na.omit(Prop_Mec_Raquis_PE)
+  Prop_Mec_Raquis_PE <- Prop_Mec_Raquis_PE[-nrow(Prop_Mec_Raquis_PE),]
+  if (i%%3 == 1){
+    Prop_Mec_Raquis_PE <- cbind(Prop_Mec_Raquis_PE,Cont_fibra=rep(10,nrow(Prop_Mec_Raquis_PE)))
+  } else if (i%%3 == 2){
+    Prop_Mec_Raquis_PE <- cbind(Prop_Mec_Raquis_PE,Cont_fibra=rep(20,nrow(Prop_Mec_Raquis_PE)))
+  } else if(i%%3==0)
+    Prop_Mec_Raquis_PE <- cbind(Prop_Mec_Raquis_PE,Cont_fibra=rep(30,nrow(Prop_Mec_Raquis_PE)))
+  if (i %in% c(1,2,3,13,14,15,25,26,27,37,38,39)){
+    Prop_Mec_Raquis_PE <- cbind(Prop_Mec_Raquis_PE,Tamiz=rep('ST',nrow(Prop_Mec_Raquis_PE)))
+  }else if (i %in% c(4,5,6,16,17,18,28,29,30,40,41,42)){
+    Prop_Mec_Raquis_PE <- cbind(Prop_Mec_Raquis_PE,Tamiz=rep('T20',nrow(Prop_Mec_Raquis_PE)))
+  }else if (i %in% c(7,8,9,19,20,21,31,32,33,43,44,45)){
+    Prop_Mec_Raquis_PE <- cbind(Prop_Mec_Raquis_PE,Tamiz=rep('T30',nrow(Prop_Mec_Raquis_PE)))
+  }else if (i %in% c(10,11,12,22,23,24,34,35,36,46,47,48)){
+    Prop_Mec_Raquis_PE <- cbind(Prop_Mec_Raquis_PE,Tamiz=rep('T40',nrow(Prop_Mec_Raquis_PE)))
+  }
+  if (i<=12) {
+    Prop_Mec_Raquis_PE <- cbind(Prop_Mec_Raquis_PE, Formulacion = rep('PEADr',nrow(Prop_Mec_Raquis_PE)))
+  } else if(i>=13 && i<=24){
+    Prop_Mec_Raquis_PE <- cbind(Prop_Mec_Raquis_PE, Formulacion = rep('PEADr_4',nrow(Prop_Mec_Raquis_PE)))
+  } else if (i>24 && i<=36){
+    Prop_Mec_Raquis_PE <- cbind(Prop_Mec_Raquis_PE, Formulacion = rep('PEr',nrow(Prop_Mec_Raquis_PE)))
+  }else {
+    Prop_Mec_Raquis_PE <- cbind(Prop_Mec_Raquis_PE, Formulacion = rep('PEr_4',nrow(Prop_Mec_Raquis_PE)))
+  }
+  base_final <- rbind(base_final,Prop_Mec_Raquis_PE)
+}
+colnames(base_final)[colnames(base_final) == "Módulo elástico (MPa)"] <- "Mod_elas"
+colnames(base_final)[colnames(base_final) == "Resistencia a la tensión (MPa)"] <- "Resistencia"
+colnames(base_final)[colnames(base_final) == "Elongación a la rotura (%)"] <- "Elongacion"
+colnames(base_final)[colnames(base_final) == "Tenacidad (MPa)"] <- "Tenacidad"
+```
+
+# Introducción
+
+El propósito de este diseño experimental es investigar el impacto de los factores de formulación, tamiz y contenido de fibra en cuatro características mecánicas de las probetas: 
+
+- El módulo de elasticidad (MPa),
+- La resistencia a la tensión (MPa), 
+- La elongación a la rotura ($\%$) y 
+- La tenacidad (MPa). 
+
+Se llevará a cabo un análisis de varianza (ANOVA) multifactorial para analizar cómo estos factores interactúan entre sí y con la variable dependiente, con el fin de determinar si tienen un efecto significativo en cada una de las características de las probetas. Los resultados obtenidos permitirán identificar los factores que optimizan cada una de las características mecánicas mencionadas.
+
+Es crucial aclarar algunos términos y sus respectivas codificaciones que se utilizarán a lo largo del análisis:
+
+1. **Formulación**: La formulación de las probetas se divide en cuatro casos:
+  - `PEADr`: Fibra + PEADr
+  - `PEADr_4`: Fibra + PEADr + 4% de compatibilizante
+  - `PEr`: Fibra tratada + PEr
+  - `PEr_4`: Fibra tratada + PEr + 4% de compatibilizante.
+
+2. **Tamiz**: Se refiere al tamaño de malla utilizado en el experimento:
+  - `ST`: Sin Tamiz
+  - `T20`: Tamiz con malla no.20
+  - `T30`: Tamiz con malla no.30
+  - `T40`: Tamiz con malla no.40
+
+3. **Contenido de Fibra (%)**:
+  - `10`: 10% de Fibra en la formulación
+  - `20`: 20% de Fibra en la formulación
+  - `30`: 30% de Fibra en la formulación
+
+Este análisis detallado y sistemático permitirá una comprensión profunda de la relación entre los factores de interés y las características mecánicas de las probetas, lo que a su vez facilitará la selección de los factores óptimos para mejorar dichas características.
+
+# ANOVA
+
+## Para módulo de elasticidad
+
+```{r,echo=FALSE}
+modelo_modu <- aov(Mod_elas ~ Cont_fibra * Tamiz * Formulacion, data = base_final)
+summary(modelo_modu)
+```
+
+## Para resistencia a la tensión
+
+```{r,echo=FALSE}
+modelo_resis <- aov(Resistencia ~ Cont_fibra * Tamiz * Formulacion, data = base_final)
+summary(modelo_resis)
+```
+
+## Para elongación a la rotura
+
+```{r, echo=FALSE}
+modelo_elon <- aov(Elongacion ~ Cont_fibra * Tamiz * Formulacion, data = base_final)
+summary(modelo_elon)
+```
+
+## Para tenacidad
+
+```{r, echo=FALSE}
+modelo_tenac <- aov(Tenacidad ~ Cont_fibra * Tamiz * Formulacion, data = base_final)
+summary(modelo_tenac)
+```
+
+Podemos observar que en todos los casos se obtuvo un alto nivel de significancia, lo cual significa que cada uno de los factores tomados en cuenta son significativos para describir las características estudiadas.
+
+Por tanto continuamos con los siguientes test, para evaluar la diferencia de las medias de cada interación entre factores. 
+
+*Unicamente se reportara aquellos casos que se tiene baja significancia.*
+
+# Prueba Duncan
+
+**Rango de menor significancia** para las p medias: El rango de cualquier subconjunto de p medias muestrales debe exceder cierto valor antes de que se encuentre que cualquiera de las p medias es diferentes (Walpole, 2012)
+
+$$R_p=r_p\sqrt{\frac{s^2}{n}}$$
+
+donde $r_p$ son los **rangos estudentizados de menor significancia**, que dependen del nivel de significancia deseado ($\alpha$) y del número de grados de libertad del cuadrado medio del error $v$. Su cálculo se puede ver en *Critical Values for Duncan's New Multiple Range Test* (H.L. Harter) de la forma $r_p(0.05;p,v)$
+
+Para realizar esta prueba se ordenan las p medias muestrales $\bar{y}_p$ y se compara las diferencias $|\bar{y}_i-\bar{y}_j|$ con $R_p$ donde $p$ es el número de medias entre $\bar{y}_i$ y $\bar{y}_j$ en su forma ordenada. La prueba de hipótesis es la siguiente
+
+$$\begin{cases}
+  Ho: \bar{y}_i-\bar{y}_j= 0\\
+  Ha: \bar{y}_i-\bar{y}_j\neq 0
+  \end{cases}
+$$
+
+Se rechaza $Ho$ si  $|\bar{y}_i-\bar{y}_i|>R_p$, en este caso diremos que las medias son significativamente distintas.
+
+Si se acepta $Ho$ diremos que las medias no son significativamente distintas.
+
+En R la prueba *duncan.test()*, nos devuelve el valor p, por tanto cuando este valor sea mayor que un nivel de significancia $\alpha$, concluimos que las medias no son significativamente diferentes.
+
+Para nuestro caso tenemos:
+
+## Para módulo de elasticidad
+
+**Comparando únicamente los tamices:**
+
+|        | **Diferencia** | **valor-p** | **LIC**   | **LSC**  |
+|--------|----------------|-------------|-----------|----------|
+| ST-T20 | -2.053526      | 0.8182      | -19.57332 | 15.46626 |
+
+Las medias para $ST$ y $T20$ no son significativamente diferentes con un 95% de confianza. Es decir, podemos concluir que no utilizar tamiz y usar tamiz no.20 producen en promedio la misma elasticidad en las probetas.
+
+**Comparando únicamente formulación:**
+
+|           | **Diferencia** | **valor-p** | **LIC**   | **LSC**  |
+|-----------|----------------|-------------|-----------|----------|
+| PEr-PEr_4 | -14.09479      | 0.1148      | -31.61509 | 3.425501 |
+
+Las medias de la formulación $PEr$ y $PEr_4$ no son significativamente diferentes con 95% de confianza. Es decir, podemos concluir que la elaboración de las probetas con las formulaciones $PEr$ y $PEr_4$ producen en promedio la misma elasticidad en las probetas.
+
+
+**Comparando los 3 factores:**
+
+Se tienen 296 pares de combinaciones de los 3 factores, para los cuales se concluye que producen en promedio una misma elasticidad en las probetas
+
+## Para resistencia a la tensión
+
+**Comparando únicamente los tamices:**
+
+|         | **Diferencia** | **valor-p** | **LIC**    | **LSC**   |
+|---------|----------------|-------------|------------|-----------|
+| ST-T20  | -0.024070939   | 0.7087      | -0.1503975 | 0.1022557 |
+| T30-T40 | -0.008536751   | 0.8946      | -0.1348634 | 0.1177899 |
+
+
+Las medias para $ST$ y $T20$ no son significativamente diferentes con un 95% de confianza. Es decir, podemos concluir que no utilizar tamiz y usar tamiz no.20 producen en promedio la misma resistencia a la tensión en las probetas.
+
+Las medias para $T30$ y $T40$ no son significativamente diferentes con un 95% de confianza. Es decir, podemos concluir que utilizar tamiz no.30 y usar tamiz no.40 producen en promedio la misma resistencia a la tensión en las probetas.
+
+
+**Comparando únicamente formulación:**
+
+|               | **Diferencia** | **valor-p** | **LIC**    | **LSC**    |
+|---------------|----------------|-------------|------------|------------|
+| PEADr-PEADr_4 | -0.1032631     | 0.1091      | -0.2295933 | 0.02306714 |
+
+Las medias de la formulación $PEADr$ y $PEADr_4$ no son significativamente diferentes con 95% de confianza. Es decir, podemos concluir que la elaboración de las probetas con las formulaciones $PEADr$ y $PEADr_4$ producen en promedio la misma resistencia a la tensión en las probetas.
+
+**Comparando los 3 factores:**
+
+Se tienen 149 pares de combinaciones de los 3 factores, para los cuales se concluye que producen una misma resistencia a la tensión en las probetas.
+
+## Para elongación a la rotura
+
+**Comparando únicamente los tamices:**
+
+|           | **Diferencia** | **valor-p** | **LIC**     | **LSC**    |
+|-----------|----------------|-------------|-------------|------------|
+| T20-T30   | 0.006858146    | 0.802       | -0.04677668 | 0.06049297 |
+
+Las medias para $T20$ y $T30$ no son significativamente diferentes con un 95% de confianza. Es decir, podemos concluir que utilizar tamiz no.20 y usar tamiz no.30 producen en promedio la misma elongación a la rotura en las probetas.
+
+**Comparando los 3 factores:**
+
+Se tienen 231 pares de combinaciones de los 3 factores, para los cuales se concluye que producen en promedio una elongación a la rotura en las probetas.
+
+## Para tenacidad
+
+**Comparando únicamente los tamices:**
+
+|           | **Diferencia** | **valor-p** | **LIC**      | **LSC**     |
+|-----------|----------------|-------------|--------------|-------------|
+| ST-T20    | -0.0026743     | 0.248       | -0.007212387 | 0.001863788 |
+
+Las medias para $ST$ y $T20$ no son significativamente diferentes con un 95% de confianza. Es decir, podemos concluir que utilizar no utilizar tamiz y usar tamiz no.20 producen en promedio la misma tenacidad en las probetas.
+
+**Comparando los 3 factores:**
+
+Se tienen 207 pares de combinaciones de los 3 factores, para los cuales se concluye que producen en promedio una misma tenacidad en las probetas.
+
+
+# Prueba Fisher (LSD) 
+
+Este constraste fue sugerido por Fisher en 1935, consiste en una prueba de hipótesis por parejas basada en la distribución t con $N-I$ grados de libertad. 
+
+
+$$\begin{cases}
+  Ho: \mu_i = \mu_j \\
+  Ha: \mu \neq \mu_j
+  \end{cases}
+$$
+
+Determinando el estadístico siguiente:
+
+$$
+t = \frac{\bar{y_i} - \bar{y_j}}{\sqrt{\hat{S_R}^2 \left( \frac{1}{n_i} + \frac{1}{n_j} \right) }}
+$$
+
+Por lo tanto, concluiremos que la pareja de medias de la hipótesis nula son estadísiticamente diferentes si se verifica que:
+
+$$
+| \bar{y_i} - \bar{y_j} | > LSD
+$$
+
+donde, el valor de $LSD$ se denomida la mínima diferencia significativa, y está dada de la siguiente manera:
+
+$$
+LSD = t_{(\alpha/2; N-I)} \sqrt{\hat{S_R}^2 \left( \frac{1}{n_i} + \frac{1}{n_j} \right) }
+$$
+
+siendo:
+
+* $n_i$ y $n_j$: el número de observaciones correspondiente a cada media.
+
+* $N-I$: El número de grados de libertad de la varianza residual
+
+* $t_{(\alpha/2; N-I)}$: el valor crítico de la distribución que deja una probabilidad a su derecha igual a $\alpha/2$.
+
+Además, si el diseño es balanceado, el valor del $LSD$ se reduce a 
+
+$$
+LSD = t_{(\alpha/2; N-I)} \sqrt{\frac{\hat{2S_R}^2}{n}}
+$$
+
+Se rechaza $Ho$ si  $|\bar{y}_i-\bar{y}_i|>R_p$, en este caso diremos que las medias son significativamente distintas.
+
+Si se acepta $Ho$ diremos que las medias no son significativamente distintas.
+
+Para nuestro análisis tenemos:
+
+## Para módulo de elasticidad
+
+**Comparando únicamente los tamices:**
+
+|        | **Diferencia** | **valor-p** | **LIC**   | **LSC**  |
+|--------|----------------|-------------|-----------|----------|
+| ST-T20 | -2.053526      | 0.8185      | -19.60194 | 15.49489 |
+
+Las medias para $ST$ y $T20$ no son significativamente diferentes con un 95% de confianza. Es decir, podemos concluir que no utilizar tamiz y usar tamiz no.20 producen en promedio la misma elasticidad en las probetas.
+
+**Comparando únicamente formulación:**
+
+|           | **Diferencia** | **valor-p** | **LIC**   | **LSC**  |
+|-----------|----------------|-------------|-----------|----------|
+| PEr-PEr_4 | -14.09479      | 0.1151      | -31.62855 | 3.438970 |
+
+Las medias de la formulación $PEr$ y $PEr_4$ no son significativamente diferentes con 95% de confianza. Es decir, podemos concluir que la elaboración de las probetas con las formulaciones $PEr$ y $PEr_4$ producen en promedio la misma elasticidad en las probetas.
+
+
+**Comparando los 3 factores:**
+
+Se tienen 253 pares de combinaciones de los 3 factores, para los cuales se concluye que producen en promedio una misma elasticidad en las probetas
+
+## Para resistencia a la tensión
+
+**Comparando únicamente los tamices:**
+
+|         | **Diferencia** | **valor-p** | **LIC**    | **LSC**   |
+|---------|----------------|-------------|------------|-----------|
+| ST-T20  | -0.024070939   | 0.7092      | -0.1506039 | 0.1024621 |
+| T30-T40 | -0.008536751   | 0.8944      | -0.1346566 | 0.1175831 |
+
+
+Las medias para $ST$ y $T20$ no son significativamente diferentes con un 95% de confianza. Es decir, podemos concluir que no utilizar tamiz y usar tamiz no.20 producen en promedio la misma resistencia a la tensión en las probetas.
+
+Las medias para $T30$ y $T40$ no son significativamente diferentes con un 95% de confianza. Es decir, podemos concluir que utilizar tamiz no.30 y usar tamiz no.40 producen en promedio la misma resistencia a la tensión en las probetas.
+
+
+**Comparando únicamente formulación:**
+
+|               | **Diferencia** | **valor-p** | **LIC**    | **LSC**    |
+|---------------|----------------|-------------|------------|------------|
+| PEADr-PEADr_4 | -0.1032631     | 0.1088      | -0.2294961 | 0.02296994 |
+
+Las medias de la formulación $PEADr$ y $PEADr_4$ no son significativamente diferentes con 95% de confianza. Es decir, podemos concluir que la elaboración de las probetas con las formulaciones $PEADr$ y $PEADr_4$ producen en promedio la misma resistencia a la tensión en las probetas.
+
+**Comparando los 3 factores:**
+
+Se tienen 107 pares de combinaciones de los 3 factores, para los cuales se concluye que producen una misma resistencia a la tensión en las probetas.
+
+## Para elongación a la rotura
+
+**Comparando únicamente los tamices:**
+
+|           | **Diferencia** | **valor-p** | **LIC**     | **LSC**    |
+|-----------|----------------|-------------|-------------|------------|
+| T20-T30   | 0.006858146    | 0.803       | -0.04692741 | 0.06064371 |
+
+Las medias para $T20$ y $T30$ no son significativamente diferentes con un 95% de confianza. Es decir, podemos concluir que utilizar tamiz no.20 y usar tamiz no.30 producen en promedio la misma elongación a la rotura en las probetas.
+
+**Comparando los 3 factores:**
+
+Se tienen 146 pares de combinaciones de los 3 factores, para los cuales se concluye que producen en promedio una elongación a la rotura en las probetas.
+
+## Para tenacidad
+
+**Comparando únicamente los tamices:**
+
+|           | **Diferencia** | **valor-p** | **LIC**      | **LSC**     |
+|-----------|----------------|-------------|--------------|-------------|
+| ST-T20    | -0.0026743     | 0.249       | -0.007219802 | 0.001871202 |
+
+Las medias para $ST$ y $T20$ no son significativamente diferentes con un 95% de confianza. Es decir, podemos concluir que utilizar no utilizar tamiz y usar tamiz no.20 producen en promedio la misma tenacidad en las probetas.
+
+**Comparando los 3 factores:**
+
+Se tienen 180 pares de combinaciones de los 3 factores, para los cuales se concluye que producen en promedio una misma tenacidad en las probetas.
+
+# Prueba Tukey (HSD) 
+
+Este método Post-Hoc consiste en realizar comparaciones de las medias por pares que den credibilidad a la tasa de error tipo I.Esto implica encontrar diferencias significativas entre las medias $i,j$ con $i\neq j$ si $|\bar{y}_i-\bar{y}_j|$ excede a un valor  $q(\alpha,k,v)\sqrt\frac{MSE}{n}$.
+
+El proceso general del Test es el siguiente:
+
+**Prueba de hipotesis:**
+
+$$
+\begin{cases}
+  Ho: |\bar{Y}_i-\bar{Y}_j|= 0\\
+  Ha: |\bar{Y}_i-\bar{Y}_j|\neq 0
+\end{cases}
+$$
+
+**Valor de comparación:** 
+$$
+\mathrm{HSD} = q \sqrt{\frac{\mathrm{MSE}}{n_c}}
+$$
+
+Donde 
+
+* __Valor crítico de la tabla de Rango Studentizado:__ $q(\alpha,k,v)$
+
+* __Nivel de Significancia:__ $\alpha$
+
+* __Número de muestras:__ $k$
+
+* __Grados de libretad de MSE:__ $v$
+
+* $\mathrm{MSE}$ = Error Cuadrático Medio, 
+
+* $\textbf{n_c}$ = tamaño de la muestra (n). 
+
+* __Regla de Decisión:__ Rechazar $H_0$ si $|\bar{y}_i - \bar{y}_j| > \text{Valor crítico de HSD}$
+
+El valor de q puede ser obtenido con la siguiente expresión *qtukey(p =1-\(\alpha\), nmeans = k, df = n - k)*
+
+Los intervalos para este método vienen  dados por  la siguiente expresión
+
+$$
+\bar{y_i} - \bar{y_j} \pm q_{\alpha,k,n-k} \sqrt{\left(\frac{MSE}{n}\right)}
+$$
+
+## Para módulo de elasticidad
+
+*Comparando únicamente los tamices:*
+
+|        | **Diferencia** | **valor-p** | **LIC**   | **LSC**  |
+|--------|----------------|-------------|-----------|----------|
+| ST-T20 | -2.053526      | 0.9957      | -25.05957 | 20.95251 |
+
+En el módulo de elasticidad, las medias de los tamices ST y T20 no son significativamente diferentes. Con una diferencia de 2.05.
+
+*Comparando únicamente formulación:*
+
+|           | **Diferencia** | **valor-p** | **LIC**   | **LSC**  |
+|-----------|----------------|-------------|-----------|----------|
+| PEr-PEr_4 | -14.09479      | 0.3924      | -37.08162 | 8.892038 |
+
+En el módulo de formulación, las medias de PER y PEr_4 no son significativamente diferentes. Con una diferencia de 14.09.
+
+
+*Comparando los 3 factores:* 
+
+Se tienen 296 diferencias no significativas
+
+## Para resistencia a la tensión
+
+*Comparando únicamente los tamices:*
+
+|         | **Diferencia** | **valor-p** | **LIC**    | **LSC**   |
+|---------|----------------|-------------|------------|-----------|
+| ST-T20  | -0.024070939   | 0.9823      | -0.1899562 | 0.1418143 |
+| T30-T40 | -0.008536751   | 0.9992      | -0.1738804 | 0.1568069 |
+
+Las medias de ST y T20 no son significativamente diferentes. Con una diferencia de 0.02.
+
+Las medias de T30 y T40 no  son significativamente diferentes. Con una diferencia de 0.008.
+
+*Comparando únicamente formulación:*
+
+|               | **Diferencia** | **valor-p** | **LIC**    | **LSC**    |
+|---------------|----------------|-------------|------------|------------|
+| PEADr-PEADr_4 | -0.1032631     | 0.3764      | -0.2687551 | 0.0622289  |
+
+Las medias de PEADr y PEADr_4 no son significativamente diferentes. Con una diferencia de 0.1032.
+
+*Comparando los 3 factores:*
+
+Se tiene 149 diferencias no significativas
+
+## Para elongación a la rotura
+
+*Comparando únicamente los tamices:*
+
+|           | **Diferencia** | **valor-p** | **LIC**     | **LSC**    |
+|-----------|----------------|-------------|-------------|------------|
+| T20-T30   | 0.006858146    | 0.9945      | -0.06365493 | 0.07737122 |
+
+Las medias de T20 y T30 no son significativamente diferentes. Con una diferencia de 0.0068.
+
+Comparando los 3 factores:
+
+Se tienen 231 diferencias no significativas
+
+## Para tenacidad
+
+*Comparando únicamente los tamices:*
+
+|           | **Diferencia** | **valor-p** | **LIC**      | **LSC**     |
+|-----------|----------------|-------------|--------------|-------------|
+| ST-T20    | -0.0026743     | 0.6562      | -0.00863347  | 0.003284871 |
+
+Las medias de ST y T20 no son significativamente diferentes. Con una diferencia de 0.0026743.
+
+*Comparando los 3 factores:*
+
+Se tienen 207 diferencias no significativas
+
+# Prueba Bonferroni
+
+La prueba de Bonferroni es  un test de comparaciones múltiples, que permite comparar las medias de los diferentes niveles de un factor. Es una prueba que permite reducir el error tipo I, después de haber rechazado la hipótesis nula de igualdad de medias medíante pruebas como la de Fisher.
+
+En este procedimiento se fija un nivel de significancia $\alpha$ que se reparte entre cada una de las comparaciones consideradas y se utiliza la desigualdad de Bonferroni.
+
+$$
+Pr \left( \bigcup_{m=1}^M A_m\right) \leq \sum_{m=1}^M Pr(A_m)
+$$
+
+El Test de Bonferroni se basa en la creación de un umbral por encima del cual la diferencia entre las dos medias será significativa y por debajo del cual esa diferencia no será estadísticamente significativa.
+
+Al aplicar este test en nuestro diseño experimental, lo que se busca es que fijado un factor se comparen las medias de las combinaciones de los factores restantes, por ejemplo, fijada la formulación, se compare el efecto de la malla y el tamiz en las respectivas características mecánicas que se están analizando en el estudio, lo cual, permitirá analizar de manera más detallada cual de los factores son los que tienen una mayor influencia en el desempeño de las probetas.
+
+A continuación, se muestran los resultados de aplicar el test de Bonferroni, en donde, para cada característica mecánica, se puede fijar uno o más factores y se mostrará una tabla con los resultados de p valor obtenios, así también una gráfica, en donde se muestra por encima de la linea que representa el nivel de significancia, en que combinaciones la difeerencia de sus medias no es estadísticamente significativa, dado un factor fijo.
+
+## Para módulo de elasticidad
+
+```{r,echo=FALSE}
+#Tabla filtros
+selectInput('formulacion1','Seleccione la formulación',
+            choices=c('-','PEADr','PEADr_4','PEr','PEr_4'),selected = 'PEADr')
+selectInput('tamiz1','Seleccione el Tamiz',
+            choices=c('-','ST','T20','T30','T40'),selected = 'T40')
+selectInput('fibra1','Seleccione la Fibra',
+            choices=c('-','10','20','30'),selected = '-')
+selectInput('difsig1','Diferencia significativa',
+            choices=c('-','Sí','No'))
+tabla1 <- LSD.test(modelo_modu,c("Formulacion","Tamiz","Cont_fibra"),group = FALSE, p.adj = 'bon')$comparison
+tabla1<-rownames_to_column(tabla1,var='Combinaciones')
+tabla1<-tabla1 %>% select(-signif.)
+
+tabla1<-tabla1 %>% mutate(Etiqueta=Combinaciones)%>% separate(Combinaciones,into=c("Formulación 1",'Malla 1','Fibra 1',"Formulación 2","Malla 2","Fibra 2"),sep="[:\\-]") 
+tabla1$`Fibra 1`<-trimws(tabla1$`Fibra 1`)
+tabla1$`Formulación 2`<-trimws(tabla1$`Formulación 2`)
+tabla1<-tabla1 %>% rename(Diferencia=difference,`Valor-p`=pvalue)
+tabla2<-reactive({
+  formulacion<-input$formulacion1
+  tamiz<-input$tamiz1
+  fibra<-input$fibra1
+  if(formulacion=='-'){
+    formulacion<-c('PEADr','PEADr_4','PEr','PEr_4')
+  }
+  if(tamiz=='-'){
+    tamiz<-c('ST','T20','T30','T40')
+  }
+  if(fibra=='-'){
+    fibra<-c('10','20','30')
+  }
+  tabla1<-tabla1 %>% filter(`Formulación 1`%in%formulacion,`Formulación 2`%in%formulacion,`Malla 1`%in%tamiz,`Malla 2`%in%tamiz,`Fibra 1`%in%fibra,`Fibra 2`%in%fibra)
+  if (input$difsig1=="Sí") {
+    tabla1<-tabla1 %>% filter(`Valor-p`<0.05)
+  }
+  else if (input$difsig1=="No") {
+    tabla1<-tabla1 %>% filter(`Valor-p`>=0.05)
+  }
+  tabla1
+  })
+
+renderTable({tabla2() %>% select(-Etiqueta)})
+
+```
+
+```{r,echo=FALSE}
+#Grafico con filtros
+
+renderHighchart({
+  hc <- hchart(tabla2(), 
+         type = "scatter", 
+         hcaes(x = Etiqueta, 
+               y = `Valor-p`)) %>%  
+              hc_title(text = "Valores p",
+              style = list(fontWeight = "bold", fontSize = "25px"),
+              align = "center") %>% hc_tooltip(headerFormat = "<br>",             pointFormat = "Etiqueta: {point.Etiqueta}<br>Valor-p {series.Etiqueta}: {point.Valor-p}")%>%
+    hc_yAxis(
+      gridLineColor = "transparent",
+      min = 0,
+      max = 1,
+      opposite = TRUE,
+      alternateGridColor = "#FAFAFA",
+      plotBands = list(
+        list(
+          from = 0.05,
+          to = 1,
+          color = "#FFC6C6",
+          label = list(text = "Dif. no significativa")
+        )
+      ),
+      # Agregar línea en el eje y = 0.05
+      plotLines = list(
+        list(
+          color = "red",
+          width = 2,
+          value = 0.05,
+          dashStyle = "dash",
+          zIndex = 5,
+          label = list(
+            text = "0.05",
+            align = "right",
+            style = list(color = "red")
+          )
+        )
+      )
+    ) %>% hc_xAxis(labels=list(enabled=FALSE))
+})
+```
+
+
+## Para resistencia a la tensión
+
+```{r,echo=FALSE}
+#Tabla filtros
+selectInput('formulacion3','Seleccione la formulación',
+            choices=c('-','PEADr','PEADr_4','PEr','PEr_4'),selected = 'PEADr')
+selectInput('tamiz3','Seleccione el Tamiz',
+            choices=c('-','ST','T20','T30','T40'),selected = 'T40')
+selectInput('fibra3','Seleccione la Fibra',
+            choices=c('-','10','20','30'),selected = '-')
+selectInput('difsig3','Diferencia significativa',
+            choices=c('-','Sí','No'))
+tabla3 <- LSD.test(modelo_resis,c("Formulacion","Tamiz","Cont_fibra"),group = FALSE, p.adj = 'bon')$comparison
+tabla3<-rownames_to_column(tabla3,var='Combinaciones')
+tabla3<-tabla3 %>% select(-signif.)
+
+tabla3<-tabla3 %>% mutate(Etiqueta=Combinaciones)%>% separate(Combinaciones,into=c("Formulación 1",'Malla 1','Fibra 1',"Formulación 2","Malla 2","Fibra 2"),sep="[:\\-]") 
+tabla3$`Fibra 1`<-trimws(tabla3$`Fibra 1`)
+tabla3$`Formulación 2`<-trimws(tabla3$`Formulación 2`)
+tabla3<-tabla3 %>% rename(Diferencia=difference,`Valor-p`=pvalue)
+tabla4<-reactive({
+  formulacion<-input$formulacion3
+  tamiz<-input$tamiz3
+  fibra<-input$fibra3
+  if(formulacion=='-'){
+    formulacion<-c('PEADr','PEADr_4','PEr','PEr_4')
+  }
+  if(tamiz=='-'){
+    tamiz<-c('ST','T20','T30','T40')
+  }
+  if(fibra=='-'){
+    fibra<-c('10','20','30')
+  }
+  tabla3<-tabla3 %>% filter(`Formulación 1`%in%formulacion,`Formulación 2`%in%formulacion,`Malla 1`%in%tamiz,`Malla 2`%in%tamiz,`Fibra 1`%in%fibra,`Fibra 2`%in%fibra)
+  if (input$difsig3=="Sí") {
+    tabla3<-tabla3 %>% filter(`Valor-p`<0.05)
+  }
+  else if (input$difsig3=="No") {
+    tabla3<-tabla3 %>% filter(`Valor-p`>=0.05)
+  }
+  tabla3
+  })
+
+renderTable({tabla4() %>% select(-Etiqueta)})
+
+```
+
+```{r,echo=FALSE}
+#Grafico con filtros
+renderHighchart({
+  hc <- hchart(tabla4(), 
+         type = "scatter", 
+         hcaes(x = Etiqueta, 
+               y = `Valor-p`)) %>%  
+              hc_title(text = "Valores p",
+              style = list(fontWeight = "bold", fontSize = "25px"),
+              align = "center") %>% hc_tooltip(headerFormat = "<br>",             pointFormat = "Etiqueta: {point.Etiqueta}<br>Valor-p {series.Etiqueta}: {point.Valor-p}")%>% 
+    hc_yAxis(
+      gridLineColor = "transparent",
+      min = 0,
+      max = 1,
+      opposite = TRUE,
+      alternateGridColor = "#FAFAFA",
+      plotBands = list(
+        list(
+          from = 0.05,
+          to = 1,
+          color = "#FFC6C6",
+          label = list(text = "Dif. no significativa")
+        )
+      ),
+      # Agregar línea en el eje y = 0.05
+      plotLines = list(
+        list(
+          color = "red",
+          width = 2,
+          value = 0.05,
+          dashStyle = "dash",
+          zIndex = 5,
+          label = list(
+            text = "0.05",
+            align = "right",
+            style = list(color = "red")
+          )
+        )
+      )
+    ) %>% hc_xAxis(labels=list(enabled=FALSE))
+})
+```
+
+## Para elongación a la rotura
+
+```{r,echo=FALSE}
+#Tabla filtros
+selectInput('formulacion5','Seleccione la formulación',
+            choices=c('-','PEADr','PEADr_4','PEr','PEr_4'),selected = 'PEADr')
+selectInput('tamiz5','Seleccione el Tamiz',
+            choices=c('-','ST','T20','T30','T40'),selected = 'T40')
+selectInput('fibra5','Seleccione la Fibra',
+            choices=c('-','10','20','30'),selected = '-')
+selectInput('difsig5','Diferencia significativa',
+            choices=c('-','Sí','No'))
+tabla5 <- LSD.test(modelo_elon,c("Formulacion","Tamiz","Cont_fibra"),group = FALSE, p.adj = 'bon')$comparison
+tabla5<-rownames_to_column(tabla5,var='Combinaciones')
+tabla5<-tabla5 %>% select(-signif.)
+
+tabla5<-tabla5 %>% mutate(Etiqueta=Combinaciones)%>% separate(Combinaciones,into=c("Formulación 1",'Malla 1','Fibra 1',"Formulación 2","Malla 2","Fibra 2"),sep="[:\\-]") 
+tabla5$`Fibra 1`<-trimws(tabla5$`Fibra 1`)
+tabla5$`Formulación 2`<-trimws(tabla5$`Formulación 2`)
+tabla5<-tabla5 %>% rename(Diferencia=difference,`Valor-p`=pvalue)
+tabla6<-reactive({
+  formulacion<-input$formulacion5
+  tamiz<-input$tamiz5
+  fibra<-input$fibra5
+  if(formulacion=='-'){
+    formulacion<-c('PEADr','PEADr_4','PEr','PEr_4')
+  }
+  if(tamiz=='-'){
+    tamiz<-c('ST','T20','T30','T40')
+  }
+  if(fibra=='-'){
+    fibra<-c('10','20','30')
+  }
+  tabla5<-tabla5 %>% filter(`Formulación 1`%in%formulacion,`Formulación 2`%in%formulacion,`Malla 1`%in%tamiz,`Malla 2`%in%tamiz,`Fibra 1`%in%fibra,`Fibra 2`%in%fibra)
+  if (input$difsig5=="Sí") {
+    tabla5<-tabla5 %>% filter(`Valor-p`<0.05)
+  }
+  else if (input$difsig5=="No") {
+    tabla5<-tabla5 %>% filter(`Valor-p`>=0.05)
+  }
+  tabla5
+  })
+
+renderTable({tabla6() %>% select(-Etiqueta)})
+
+```
+
+```{r,echo=FALSE}
+#Grafico con filtros
+renderHighchart({
+  hc <- hchart(tabla6(), 
+               type = "scatter", 
+               hcaes(x = Etiqueta, 
+                     y = `Valor-p`)) %>%  
+    hc_title(text = "Valores p",
+             style = list(fontWeight = "bold", fontSize = "25px"),
+             align = "center") %>% 
+    hc_tooltip(headerFormat = "<br>",             
+               pointFormat = "Etiqueta: {point.Etiqueta}<br>Valor-p {series.Etiqueta}: {point.Valor-p}") %>% 
+    hc_yAxis(
+      gridLineColor = "transparent",
+      min = 0,
+      max = 1,
+      opposite = TRUE,
+      alternateGridColor = "#FAFAFA",
+      plotBands = list(
+        list(
+          from = 0.05,
+          to = 1,
+          color = "#FFC6C6",
+          label = list(text = "Dif. no significativa")
+        )
+      ),
+      # Agregar línea en el eje y = 0.05
+      plotLines = list(
+        list(
+          color = "red",
+          width = 2,
+          value = 0.05,
+          dashStyle = "dash",
+          zIndex = 5,
+          label = list(
+            text = "0.05",
+            align = "right",
+            style = list(color = "red")
+          )
+        )
+      )
+    ) %>% 
+    hc_xAxis(labels = list(enabled = FALSE))
+})
+```
+
+## Para tenacidad
+
+```{r,echo=FALSE}
+#Tabla filtros
+selectInput('formulacion7','Seleccione la formulación',
+            choices=c('-','PEADr','PEADr_4','PEr','PEr_4'),selected = 'PEADr')
+selectInput('tamiz7','Seleccione el Tamiz',
+            choices=c('-','ST','T20','T30','T40'),selected = 'T40')
+selectInput('fibra7','Seleccione la Fibra',
+            choices=c('-','10','20','30'),selected = '-')
+selectInput('difsig7','Diferencia significativa',
+            choices=c('-','Sí','No'))
+tabla7 <- LSD.test(modelo_tenac,c("Formulacion","Tamiz","Cont_fibra"),group = FALSE, p.adj = 'bon')$comparison
+tabla7<-rownames_to_column(tabla7,var='Combinaciones')
+tabla7<-tabla7 %>% select(-signif.)
+
+tabla7<-tabla7 %>% mutate(Etiqueta=Combinaciones)%>% separate(Combinaciones,into=c("Formulación 1",'Malla 1','Fibra 1',"Formulación 2","Malla 2","Fibra 2"),sep="[:\\-]") 
+tabla7$`Fibra 1`<-trimws(tabla7$`Fibra 1`)
+tabla7$`Formulación 2`<-trimws(tabla7$`Formulación 2`)
+tabla7<-tabla7 %>% rename(Diferencia=difference,`Valor-p`=pvalue)
+tabla8<-reactive({
+  formulacion<-input$formulacion7
+  tamiz<-input$tamiz7
+  fibra<-input$fibra7
+  if(formulacion=='-'){
+    formulacion<-c('PEADr','PEADr_4','PEr','PEr_4')
+  }
+  if(tamiz=='-'){
+    tamiz<-c('ST','T20','T30','T40')
+  }
+  if(fibra=='-'){
+    fibra<-c('10','20','30')
+  }
+  tabla7<-tabla7 %>% filter(`Formulación 1`%in%formulacion,`Formulación 2`%in%formulacion,`Malla 1`%in%tamiz,`Malla 2`%in%tamiz,`Fibra 1`%in%fibra,`Fibra 2`%in%fibra)
+  if (input$difsig7=="Sí") {
+    tabla7<-tabla7 %>% filter(`Valor-p`<0.05)
+  }
+  else if (input$difsig7=="No") {
+    tabla7<-tabla7 %>% filter(`Valor-p`>=0.05)
+  }
+  tabla7
+  })
+
+renderTable({tabla8() %>% select(-Etiqueta)})
+
+```
+
+```{r,echo=FALSE}
+#Grafico con filtros
+renderHighchart({
+  hc <- hchart(tabla8(), 
+               type = "scatter", 
+               hcaes(x = Etiqueta, 
+                     y = `Valor-p`)) %>%  
+    hc_title(text = "Valores p",
+             style = list(fontWeight = "bold", fontSize = "25px"),
+             align = "center") %>% 
+    hc_tooltip(headerFormat = "<br>",             
+               pointFormat = "Etiqueta: {point.Etiqueta}<br>Valor-p {series.Etiqueta}: {point.Valor-p}") %>% 
+    hc_yAxis(
+      gridLineColor = "transparent",
+      min = 0,
+      max = 1,
+      opposite = TRUE,
+      alternateGridColor = "#FAFAFA",
+      plotBands = list(
+        list(
+          from = 0.05,
+          to = 1,
+          color = "#FFC6C6",
+          label = list(text = "Dif. no significativa")
+        )
+      ),
+      # Agregar línea en el eje y = 0.05
+      plotLines = list(
+        list(
+          color = "red",
+          width = 2,
+          value = 0.05,
+          dashStyle = "dash",
+          zIndex = 5,
+          label = list(
+            text = "0.05",
+            align = "right",
+            style = list(color = "red")
+          )
+        )
+      )
+    ) %>% 
+    hc_xAxis(labels = list(enabled = FALSE)) 
+})
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Referencias
+
+*Box, G.E.; Hunter, J.S.; Hunter, W.G. (2008). Estadística para investigadores. Diseño, innovación y descubrimiento. Segunda Edición, Ed. Reverté, Barcelona.*
+
+*Gutiérrez, H.; de la Vara, R. (2003). Análisis y diseño de experimentos. McGraw-Hill, México.*
+
+*Lara, A.P (2020). Diseño estadístico de experimentos. Análisis de la varianza. Grupo Editorial Universitario. Universidad de Granada, España*
+
+*Walpole, R. E., Myers, R. H., & Myers, S. L. KY (2012). Probabilidad y estadística para ingeniería y ciencias.*
+
+
