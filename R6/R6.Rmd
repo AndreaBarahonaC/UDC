@@ -102,7 +102,7 @@ Persona <- R6Class("Persona",list(
 ```
 De esta forma se asegura que el nombre sea un solo string y que la edad sea un solo número. Creemos por ejemplo:
 
-```{r}
+```{r, error=TRUE}
 Andrea <- Persona$new("Andrea", 'veintidos')
 ```
 
@@ -203,7 +203,7 @@ names(Andrea2)
 ## Ejemplos adicionales
 
 
-## 14.3 Controles de Acceso
+# Controles de Acceso
 
 `R6Class()` tiene otros 2 argumentos que funcionan similar a `public`:
 
@@ -211,7 +211,7 @@ names(Andrea2)
 
 * `active` permite utilizar funciones de acceso para definir campos dinámicos o activos.
 
-### Privacidad
+## Privacidad
 
 Con R6 es posible definir campos y metodos **privados**, es decir, que solo están disponibles dentro de la clase. Otros aspectos importantes de conocer son:
 
@@ -255,7 +255,7 @@ Esta distinción entre campos públicos y privados es importante cuando se crea 
 
 Todo lo que sea privado se puede refactorizar más fácilmente porque sabes que los demás no dependen de estos campos. Los métodos privados tienden a ser menos importantes en R en comparación con otros lenguajes de programación porque las jerarquías de objetos en R tienden a ser más simples.
 
-### Campos Activos
+## Campos Activos
 
 Los campos activos permiten definir componentes que funcionan como campos para los usuarios, pero están definidos como funciones, es decir, como métodos.
 
@@ -283,7 +283,7 @@ x$random
 
 Los campos activos son usandos particularmente junto con el argumento de campos privamos, ya que esto hace posible implementar componentes similares a los campos pero con controles adicionales. Por ejemplo, podemos usar esto para crear un campo solo de lectura para `edad`, y para asegurarnos que `nombre` sea un vector de un solo caracter.
 
-```{r}
+```{r, error=TRUE}
 Persona <- R6Class("Person", 
   
   private = list(
@@ -328,7 +328,7 @@ Andrea4$edad <- 20
 #> Error: `$edad` is read only
 ```
 
-## 14.4 Semántica de referencia
+# Semántica de referencia
 
 Una de las grandes diferencias entre R6 y la mayoría de los demás objetos es que tienen una semántica de referencia. La principal consecuencia de la semántica de referencia es que los objetos no se copian cuando se modifican:
 
@@ -366,11 +366,11 @@ Hay otras tres consecuencias menos intuitivas:
 
 Estas están descritas con mayor detalle a continuación.
 
-### Razonamientos
+## Razonamientos
 
 Generalmente, las semanticas de referencias hacen el código más difícil de entender. Tomemos el siguiente ejemplo sencillo:
 
-```{r}
+```{r,eval=FALSE}
 x <- list(a = 1)
 y <- list(b = 2)
 
@@ -381,7 +381,7 @@ Para la gran mayoría de funciones, sabes que la línea final solo modifica `z`.
 
 Ahora, tomemos un ejemplo similar que utiliza una clase de referencia de `Lista` imaginaria:
 
-```{r}
+```{r, eval=FALSE}
 x <- Lista$new(a = 1)
 y <- Lista$new(b = 2)
 
@@ -389,7 +389,8 @@ z <- f(x, y)
 ```
 
 Es mucho más difícil de entender la línea final: si `f()` llama a métodos de `x` o `y`, podría modificarlos al igual que `z`. Este es el mayor inconveniente potencial de R6 y se debe tener cuidado de evitarlo escribiendo funciones que devuelvan un valor o modifiquen sus entradas de R6, pero no ambas. 
-### Finalización
+
+## Finalización
 
 La semántica de referencia, permite pensar en el momento en que un objeto R6 es finalizado o eliminado. Esto es diferente a la mayoría de los objetos en R, donde la semántica de copia al modificar significa que puede haber muchas versiones transitorias de un objeto, lo que no permite pensar en cuándo se elimina un objeto de forma lógica.
 
@@ -407,7 +408,7 @@ Debido a que los objetos R6 no se copian al modificarlos, solo se eliminan una v
 ArchivoTemporal <- R6Class("ArchivoTemporal", list(
   ruta = NULL,
   initialize = function() {
-    self$ruta <- archtemp()
+    self$ruta <- tempfile()
   },
   finalize = function() {
     message("Cleaning up ", self$ruta)
@@ -428,13 +429,12 @@ Finalmente, veamos cómo se utiliza esta clase `ArchivoTemporal` creando una ins
 ```{r}
 at <- ArchivoTemporal$new()
 rm(at)
-#> Cleaning up /tmp/Rtmpk73JdI/file155f31d8424bd
 ```
 
 
 En resumen, los objetos R6 permiten definir métodos `initialize` y `finalize`, que se ejecutan al crear y eliminar instancias de la clase respectivamente, permitiendo una gestión más controlada de los recursos y la limpieza de la memoria.
 
-### Campos R6
+## Campos R6
 
 Una última consecuencia que puede surgir al utilizar semántica de referencia en R6, es particularmente cuando se usa una instancia de una clase R6 como valor predeterminado de un campo. La semántica de referencia significa que cuando asignas un objeto a otro, no se crea una copia independiente, sino que ambos hacen referencia al mismo objeto en la memoria.
 
@@ -459,7 +459,6 @@ db_a <- DatabaseTemporal$new()
 db_b <- DatabaseTemporal$new()
 
 db_a$file$ruta == db_b$file$ruta
-#> [1] TRUE
 ```
 
 
@@ -487,13 +486,12 @@ DatabaseTemporal <- R6Class("DatabaseTemporal", list(
 db_a <- DatabaseTemporal$new()
 db_b <- DatabaseTemporal$new()
 
-db_a$file$path == db_b$file$path
-#> [1] FALSE
+db_a$archivo$ruta == db_b$archivo$ruta
 ```
 
 Ahora, cada instancia de `DatabaseTemporal` tiene su propia instancia única de `ArchivoTemporal`, y por lo tanto, sus caminos de archivo son diferentes, como se espera. Esto garantiza que cada instancia de `DatabaseTemporal` tenga sus propios recursos independientes.
 
-## 14.5 ¿ Por qué R6 ?
+# 14.5 ¿ Por qué R6 ?
 
 Este texto explica por qué el autor prefiere utilizar R6 en lugar de Reference Classes (RC), una sistema de programación orientada a objetos (OO) incorporado en R, debido a las siguientes razones:
 

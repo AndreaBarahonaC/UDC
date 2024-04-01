@@ -1512,6 +1512,543 @@ programming - Introduction, 12 Base Types, 14 R6, 14.1 Introduction 2.
 semantics, 14.5 Why R6</p>
 <div id="clases-y-métodos" class="section level1">
 <h1>Clases y métodos</h1>
+<p>Para crear las clases y sus métodos se utiliza:
+<code>R6::R6Class()</code></p>
+<p>Por ejemplo:</p>
+<pre class="r"><code>SumaAcum &lt;- R6Class(&quot;SumaAcum&quot;,list(
+  suma = 0,
+  sumar = function(x=1){
+   self$suma&lt;-self$suma+x
+   invisible(self)
+  }
+))</code></pre>
+<p>En el ejemplo se muestra los argumentos que deben ir en la función
+<code>R6Class()</code>:</p>
+<ul>
+<li><p>El primer argumento es el nombre de la clase, el cual no es
+necesario, pero evita errores.</p></li>
+<li><p>El segundo argumento son los métodos (funciones) y campos
+(variables) públicos del objeto. Los métodos pueden acceder a los
+métodos y campos del mismo objeto mediante <code>self</code></p></li>
+</ul>
+<p>Para crear un nuevo objeto se utiliza el método
+<code>$new()</code>:</p>
+<pre class="r"><code>x &lt;- SumaAcum$new()
+x</code></pre>
+<pre><code>## &lt;SumaAcum&gt;
+##   Public:
+##     clone: function (deep = FALSE) 
+##     suma: 0
+##     sumar: function (x = 1)</code></pre>
+<p>Además, se accede a los campos y se llama a los métodos mediante
+<code>$</code>:</p>
+<pre class="r"><code>x$sumar(2)
+x$suma</code></pre>
+<pre><code>## [1] 2</code></pre>
+<pre class="r"><code>x$sumar(4)
+x$suma</code></pre>
+<pre><code>## [1] 6</code></pre>
+<pre class="r"><code>x$sumar()
+x$suma</code></pre>
+<pre><code>## [1] 7</code></pre>
+<div id="encadenamiento-de-métodos" class="section level2">
+<h2>Encadenamiento de métodos</h2>
+<p>Debido a como se crean los métodos podemos realizar un
+encadenamiento, por ejemplo:</p>
+<pre class="r"><code>y &lt;- SumaAcum$new()
+y$sumar(5)$sumar(10)
+y$suma</code></pre>
+<pre><code>## [1] 15</code></pre>
+<p>Este encadenamiento está relacionados con los <strong>pipe</strong> y
+se revisará más adelante los pros y contras de esto.</p>
+</div>
+<div id="métodos-importantes" class="section level2">
+<h2>Métodos importantes</h2>
+<p>El método <code>$initialize()</code> modifica el comportamiento de
+<code>$new()</code>, por ejemplo:</p>
+<pre class="r"><code>Persona &lt;- R6Class(&quot;Persona&quot;,list(
+  nombre = NULL,
+  edad = NA,
+  initialize = function(nombre, edad= NA){
+    stopifnot(is.character(nombre), length(nombre)==1)
+    stopifnot(is.numeric(edad), length(edad)==1)
+    self$nombre &lt;- nombre
+    self$edad &lt;- edad
+  }
+))</code></pre>
+<p>De esta forma se asegura que el nombre sea un solo string y que la
+edad sea un solo número. Creemos por ejemplo:</p>
+<pre class="r"><code>Andrea &lt;- Persona$new(&quot;Andrea&quot;, &#39;veintidos&#39;)</code></pre>
+<pre><code>## Error in initialize(...): is.numeric(edad) is not TRUE</code></pre>
+<p>Por lo tanto no se crea, debido a que <code>&#39;veintidos&#39;</code> no es
+un número, y si se creará cuando lo creemos de esta forma:</p>
+<pre class="r"><code>Andrea &lt;- Persona$new(&quot;Andrea&quot;, 22)</code></pre>
+<p>En caso de tener requisitos más complejos se puede utilizar
+<code>$validate()</code></p>
+<p>El método <code>$print()</code> permite modificar el comportamiento
+de la impresión por defecto, por ejemplo:</p>
+<pre class="r"><code>Persona &lt;- R6Class(&quot;Persona&quot;, list(
+  nombre = NULL,
+  edad = NA,
+  initialize = function(nombre, edad = NA) {
+    self$nombre &lt;- nombre
+    self$edad &lt;- edad
+  },
+  print = function(...) {
+    cat(&quot;Persona: \n&quot;)
+    cat(&quot;Nombre: &quot;, self$nombre, &quot;\n&quot;, sep = &quot;&quot;)
+    cat(&quot;Edad:  &quot;, self$edad, &quot;\n&quot;, sep = &quot;&quot;)
+    invisible(self)
+  }
+))
+
+Andrea2 &lt;- Persona$new(&quot;Andrea&quot;)
+Andrea2</code></pre>
+<pre><code>## Persona: 
+## Nombre: Andrea
+## Edad:  NA</code></pre>
+<p>Ahora vemos que el objeto creado anteriormente no tiene relación con
+este nuevo, pues cada método está vinculado a un objeto individual.
+Vemos que:</p>
+<pre class="r"><code>Andrea</code></pre>
+<pre><code>## &lt;Persona&gt;
+##   Public:
+##     clone: function (deep = FALSE) 
+##     edad: 22
+##     initialize: function (nombre, edad = NA) 
+##     nombre: Andrea</code></pre>
+<pre class="r"><code>Andrea2</code></pre>
+<pre><code>## Persona: 
+## Nombre: Andrea
+## Edad:  NA</code></pre>
+<p>No imprimen lo mismo.</p>
+</div>
+<div id="agregar-métodos-después-de-la-creación" class="section level2">
+<h2>Agregar métodos después de la creación</h2>
+<p>Para evitar crear nuevas clases, se puede modificar los campos o
+métodos de una ya existente. Se utiliza <code>$set()</code> para agregar
+nuevos elementos. Por ejemplo:</p>
+<pre class="r"><code>SumAcum &lt;- R6Class(&quot;SumAcum&quot;)
+SumAcum$set(&quot;public&quot;, &quot;suma&quot;, 0)
+SumAcum$set(&quot;public&quot;, &quot;sumar&quot;, function(x=1){
+  self$suma &lt;- self$suma + x
+  invisible(self)
+})</code></pre>
+<p>Para agregarlos debemos proporcionar: visibilidad (public, entre
+otros), nombre y lo que se va a agregrar.</p>
+<p>De esta forma se crea este objeto igual al que se creó en la primera
+sección. Además, si se agregan nuevo campos o métodos solo estarán
+disponibles para los nuevos objetos creados a partir de esto.</p>
+</div>
+<div id="herencia" class="section level2">
+<h2>Herencia</h2>
+<p>Se puede heredar los comportamientos de una clase existente a otra
+utilizando <code>inherit</code>, para ello veamos el ejemplo:</p>
+<pre class="r"><code>SumAcumMsg &lt;- R6Class(&quot;SumAcumMsg&quot;,
+  inherit = SumAcum,
+  public = list(
+    sumar = function(x=1){
+      cat(&quot;Sumando &quot;, x, &quot;\n&quot;, sep=&quot;&quot; )
+      super$sumar(x=x)
+    }
+  )
+)</code></pre>
+<p>Al agregar <code>$sumar()</code> se cambia la implementación de la
+clase que hereda (Super clase) y se modifica con la que se implementa en
+el código. Vemos que se puede acceder al método de la Super clase
+mediante <code>super$</code>, y cualquier método que no se modifique
+utilizará los métodos de la Super Clase.</p>
+<pre class="r"><code>x2 &lt;- SumAcumMsg$new()
+x2$sumar(5)$sumar(3)$suma</code></pre>
+<pre><code>## Sumando 5
+## Sumando 3</code></pre>
+<pre><code>## [1] 8</code></pre>
+</div>
+<div id="introspección" class="section level2">
+<h2>Introspección</h2>
+<p>Para determinar la clase y todas las que hereda podemos utilizar
+<code>class()</code>:</p>
+<pre class="r"><code>class(x2)</code></pre>
+<pre><code>## [1] &quot;SumAcumMsg&quot; &quot;SumAcum&quot;    &quot;R6&quot;</code></pre>
+<p>Podemos ver que métodos y campos contiene utilizando
+<code>name()</code>:</p>
+<pre class="r"><code>names(Andrea2)</code></pre>
+<pre><code>## [1] &quot;.__enclos_env__&quot; &quot;edad&quot;            &quot;nombre&quot;          &quot;clone&quot;          
+## [5] &quot;print&quot;           &quot;initialize&quot;</code></pre>
+</div>
+<div id="ejemplos-adicionales" class="section level2">
+<h2>Ejemplos adicionales</h2>
+</div>
+</div>
+<div id="controles-de-acceso" class="section level1">
+<h1>Controles de Acceso</h1>
+<p><code>R6Class()</code> tiene otros 2 argumentos que funcionan similar
+a <code>public</code>:</p>
+<ul>
+<li><p><code>private</code> permite crear campos y métodos que solo
+están disponibles dentro de la clase y no fuera de ella.</p></li>
+<li><p><code>active</code> permite utilizar funciones de acceso para
+definir campos dinámicos o activos.</p></li>
+</ul>
+<div id="privacidad" class="section level2">
+<h2>Privacidad</h2>
+<p>Con R6 es posible definir campos y metodos <strong>privados</strong>,
+es decir, que solo están disponibles dentro de la clase. Otros aspectos
+importantes de conocer son:</p>
+<ul>
+<li><p>El argumento <code>private</code> en <code>R6Class</code> se
+declara de la misma forma en la que se hace el argumento
+<code>public</code>, es decir, asigmar una lista de métodos (funciones)
+y campos (variables).</p></li>
+<li><p>Los campos y métodos definidos en <code>private</code> estarán
+disponible dentro de los métodos usando <code>private$</code> en lugar
+de <code>self$</code>.</p></li>
+</ul>
+<p>Para poner esto en práctica, escribamos los campos <code>$edad</code>
+y <code>$nombre</code> como argumentos privados de la clase
+<em>Persona</em>.</p>
+<p>Una vez definidos de esta forma, solo podremos establecer
+<code>$edad</code> y <code>$nombre</code> durante la creación del
+objeto, y no tendremos acceso a estos valores fuera de la clase.</p>
+<pre class="r"><code>Persona &lt;- R6Class(&quot;Persona&quot;, 
+  public = list(
+    initialize = function(nombre, edad = NA) {
+      private$nombre &lt;- nombre
+      private$edad &lt;- edad
+    },
+    print = function(...) {
+      cat(&quot;Persona: \n&quot;)
+      cat(&quot;  Nombre: &quot;, private$nombre, &quot;\n&quot;, sep = &quot;&quot;)
+      cat(&quot;  Edad:  &quot;, private$edad, &quot;\n&quot;, sep = &quot;&quot;)
+    }
+  ),
+  private = list(
+    edad = NA,
+    nombre = NULL
+  )
+)
+
+Andrea3 &lt;- Persona$new(&quot;Andrea&quot;)
+Andrea3</code></pre>
+<pre><code>## Persona: 
+##   Nombre: Andrea
+##   Edad:  NA</code></pre>
+<pre class="r"><code>#&gt; Persona: 
+#&gt;   Nombre: Andrea
+#&gt;   Edad:  NA
+Andrea3$nombre</code></pre>
+<pre><code>## NULL</code></pre>
+<pre class="r"><code>#&gt; NULL</code></pre>
+<p>Esta distinción entre campos públicos y privados es importante cuando
+se crea redes complejas de clases, ya que será fundamental tener claro a
+los campos que otros podrán acceder y cuales no.</p>
+<p>Todo lo que sea privado se puede refactorizar más fácilmente porque
+sabes que los demás no dependen de estos campos. Los métodos privados
+tienden a ser menos importantes en R en comparación con otros lenguajes
+de programación porque las jerarquías de objetos en R tienden a ser más
+simples.</p>
+</div>
+<div id="campos-activos" class="section level2">
+<h2>Campos Activos</h2>
+<p>Los campos activos permiten definir componentes que funcionan como
+campos para los usuarios, pero están definidos como funciones, es decir,
+como métodos.</p>
+<p>Los campos activos están implementados usando <strong>enlaces
+activos</strong>, que son funciones que toman un único argumento
+(<code>value</code>), si el argumento es <code>missing()</code>,
+significa que el valor se está recuperando, o de lo contrario se está
+modificando.</p>
+<p>Por ejemplo, creemos un campo activo llamado <code>random</code> que
+nos devuelva un valor diferente cada que accedemos a el:</p>
+<pre class="r"><code>Ran &lt;- R6::R6Class(&quot;Ran&quot;, active = list(
+  random = function(value) {
+    if (missing(value)) {
+      runif(1)  
+    } else {
+      stop(&quot;Can&#39;t set `$random`&quot;, call. = FALSE)
+    }
+  }
+))
+x &lt;- Ran$new()
+x$random</code></pre>
+<pre><code>## [1] 0.01074074</code></pre>
+<pre class="r"><code>#&gt; [1] 0.0808
+x$random</code></pre>
+<pre><code>## [1] 0.4155208</code></pre>
+<pre class="r"><code>#&gt; [1] 0.834
+x$random</code></pre>
+<pre><code>## [1] 0.2855819</code></pre>
+<p>Los campos activos son usandos particularmente junto con el argumento
+de campos privamos, ya que esto hace posible implementar componentes
+similares a los campos pero con controles adicionales. Por ejemplo,
+podemos usar esto para crear un campo solo de lectura para
+<code>edad</code>, y para asegurarnos que <code>nombre</code> sea un
+vector de un solo caracter.</p>
+<pre class="r"><code>Persona &lt;- R6Class(&quot;Person&quot;, 
+  
+  private = list(
+    .edad = NA,
+    .nombre = NULL
+  ),
+  
+  active = list(
+    edad = function(value) {
+      if (missing(value)) {
+        private$.edad
+      } else {
+        stop(&quot;`$edad` solo se puede leeer&quot;, call. = FALSE)
+      }
+    },
+    name = function(value) {
+      if (missing(value)) {
+        private$.nombre
+      } else {
+        stopifnot(is.character(value), length(value) == 1)
+        private$.nombre &lt;- value
+        self
+      }
+    }
+  ),
+  
+  public = list(
+    initialize = function(nombre, edad = NA) {
+      private$.nombre &lt;- nombre
+      private$.edad &lt;- edad
+    }
+  )
+  
+)
+
+Andrea4 &lt;- Persona$new(&quot;Andrea&quot;, edad = 22)
+Andrea4$nombre</code></pre>
+<pre><code>## NULL</code></pre>
+<pre class="r"><code>#&gt; [1] &quot;Andrea&quot;
+Andrea4$nombre &lt;- 10</code></pre>
+<pre><code>## Error in Andrea4$nombre &lt;- 10: no se pueden adicionar vínculos a un ambiente bloqueado</code></pre>
+<pre class="r"><code>#&gt; Error in (function (value) : is.character(value) is not TRUE
+Andrea4$edad &lt;- 20</code></pre>
+<pre><code>## Error: `$edad` solo se puede leeer</code></pre>
+<pre class="r"><code>#&gt; Error: `$edad` is read only</code></pre>
+</div>
+</div>
+<div id="semántica-de-referencia" class="section level1">
+<h1>Semántica de referencia</h1>
+<p>Una de las grandes diferencias entre R6 y la mayoría de los demás
+objetos es que tienen una semántica de referencia. La principal
+consecuencia de la semántica de referencia es que los objetos no se
+copian cuando se modifican:</p>
+<pre class="r"><code>y1 &lt;- SumaAcum$new() 
+y2 &lt;- y1
+
+y1$sumar(10)
+c(y1 = y1$suma, y2 = y2$suma)</code></pre>
+<pre><code>## y1 y2 
+## 10 10</code></pre>
+<pre class="r"><code>#&gt; y1 y2 
+#&gt; 10 10</code></pre>
+<p>En cambio, si queremos copiar, necesitamos expecificarlo con el
+método <code>$clone()</code>:</p>
+<pre class="r"><code>y1 &lt;- SumaAcum$new() 
+y2 &lt;- y1$clone()
+
+y1$sumar(10)
+c(y1 = y1$suma, y2 = y2$suma)</code></pre>
+<pre><code>## y1 y2 
+## 10  0</code></pre>
+<pre class="r"><code>#&gt; y1 y2 
+#&gt; 10  0</code></pre>
+<p>(<code>$clone()</code> no clona recursivamente objetos R6 anidados.
+Si quieres eso, necesitarás usar <code>$clone(deep = TRUE)</code>.)</p>
+<p>Hay otras tres consecuencias menos intuitivas:</p>
+<ul>
+<li><p>Es más difícil razonar sobre el código que utiliza objetos R6
+porque es necesario comprender más contexto.</p></li>
+<li><p>Tiene sentido pensar en cuándo se elimina un objeto R6 y puede
+escribir <code>$finalize()</code> para complementar
+<code>$initialize()</code>.</p></li>
+<li><p>Si uno de los campos es un objeto R6, debe crearlo dentro de
+<code>$initialize()</code>, no de R6Class().</p></li>
+</ul>
+<p>Estas están descritas con mayor detalle a continuación.</p>
+<div id="razonamientos" class="section level2">
+<h2>Razonamientos</h2>
+<p>Generalmente, las semanticas de referencias hacen el código más
+difícil de entender. Tomemos el siguiente ejemplo sencillo:</p>
+<pre class="r"><code>x &lt;- list(a = 1)
+y &lt;- list(b = 2)
+
+z &lt;- f(x, y)</code></pre>
+<p>Para la gran mayoría de funciones, sabes que la línea final solo
+modifica <code>z</code>.</p>
+<p>Ahora, tomemos un ejemplo similar que utiliza una clase de referencia
+de <code>Lista</code> imaginaria:</p>
+<pre class="r"><code>x &lt;- Lista$new(a = 1)
+y &lt;- Lista$new(b = 2)
+
+z &lt;- f(x, y)</code></pre>
+<p>Es mucho más difícil de entender la línea final: si <code>f()</code>
+llama a métodos de <code>x</code> o <code>y</code>, podría modificarlos
+al igual que <code>z</code>. Este es el mayor inconveniente potencial de
+R6 y se debe tener cuidado de evitarlo escribiendo funciones que
+devuelvan un valor o modifiquen sus entradas de R6, pero no ambas.</p>
+</div>
+<div id="finalización" class="section level2">
+<h2>Finalización</h2>
+<p>La semántica de referencia, permite pensar en el momento en que un
+objeto R6 es finalizado o eliminado. Esto es diferente a la mayoría de
+los objetos en R, donde la semántica de copia al modificar significa que
+puede haber muchas versiones transitorias de un objeto, lo que no
+permite pensar en cuándo se elimina un objeto de forma lógica.</p>
+<p>Por ejemplo, en el caso de objetos de tipo factor en R, cuando se
+modifican los niveles de un factor, se crea un nuevo objeto factor y el
+objeto original se deja para que lo recolecte el recolector de
+basura.</p>
+<pre class="r"><code>x &lt;- factor(c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;))
+levels(x) &lt;- c(&quot;c&quot;, &quot;b&quot;, &quot;a&quot;)</code></pre>
+<p>Debido a que los objetos R6 no se copian al modificarlos, solo se
+eliminan una vez, tiene sentido pensar en el método
+<code>$finalize()</code> como un complemento al método
+<code>$initialize()</code>. Los finalizadores generalmente tienen un
+papel similar a <code>on.exit()</code>, limpiando cualquier recurso
+creado por el inicializador.</p>
+<pre class="r"><code>ArchivoTemporal &lt;- R6Class(&quot;ArchivoTemporal&quot;, list(
+  ruta = NULL,
+  initialize = function() {
+    self$ruta &lt;- tempfile()
+  },
+  finalize = function() {
+    message(&quot;Cleaning up &quot;, self$ruta)
+    unlink(self$ruta)
+  }
+))</code></pre>
+<p>El ejemplo proporcionado muestra una clase llamada
+<code>ArchivoTemporal</code>, que encapsula un archivo temporal y se
+encarga de eliminarlo automáticamente cuando se finaliza la instancia de
+la clase.</p>
+<p>El método <code>finalize</code> será ejecutado cuando el objeto sea
+eliminado (o más precisamente, por la primera recolección de basura
+después de que el objeto haya sido desligado de todos los nombres) o
+cuando R se cierre.</p>
+<p>Esto significa que el finalizador puede ser llamado efectivamente en
+cualquier parte de tu código en R, lo que hace casi imposible razonar
+sobre el código del finalizador que toca estructuras de datos
+compartidas. Se recomienda evitar estos posibles problemas utilizando el
+finalizador solo para limpiar recursos privados asignados por el
+inicializador.</p>
+<p>Finalmente, veamos cómo se utiliza esta clase
+<code>ArchivoTemporal</code> creando una instancia, luego eliminando
+explícitamente la instancia con <code>rm()</code>, lo que provoca que el
+finalizador se ejecute para limpiar el archivo temporal.</p>
+<pre class="r"><code>at &lt;- ArchivoTemporal$new()
+rm(at)</code></pre>
+<p>En resumen, los objetos R6 permiten definir métodos
+<code>initialize</code> y <code>finalize</code>, que se ejecutan al
+crear y eliminar instancias de la clase respectivamente, permitiendo una
+gestión más controlada de los recursos y la limpieza de la memoria.</p>
+</div>
+<div id="campos-r6" class="section level2">
+<h2>Campos R6</h2>
+<p>Una última consecuencia que puede surgir al utilizar semántica de
+referencia en R6, es particularmente cuando se usa una instancia de una
+clase R6 como valor predeterminado de un campo. La semántica de
+referencia significa que cuando asignas un objeto a otro, no se crea una
+copia independiente, sino que ambos hacen referencia al mismo objeto en
+la memoria.</p>
+<p>Por ejemplo, creemos una clase llamada <code>DatabaseTemporal</code>
+que tiene un campo <code>archivo</code>, que es una instancia de la
+clase <code>ArchivoTemporal</code>.</p>
+<p>Por ejemplo, dado el siguiente código, queremos crear una base de
+datos temporal cada vez que llamamos a DatabaseTemporal$new(), pero el
+código actual siempre usa la misma ruta.</p>
+<pre class="r"><code>DatabaseTemporal &lt;- R6Class(&quot;DatabaseTemporal&quot;, list(
+  con = NULL,
+  file = ArchivoTemporal$new(),
+  initialize = function() {
+    self$con &lt;- DBI::dbConnect(RSQLite::SQLite(), ruta = file$ruta)
+  },
+  finalize = function() {
+    DBI::dbDisconnect(self$con)
+  }
+))
+
+db_a &lt;- DatabaseTemporal$new()
+db_b &lt;- DatabaseTemporal$new()
+
+db_a$file$ruta == db_b$file$ruta</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<p>(Si está familiarizado con Python, esto es muy similar al problema
+del “argumento predeterminado mutable”).</p>
+<p>El problema es que, cuando se usa una instancia de clase como valor
+predeterminado para un campo, esa instancia se comparte entre todas las
+instancias de la clase. Por lo tanto, cada instancia de
+<code>DatabaseTemporal</code> está haciendo referencia al mismo objeto
+<code>ArchivoTemporal</code>, en lugar de tener su propia instancia
+única.</p>
+<p>Para solucionar este problema, se debe crear una nueva instancia de
+<code>ArchivoTemporal</code> dentro del método
+<code>initialize()</code>, de modo que cada instancia de
+<code>DatabaseTemporal</code> tenga su propia instancia única de
+<code>ArchivoTemporal</code>.</p>
+<pre class="r"><code>DatabaseTemporal &lt;- R6Class(&quot;DatabaseTemporal&quot;, list(
+  con = NULL,
+  archivo = NULL,
+  initialize = function() {
+    self$archivo &lt;- ArchivoTemporal$new()
+    self$con &lt;- DBI::dbConnect(RSQLite::SQLite(),
+                               ruta = file$ruta)
+  },
+  finalize = function() {
+    DBI::dbDisconnect(self$con)
+  }
+))
+
+db_a &lt;- DatabaseTemporal$new()
+db_b &lt;- DatabaseTemporal$new()
+
+db_a$archivo$ruta == db_b$archivo$ruta</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<p>Ahora, cada instancia de <code>DatabaseTemporal</code> tiene su
+propia instancia única de <code>ArchivoTemporal</code>, y por lo tanto,
+sus caminos de archivo son diferentes, como se espera. Esto garantiza
+que cada instancia de <code>DatabaseTemporal</code> tenga sus propios
+recursos independientes.</p>
+</div>
+</div>
+<div id="por-qué-r6" class="section level1">
+<h1>14.5 ¿ Por qué R6 ?</h1>
+<p>Este texto explica por qué el autor prefiere utilizar R6 en lugar de
+Reference Classes (RC), una sistema de programación orientada a objetos
+(OO) incorporado en R, debido a las siguientes razones:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Simplicidad</strong>: R6 es mucho más simple que RC.
+Mientras que ambos están construidos sobre entornos
+(<em>environments</em>), R6 utiliza el sistema S3, que es más sencillo y
+fácil de entender que el sistema S4 utilizado por RC.</p></li>
+<li><p><strong>Documentación exhaustiva</strong>: R6 cuenta con una
+documentación completa en línea disponible en <a href="https://r6.r-lib.org" class="uri">https://r6.r-lib.org</a>. Esta
+documentación proporciona recursos detallados y ejemplos para comprender
+y utilizar R6 de manera efectiva.</p></li>
+<li><p><strong>Subclases entre paquetes</strong>: R6 ofrece un mecanismo
+más simple para la subclases entre paquetes, que funciona
+automáticamente sin necesidad de que el usuario lo configure. Por el
+contrario, RC requiere más configuración y atención al detalle para
+lograr la misma funcionalidad.</p></li>
+<li><p><strong>Separación de variables y campos</strong>: En RC, las
+variables y los campos se mezclan en la misma pila de entornos, lo que
+puede conducir a confusión y a errores potenciales. En R6, los campos se
+colocan en un entorno separado, lo que hace que el código sea más
+explícito y menos propenso a errores.</p></li>
+<li><p><strong>Velocidad</strong>: R6 es mucho más rápido que RC en
+términos de tiempo de despacho de métodos. Aunque generalmente la
+velocidad de despacho de métodos no es crítica en aplicaciones del mundo
+real, RC es notablemente más lento, y el cambio de RC a R6 ha llevado a
+mejoras sustanciales de rendimiento en el paquete Shiny.</p></li>
+<li><p><strong>Independencia de la versión de R</strong>: RC está ligado
+a una versión específica de R. Esto significa que cualquier corrección
+de errores en RC solo se puede aprovechar si se requiere una versión más
+reciente de R. Esto puede dificultar la compatibilidad entre paquetes
+que necesitan funcionar en diferentes versiones de R.</p></li>
+</ol>
 </div>
 
 
