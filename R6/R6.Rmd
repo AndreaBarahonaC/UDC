@@ -35,3 +35,183 @@ library(R6)
 
 # Clases y métodos
 
+Para crear las clases y sus métodos se utiliza: `R6::R6Class()`
+
+Por ejemplo:
+
+```{r}
+SumaAcum <- R6Class("SumaAcum",list(
+  suma = 0,
+  sumar = function(x=1){
+   self$suma<-self$suma+x
+   invisible(self)
+  }
+))
+```
+
+En el ejemplo se muestra los argumentos que deben ir en la función `R6Class()`:
+
+* El primer argumento es el nombre de la clase, el cual no es necesario, pero evita errores.
+
+* El segundo argumento son los métodos (funciones) y campos (variables) públicos del objeto. Los métodos pueden acceder a los métodos y campos del mismo objeto mediante `self`
+
+Para crear un nuevo objeto se utiliza el método `$new()`:
+
+```{r}
+x <- SumaAcum$new()
+x
+```
+
+Además, se accede a los campos y se llama a los métodos mediante `$`:
+
+```{r}
+x$sumar(2)
+x$suma
+x$sumar(4)
+x$suma
+x$sumar()
+x$suma
+```
+
+## Encadenamiento de métodos
+
+Debido a como se crean los métodos podemos realizar un encadenamiento, por ejemplo:
+
+```{r}
+y <- SumaAcum$new()
+y$sumar(5)$sumar(10)
+y$suma
+```
+Este encadenamiento está relacionados con los **pipe** y se revisará más adelante los pros y contras de esto.
+
+## Métodos importantes
+
+El método `$initialize()` modifica el comportamiento de `$new()`, por ejemplo:
+
+```{r}
+Persona <- R6Class("Persona",list(
+  nombre = NULL,
+  edad = NA,
+  initialize = function(nombre, edad= NA){
+    stopifnot(is.character(nombre), length(nombre)==1)
+    stopifnot(is.numeric(edad), length(edad)==1)
+    self$nombre <- nombre
+    self$edad <- edad
+  }
+))
+```
+De esta forma se asegura que el nombre sea un solo string y que la edad sea un solo número. Creemos por ejemplo:
+
+```{r}
+Andrea <- Persona$new("Andrea", 'veintidos')
+```
+
+Por lo tanto no se crea, debido a que `'veintidos'` no es un número, y si se creará cuando lo creemos de esta forma:
+
+```{r}
+Andrea <- Persona$new("Andrea", 22)
+```
+
+En caso de tener requisitos más complejos se puede utilizar `$validate()`
+
+El método `$print()` permite modificar el comportamiento de la impresión por defecto, por ejemplo:
+
+
+```{r}
+Persona <- R6Class("Persona", list(
+  nombre = NULL,
+  edad = NA,
+  initialize = function(nombre, edad = NA) {
+    self$nombre <- nombre
+    self$edad <- edad
+  },
+  print = function(...) {
+    cat("Persona: \n")
+    cat("Nombre: ", self$nombre, "\n", sep = "")
+    cat("Edad:  ", self$edad, "\n", sep = "")
+    invisible(self)
+  }
+))
+
+Andrea2 <- Persona$new("Andrea")
+Andrea2
+```
+Ahora vemos que el objeto creado anteriormente no tiene relación con este nuevo, pues cada método está vinculado a un objeto individual. Vemos que:
+
+```{r}
+Andrea
+Andrea2
+```
+
+No imprimen lo mismo.
+
+## Agregar métodos después de la creación
+
+Para evitar crear nuevas clases, se puede modificar los campos o métodos de una ya existente. Se utiliza `$set()` para agregar nuevos elementos. Por ejemplo:
+
+```{r}
+SumAcum <- R6Class("SumAcum")
+SumAcum$set("public", "suma", 0)
+SumAcum$set("public", "sumar", function(x=1){
+  self$suma <- self$suma + x
+  invisible(self)
+})
+
+```
+
+Para agregarlos debemos proporcionar: visibilidad (public, entre otros), nombre y lo que se va a agregrar.
+
+De esta forma se crea este objeto igual al que se creó en la primera sección. Además, si se agregan nuevo campos o métodos solo estarán disponibles para los nuevos objetos creados a partir de esto.
+
+## Herencia
+
+Se puede heredar los comportamientos de una clase existente a otra utilizando `inherit`, para ello veamos el ejemplo:
+
+```{r}
+SumAcumMsg <- R6Class("SumAcumMsg",
+  inherit = SumAcum,
+  public = list(
+    sumar = function(x=1){
+      cat("Sumando ", x, "\n", sep="" )
+      super$sumar(x=x)
+    }
+  )
+)
+```
+
+Al agregar `$sumar()` se cambia la implementación de la clase que hereda (Super clase) y se modifica con la que se implementa en el código. Vemos que se puede acceder al método de la Super clase mediante `super$`, y cualquier método que no se modifique utilizará los métodos de la Super Clase.
+
+```{r}
+x2 <- SumAcumMsg$new()
+x2$sumar(5)$sumar(3)$suma
+```
+
+## Introspección
+
+Para determinar la clase y todas las que hereda podemos utilizar `class()`:
+
+```{r}
+class(x2)
+```
+
+Podemos ver que métodos y campos contiene utilizando `name()`:
+
+```{r}
+names(Andrea2)
+```
+
+## Ejemplos adicionales
+
+
+
+
+
+
+
+
+
+
+
+
+
+
