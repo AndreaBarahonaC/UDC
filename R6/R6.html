@@ -1285,7 +1285,6 @@ margin-left: 0 !important;
       después de la creación</a></li>
       <li><a href="#herencia" id="toc-herencia">Herencia</a></li>
       <li><a href="#introspección" id="toc-introspección">Introspección</a></li>
-      <li><a href="#ejemplos-adicionales" id="toc-ejemplos-adicionales">Ejemplos adicionales</a></li>
       </ul></li>
       <li><a href="#controles-de-acceso" id="toc-controles-de-acceso">Controles de Acceso</a>
       <ul>
@@ -1299,8 +1298,10 @@ margin-left: 0 !important;
       <li><a href="#finalización" id="toc-finalización">Finalización</a></li>
       <li><a href="#campos-r6" id="toc-campos-r6">Campos R6</a></li>
       </ul></li>
-      <li><a href="#por-qué-r6" id="toc-por-qué-r6">¿ Por qué R6
-      ?</a></li>
+      <li><a href="#por-qué-r6" id="toc-por-qué-r6">¿ Por qué R6 ?</a>
+      <ul>
+      <li><a href="#ejemplos-adicionales" id="toc-ejemplos-adicionales">Ejemplos adicionales</a></li>
+      </ul></li>
       </ul>
     </div>
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
@@ -1514,9 +1515,6 @@ utilizará los métodos de la Super Clase.</p>
 <span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="do">## [1] &quot;.__enclos_env__&quot; &quot;edad&quot;            &quot;nombre&quot;          &quot;clone&quot;          </span></span>
 <span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="do">## [5] &quot;print&quot;           &quot;initialize&quot;</span></span></code></pre></div>
 </div>
-<div id="ejemplos-adicionales" class="section level2">
-<h2>Ejemplos adicionales</h2>
-</div>
 </div>
 <div id="controles-de-acceso" class="section level1">
 <h1>Controles de Acceso</h1>
@@ -1605,11 +1603,11 @@ nos devuelva un valor diferente cada que accedemos a el:</p>
 <span id="cb19-9"><a href="#cb19-9" tabindex="-1"></a>))</span>
 <span id="cb19-10"><a href="#cb19-10" tabindex="-1"></a>x <span class="ot">&lt;-</span> Ran<span class="sc">$</span><span class="fu">new</span>()</span>
 <span id="cb19-11"><a href="#cb19-11" tabindex="-1"></a>x<span class="sc">$</span>random</span>
-<span id="cb19-12"><a href="#cb19-12" tabindex="-1"></a><span class="do">## [1] 0.1298837</span></span>
+<span id="cb19-12"><a href="#cb19-12" tabindex="-1"></a><span class="do">## [1] 0.5831042</span></span>
 <span id="cb19-13"><a href="#cb19-13" tabindex="-1"></a>x<span class="sc">$</span>random</span>
-<span id="cb19-14"><a href="#cb19-14" tabindex="-1"></a><span class="do">## [1] 0.9754335</span></span>
+<span id="cb19-14"><a href="#cb19-14" tabindex="-1"></a><span class="do">## [1] 0.5291023</span></span>
 <span id="cb19-15"><a href="#cb19-15" tabindex="-1"></a>x<span class="sc">$</span>random</span>
-<span id="cb19-16"><a href="#cb19-16" tabindex="-1"></a><span class="do">## [1] 0.2129988</span></span></code></pre></div>
+<span id="cb19-16"><a href="#cb19-16" tabindex="-1"></a><span class="do">## [1] 0.8164181</span></span></code></pre></div>
 <p>Los campos activos son usandos particularmente junto con el argumento
 de campos privamos, ya que esto hace posible implementar componentes
 similares a los campos pero con controles adicionales. Por ejemplo,
@@ -1874,6 +1872,9 @@ de errores en RC solo se puede aprovechar si se requiere una versión más
 reciente de R. Esto puede dificultar la compatibilidad entre paquetes
 que necesitan funcionar en diferentes versiones de R.</p></li>
 </ol>
+<div id="ejemplos-adicionales" class="section level2">
+<h2>Ejemplos adicionales</h2>
+</div>
 </div>
 </div>
 
