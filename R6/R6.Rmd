@@ -510,7 +510,7 @@ Este texto explica por qué el autor prefiere utilizar R6 en lugar de Reference 
 6. **Independencia de la versión de R**: RC está ligado a una versión específica de R. Esto significa que cualquier corrección de errores en RC solo se puede aprovechar si se requiere una versión más reciente de R. Esto puede dificultar la compatibilidad entre paquetes que necesitan funcionar en diferentes versiones de R.
 
 
-# Ejemplos adicionales
+# Ejercicios prácticos
 
 1. Create a bank account R6 class that stores a balance and allows you to deposit and withdraw money. Create a subclass that throws an error if you attempt to go into overdraft. Create another subclass that allows you to go into overdraft, but charges you a fee.
 
@@ -655,7 +655,7 @@ zona
 Sys.timezone()
 ```
 
-5. Create an R6 class that manages the current working directory. It should have `$get()` and `$set()` methods.
+4. Create an R6 class that manages the current working directory. It should have `$get()` and `$set()` methods.
 
 ```{r warning=FALSE, collapse=TRUE, error=TRUE}
 Directorio <- R6Class('Directorio',
@@ -676,7 +676,7 @@ direct$get()
 ```
 
 
-6. Create a class with a write-only `$password` field. It should have `$check_password(password)` method that returns `TRUE` or `FALSE`, but there should be no way to view the complete password.
+5. Create a class with a write-only `$password` field. It should have `$check_password(password)` method that returns `TRUE` or `FALSE`, but there should be no way to view the complete password.
 
 ```{r, error=TRUE, collapse=TRUE}
 # install.packages("R6")
@@ -732,7 +732,7 @@ Cuenta_Andrea$.password <- "NuevaContraseña"
 ```
 
 
-7. Extend the Rando class with another active binding that allows you to access the previous random `value.` Ensure that active binding is the only way to access the value.
+6. Extend the Rando class with another active binding that allows you to access the previous random `value.` Ensure that active binding is the only way to access the value.
 
 ```{r, collapse=TRUE}
 Rando <- R6::R6Class("Rando", 
