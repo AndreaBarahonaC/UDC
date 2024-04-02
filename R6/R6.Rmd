@@ -67,6 +67,8 @@ x$sumar()
 x$suma
 ```
 
+Vemos también que se utiliza `self$` para acceder a los miembros y métodos públicos de la clase (se puede usar `private$` o `super$` para miembros privados o que heredan que se verá más adelante) 
+
 ## Encadenamiento de métodos
 
 Debido a como se crean los métodos podemos realizar un encadenamiento, por ejemplo:
@@ -96,7 +98,7 @@ Persona <- R6Class("Persona",list(
 ```
 De esta forma se asegura que el nombre sea un solo string y que la edad sea un solo número. Creemos por ejemplo:
 
-```{r collapse=TRUE,, error=TRUE}
+```{r collapse=TRUE, error=TRUE}
 Andrea <- Persona$new("Andrea", 'veintidos')
 ```
 
@@ -157,6 +159,28 @@ Para agregarlos debemos proporcionar: visibilidad (public, entre otros), nombre 
 
 De esta forma se crea este objeto igual al que se creó en la primera sección. Además, si se agregan nuevo campos o métodos solo estarán disponibles para los nuevos objetos creados a partir de esto.
 
+Para evitar aumentar métodos o campos se puede bloquear la clase mediante `lock_class=TRUE`, de la siguiente forma: 
+
+```{r}
+SumaAcum <- R6Class("SumaAcum",list(
+  suma = 0,
+  sumar = function(x=1){
+   self$suma<-self$suma+x
+   invisible(self)
+  }),
+  lock_class = TRUE
+)
+```
+
+De esta forma si intentamos utilizar `$set()` se tendrá un error:
+
+```{r, error=TRUE}
+SumaAcum$set('public','y',0)
+```
+
+Se puede también bloquear o desbloquear la clase mediante `$lock()` y `$unlock()` respectivamente.
+
+
 ## Herencia
 
 Se puede heredar los comportamientos de una clase existente a otra utilizando `inherit`, para ello veamos el ejemplo:
@@ -193,9 +217,6 @@ Podemos ver que métodos y campos contiene utilizando `name()`:
 ```{r collapse=TRUE}
 names(Andrea2)
 ```
-
-## Ejemplos adicionales
-
 
 # Controles de Acceso
 
@@ -271,7 +292,7 @@ x$random
 
 Los campos activos son usandos particularmente junto con el argumento de campos privamos, ya que esto hace posible implementar componentes similares a los campos pero con controles adicionales. Por ejemplo, podemos usar esto para crear un campo solo de lectura para `edad`, y para asegurarnos que `nombre` sea un vector de un solo caracter.
 
-```{r collapse=TRUE,, error=TRUE}
+```{r collapse=TRUE, error=TRUE}
 Persona <- R6Class("Person", 
   
   private = list(
@@ -351,7 +372,7 @@ Estas están descritas con mayor detalle a continuación.
 
 Generalmente, las semanticas de referencias hacen el código más difícil de entender. Tomemos el siguiente ejemplo sencillo:
 
-```{r collapse=TRUE,,eval=FALSE}
+```{r collapse=TRUE,eval=FALSE}
 x <- list(a = 1)
 y <- list(b = 2)
 
@@ -362,7 +383,7 @@ Para la gran mayoría de funciones, sabes que la línea final solo modifica `z`.
 
 Ahora, tomemos un ejemplo similar que utiliza una clase de referencia de `Lista` imaginaria:
 
-```{r collapse=TRUE,, eval=FALSE}
+```{r collapse=TRUE, eval=FALSE}
 x <- Lista$new(a = 1)
 y <- Lista$new(b = 2)
 
@@ -489,6 +510,7 @@ Este texto explica por qué el autor prefiere utilizar R6 en lugar de Reference 
 6. **Independencia de la versión de R**: RC está ligado a una versión específica de R. Esto significa que cualquier corrección de errores en RC solo se puede aprovechar si se requiere una versión más reciente de R. Esto puede dificultar la compatibilidad entre paquetes que necesitan funcionar en diferentes versiones de R.
 
 
+## Ejemplos adicionales
 
 
 
