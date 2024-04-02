@@ -512,10 +512,247 @@ Este texto explica por qué el autor prefiere utilizar R6 en lugar de Reference 
 
 ## Ejemplos adicionales
 
+1. Create a bank account R6 class that stores a balance and allows you to deposit and withdraw money. Create a subclass that throws an error if you attempt to go into overdraft. Create another subclass that allows you to go into overdraft, but charges you a fee.
+
+```{r}
+CuentaBanco <- R6Class("CuentaBanco",
+  private = list(
+    saldo = 0
+  ),
+  active = list(
+    .saldo = function(value){
+      if (missing(value)) {
+        private$saldo
+      } else {
+        stop("`$saldo` solo se puede leer NO modificar", call. = FALSE)
+      }
+    }
+  ),
+  public = list(
+    initialize = function(x=0){
+      private$saldo <- x
+    },
+    depositar = function(x){
+      private$saldo <- private$saldo + x
+      invisible(self)
+    },
+    retirar = function(x){
+      private$saldo = private$saldo - x
+      invisible(self)
+    },
+    print = function(...){
+      cat("Cuenta: \n")
+      cat("  Saldo: ", private$saldo, "\n", sep = "")
+    }
+  )
+)
+
+SubCuentaBanco1 <- R6Class('SubCuentaBanco1',
+  inherit = CuentaBanco,
+  public =  list(
+    retirar = function(x){
+      stopifnot("Existe sobregiro"= super$.saldo-x>=0)
+      private$saldo<-super$retirar(x)$.saldo
+      }
+  )                          
+)
+
+SubCuentaBanco2 <- R6Class('SubCuentaBanco2',
+  inherit = CuentaBanco,
+  public =  list(
+    retirar = function(x){
+      if(super$.saldo-x<0){
+        private$saldo <- super$retirar(x)$.saldo - 1 #Cargo extra 1  
+      }
+      else{private$saldo <- super$retirar(x)$.saldo}
+      }
+  )                          
+)
+```
+```{r}
+Fab<-CuentaBanco$new(100)
+Fab$retirar(50)
+Fab$depositar(10)
+Fab2<-SubCuentaBanco1$new(100)
+Fab2$retirar(50)
+Fab3<-SubCuentaBanco2$new(100)
+Fab3$retirar(50)
+```
+
+2. Create an R6 class that represents a shuffled deck of cards. You should be able to draw cards from the deck with `$draw(n)`, and return all cards to the deck and reshuffle with `$reshuffle()`. Use the following code to make a vector of cards.
+
+```{r}
+cartas <- R6Class('cartas',
+  private = list(
+    suit = c("♠", "♥", "♦", "♣"),
+    value = c("A", c(2:10), "J", "Q", "K"),
+    cards = c(paste0(rep(value, 4), suit))
+  ),                
+  public=list(
+    drawn=function(n){
+      private$cards <- private$cards[-n]
+      invisible(self)
+    },
+    reshuffle=function(){
+      copy <- paste0(rep(private$value, 4), private$suit)
+      x<-sample(52)
+      for (i in 1:52) {
+        private$cards[i]<-copy[x[i]]
+      }
+      invisible(self)
+    }
+  ),
+  active=list(
+    .cartas=function(value){
+      if(missing(value)){
+        private$cards
+      }
+      else{stop("`Cartas` solo se puede leer NO modificar", call. = FALSE)}
+    }
+  )
+)
+
+```
+```{r}
+mazo<-cartas$new()
+mazo$.cartas
+mazo$drawn(1)
+mazo$.cartas
+mazo$reshuffle()
+mazo$.cartas
+```
+
+3. Create an R6 class that allows you to get and set the current time zone. You can access the current time zone with `Sys.timezone()` and set it with `Sys.setenv(TZ = "newtimezone")`. When setting the time zone, make sure the new time zone is in the list provided by `OlsonNames()`.
+
+```{r}
+ZonaHoraria <- R6Class('ZonaHoraria',
+  public = list(
+    zona = Sys.timezone(),
+  cambiar_zona=function(name){
+    stopifnot("No existe esa zona horaria" = name %in% OlsonNames()) 
+    self$zona=Sys.setenv(TZ = name)
+  })
+)
+```
+
+```{r}
+zona <- ZonaHoraria$new()
+zona$cambiar_zona('America/Guayaquil')
+zona
+Sys.timezone()
+```
+
+5. Create an R6 class that manages the current working directory. It should have `$get()` and `$set()` methods.
+
+```{r warning=FALSE}
+Directorio <- R6Class('Directorio',
+  public = list(
+    get=function(){
+      getwd()
+    },
+    set=function(path){
+      setwd(path)
+      invisible(self)
+    }
+  )
+)
+direct <- Directorio$new()
+direct$get()
+direct$set("C:/Users/Dell/OneDrive - Escuela Politécnica Nacional/Pasantías UDC")
+direct$get()
+```
 
 
+6. Create a class with a write-only `$password` field. It should have `$check_password(password)` method that returns `TRUE` or `FALSE`, but there should be no way to view the complete password.
+
+```{r, error=TRUE, collapse=TRUE}
+# install.packages("R6")
+library(R6)
 
 
+Bank_writeonly <- R6Class("Bank_writeonly", 
+      private = list(
+            user = NULL,
+            password = NULL
+      ),
+      active = list(
+        .password = function(x){
+          if(missing(x)){
+            stop("`$.password` solo permite cambiar tu contraseña, NO verla",
+                 call. = FALSE)
+          } else{
+            private$password <- x
+            cat("Contraseña cambiada con éxito")
+          }
+        }
+      ),
+      public = list(
+            initialize = function(.user, .password){
+              private$password <- .password
+              private$user <- .user
+              },
+            check_password = function(p){
+              if(private$password == p){ 
+                cat("Tu contraseña SI coincide con la ingresada", call. = FALSE)}
+              else{
+                stop("Tu contraseña NO coincide con la ingresada")}
+              },
+            print = function(...){
+              cat("Bienvenido al Banco NOSEELNOMBREXD \n")
+              cat("Tu cuenta se ha creado con el nombre de usuario:", private$user)
+            }
+      )
+      
+)
+
+# Prueba
+
+Cuenta_Andrea <- Bank_writeonly$new("AndreaBC", "prueba123")
+# Print
+Cuenta_Andrea
+# Funcion Check_password
+Cuenta_Andrea$check_password("Nomeacuerdomicontraseña")
+Cuenta_Andrea$check_password("prueba123")
+# .password
+Cuenta_Andrea$.password
+Cuenta_Andrea$.password <- "NuevaContraseña"
+```
+
+
+7. Extend the Rando class with another active binding that allows you to access the previous random `value.` Ensure that active binding is the only way to access the value.
+
+```{r, collapse=TRUE}
+Rando <- R6::R6Class("Rando", 
+    private = list(prev = NULL),
+    active = list(
+      random = function(value) {
+        if (missing(value)) {
+          private$prev <- runif(1)
+          private$prev
+        } else {
+          stop("Can't set `$random`", call. = FALSE)
+        }
+      },
+      previous = function(value) {
+        if (missing(value)) {
+          private$prev
+        } else {
+          stop("Can't set `$random`", call. = FALSE)
+        }
+      }
+    )
+)
+x <- Rando$new()
+x$random
+x$random
+x$previous
+```
+
+
+## Bibliografía
+
+* Wickham, H. (2019). Advanced r. chapman and hall/CRC.
+* Chang W (2022). R6: Encapsulated Classes with Reference Semantics. https://r6.r-lib.org, https://github.com/r-lib/R6/.
 
 
 
