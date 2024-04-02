@@ -510,11 +510,11 @@ Este texto explica por qué el autor prefiere utilizar R6 en lugar de Reference 
 6. **Independencia de la versión de R**: RC está ligado a una versión específica de R. Esto significa que cualquier corrección de errores en RC solo se puede aprovechar si se requiere una versión más reciente de R. Esto puede dificultar la compatibilidad entre paquetes que necesitan funcionar en diferentes versiones de R.
 
 
-## Ejemplos adicionales
+# Ejemplos adicionales
 
 1. Create a bank account R6 class that stores a balance and allows you to deposit and withdraw money. Create a subclass that throws an error if you attempt to go into overdraft. Create another subclass that allows you to go into overdraft, but charges you a fee.
 
-```{r, collapse=TRUE}
+```{r, collapse=TRUE, error=TRUE}
 CuentaBanco <- R6Class("CuentaBanco",
   private = list(
     saldo = 0
@@ -568,36 +568,50 @@ SubCuentaBanco2 <- R6Class('SubCuentaBanco2',
       }
   )                          
 )
-```
-```{r, collapse=TRUE}
-Fab<-CuentaBanco$new(100)
+
+Fab <- CuentaBanco$new(100)
+Fab
+
 Fab$retirar(50)
+Fab
+
 Fab$depositar(10)
+Fab
+
 Fab2<-SubCuentaBanco1$new(100)
-Fab2$retirar(50)
-Fab3<-SubCuentaBanco2$new(100)
-Fab3$retirar(50)
+Fab2
+
+Fab2$retirar(150)
+Fab2
+
+Fab3 <- SubCuentaBanco2$new(100)
+Fab3
+
+Fab3$retirar(150)
+Fab3
 ```
 
 2. Create an R6 class that represents a shuffled deck of cards. You should be able to draw cards from the deck with `$draw(n)`, and return all cards to the deck and reshuffle with `$reshuffle()`. Use the following code to make a vector of cards.
 
 ```{r, collapse=TRUE}
+library(R6)
 cartas <- R6Class('cartas',
   private = list(
     suit = c("♠", "♥", "♦", "♣"),
-    val = c("A", c(2:10), "J", "Q", "K"),
-    cards = c(paste0(rep(val, 4), suit))
+    val = c("A", c(2:10), "J", "Q", "K")
   ),                
-  public=list(
-    drawn=function(n){
-      private$cards <- private$cards[-n]
+  public = list(
+    cards = c(paste0(rep(c("A", c(2:10), "J", "Q", "K"), 4),
+                     c("♠", "♥", "♦", "♣"))),
+    drawn = function(n){
+      self$cards <- self$cards[-n]
       invisible(self)
     },
     reshuffle=function(){
       copy <- paste0(rep(private$val, 4), private$suit)
       x<-sample(52)
       for (i in 1:52) {
-        private$cards[i]<-copy[x[i]]
+        self$cards[i]<-copy[x[i]]
       }
       invisible(self)
     }
@@ -605,15 +619,14 @@ cartas <- R6Class('cartas',
   active=list(
     .cartas=function(value){
       if(missing(value)){
-        private$cards
+        self$cards
       }
-      else{stop("`Cartas` solo se puede leer NO modificar", call. = FALSE)}
+      else{stop("`Cartas` solo se puede leer NO modificar", 
+                call. = FALSE)}
     }
   )
 )
 
-```
-```{r, collapse=TRUE}
 mazo<-cartas$new()
 mazo$.cartas
 mazo$drawn(1)
@@ -644,7 +657,7 @@ Sys.timezone()
 
 5. Create an R6 class that manages the current working directory. It should have `$get()` and `$set()` methods.
 
-```{r warning=FALSE, collapse=TRUE}
+```{r warning=FALSE, collapse=TRUE, error=TRUE}
 Directorio <- R6Class('Directorio',
   public = list(
     get=function(){
@@ -698,7 +711,7 @@ Bank_writeonly <- R6Class("Bank_writeonly",
                 stop("Tu contraseña NO coincide con la ingresada")}
               },
             print = function(...){
-              cat("Bienvenido al Banco NOSEELNOMBREXD \n")
+              cat("Bienvenido al Banco \n")
               cat("Tu cuenta se ha creado con el nombre de usuario:", private$user)
             }
       )
@@ -749,7 +762,7 @@ x$previous
 ```
 
 
-## Bibliografía
+# Bibliografía
 
 * Wickham, H. (2019). Advanced r. chapman and hall/CRC.
 * Chang W (2022). R6: Encapsulated Classes with Reference Semantics. https://r6.r-lib.org, https://github.com/r-lib/R6/.

@@ -1298,14 +1298,10 @@ margin-left: 0 !important;
       <li><a href="#finalización" id="toc-finalización">Finalización</a></li>
       <li><a href="#campos-r6" id="toc-campos-r6">Campos R6</a></li>
       </ul></li>
-      <li><a href="#por-qué-r6" id="toc-por-qué-r6">¿ Por qué R6 ?</a>
-      <ul>
+      <li><a href="#por-qué-r6" id="toc-por-qué-r6">¿ Por qué R6
+      ?</a></li>
       <li><a href="#ejemplos-adicionales" id="toc-ejemplos-adicionales">Ejemplos adicionales</a></li>
-<<<<<<< HEAD
-=======
       <li><a href="#bibliografía" id="toc-bibliografía">Bibliografía</a></li>
->>>>>>> a76da9852a92590ff082431d1789c7472aa84623
-      </ul></li>
       </ul>
     </div>
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
@@ -1607,19 +1603,11 @@ nos devuelva un valor diferente cada que accedemos a el:</p>
 <span id="cb19-9"><a href="#cb19-9" tabindex="-1"></a>))</span>
 <span id="cb19-10"><a href="#cb19-10" tabindex="-1"></a>x <span class="ot">&lt;-</span> Ran<span class="sc">$</span><span class="fu">new</span>()</span>
 <span id="cb19-11"><a href="#cb19-11" tabindex="-1"></a>x<span class="sc">$</span>random</span>
-<<<<<<< HEAD
-<span id="cb19-12"><a href="#cb19-12" tabindex="-1"></a><span class="do">## [1] 0.5831042</span></span>
+<span id="cb19-12"><a href="#cb19-12" tabindex="-1"></a><span class="do">## [1] 0.5203155</span></span>
 <span id="cb19-13"><a href="#cb19-13" tabindex="-1"></a>x<span class="sc">$</span>random</span>
-<span id="cb19-14"><a href="#cb19-14" tabindex="-1"></a><span class="do">## [1] 0.5291023</span></span>
+<span id="cb19-14"><a href="#cb19-14" tabindex="-1"></a><span class="do">## [1] 0.5720322</span></span>
 <span id="cb19-15"><a href="#cb19-15" tabindex="-1"></a>x<span class="sc">$</span>random</span>
-<span id="cb19-16"><a href="#cb19-16" tabindex="-1"></a><span class="do">## [1] 0.8164181</span></span></code></pre></div>
-=======
-<span id="cb19-12"><a href="#cb19-12" tabindex="-1"></a><span class="do">## [1] 0.6469968</span></span>
-<span id="cb19-13"><a href="#cb19-13" tabindex="-1"></a>x<span class="sc">$</span>random</span>
-<span id="cb19-14"><a href="#cb19-14" tabindex="-1"></a><span class="do">## [1] 0.3830538</span></span>
-<span id="cb19-15"><a href="#cb19-15" tabindex="-1"></a>x<span class="sc">$</span>random</span>
-<span id="cb19-16"><a href="#cb19-16" tabindex="-1"></a><span class="do">## [1] 0.5399097</span></span></code></pre></div>
->>>>>>> a76da9852a92590ff082431d1789c7472aa84623
+<span id="cb19-16"><a href="#cb19-16" tabindex="-1"></a><span class="do">## [1] 0.2021011</span></span></code></pre></div>
 <p>Los campos activos son usandos particularmente junto con el argumento
 de campos privamos, ya que esto hace posible implementar componentes
 similares a los campos pero con controles adicionales. Por ejemplo,
@@ -1884,10 +1872,9 @@ de errores en RC solo se puede aprovechar si se requiere una versión más
 reciente de R. Esto puede dificultar la compatibilidad entre paquetes
 que necesitan funcionar en diferentes versiones de R.</p></li>
 </ol>
-<div id="ejemplos-adicionales" class="section level2">
-<h2>Ejemplos adicionales</h2>
-<<<<<<< HEAD
-=======
+</div>
+<div id="ejemplos-adicionales" class="section level1">
+<h1>Ejemplos adicionales</h1>
 <ol style="list-style-type: decimal">
 <li>Create a bank account R6 class that stores a balance and allows you
 to deposit and withdraw money. Create a subclass that throws an error if
@@ -1895,63 +1882,305 @@ you attempt to go into overdraft. Create another subclass that allows
 you to go into overdraft, but charges you a fee.</li>
 </ol>
 <div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a>CuentaBanco <span class="ot">&lt;-</span> <span class="fu">R6Class</span>(<span class="st">&quot;CuentaBanco&quot;</span>,</span>
-<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a>  <span class="at">public =</span> <span class="fu">list</span>(</span>
-<span id="cb30-3"><a href="#cb30-3" tabindex="-1"></a>    <span class="at">initialize =</span> <span class="cf">function</span>(<span class="at">x=</span><span class="dv">0</span>){</span>
-<span id="cb30-4"><a href="#cb30-4" tabindex="-1"></a>      private<span class="sc">$</span>saldo <span class="ot">&lt;-</span> x</span>
-<span id="cb30-5"><a href="#cb30-5" tabindex="-1"></a>    },</span>
-<span id="cb30-6"><a href="#cb30-6" tabindex="-1"></a>    <span class="at">depositar =</span> <span class="cf">function</span>(x){</span>
-<span id="cb30-7"><a href="#cb30-7" tabindex="-1"></a>      private<span class="sc">$</span>saldo <span class="ot">&lt;-</span> private<span class="sc">$</span>saldo <span class="sc">+</span> x</span>
-<span id="cb30-8"><a href="#cb30-8" tabindex="-1"></a>      <span class="fu">invisible</span>(self)</span>
-<span id="cb30-9"><a href="#cb30-9" tabindex="-1"></a>    },</span>
-<span id="cb30-10"><a href="#cb30-10" tabindex="-1"></a>    <span class="at">retirar =</span> <span class="cf">function</span>(x){</span>
-<span id="cb30-11"><a href="#cb30-11" tabindex="-1"></a>      private<span class="sc">$</span>saldo <span class="ot">=</span> private<span class="sc">$</span>saldo <span class="sc">-</span> x</span>
-<span id="cb30-12"><a href="#cb30-12" tabindex="-1"></a>      <span class="fu">invisible</span>(self)</span>
-<span id="cb30-13"><a href="#cb30-13" tabindex="-1"></a>    },</span>
-<span id="cb30-14"><a href="#cb30-14" tabindex="-1"></a>    <span class="at">print =</span> <span class="cf">function</span>(...){</span>
-<span id="cb30-15"><a href="#cb30-15" tabindex="-1"></a>      <span class="fu">cat</span>(<span class="st">&quot;Cuenta: </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb30-16"><a href="#cb30-16" tabindex="-1"></a>      <span class="fu">cat</span>(<span class="st">&quot;  Saldo: &quot;</span>, private<span class="sc">$</span>saldo, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>)</span>
-<span id="cb30-17"><a href="#cb30-17" tabindex="-1"></a>    }</span>
-<span id="cb30-18"><a href="#cb30-18" tabindex="-1"></a>  ),</span>
-<span id="cb30-19"><a href="#cb30-19" tabindex="-1"></a>  <span class="at">private =</span> <span class="fu">list</span>(</span>
-<span id="cb30-20"><a href="#cb30-20" tabindex="-1"></a>    <span class="at">saldo =</span> <span class="dv">0</span></span>
-<span id="cb30-21"><a href="#cb30-21" tabindex="-1"></a>  )</span>
-<span id="cb30-22"><a href="#cb30-22" tabindex="-1"></a>)</span>
-<span id="cb30-23"><a href="#cb30-23" tabindex="-1"></a></span>
-<span id="cb30-24"><a href="#cb30-24" tabindex="-1"></a>SubCuentaBanco1 <span class="ot">&lt;-</span> <span class="fu">R6Class</span>(<span class="st">&#39;SubCuentaBanco1&#39;</span>,</span>
-<span id="cb30-25"><a href="#cb30-25" tabindex="-1"></a>  <span class="at">inherit =</span> CuentaBanco,</span>
-<span id="cb30-26"><a href="#cb30-26" tabindex="-1"></a>  <span class="at">public =</span>  <span class="fu">list</span>(</span>
-<span id="cb30-27"><a href="#cb30-27" tabindex="-1"></a>    <span class="at">retirar =</span> <span class="cf">function</span>(x){</span>
-<span id="cb30-28"><a href="#cb30-28" tabindex="-1"></a>      <span class="fu">stopifnot</span>(<span class="st">&quot;Existe sobregiro&quot;</span><span class="ot">=</span> super<span class="sc">$</span><span class="fu">retirar</span>(x)<span class="sc">&lt;</span><span class="dv">0</span>)</span>
-<span id="cb30-29"><a href="#cb30-29" tabindex="-1"></a>      self<span class="sc">$</span>saldo<span class="ot">&lt;-</span>super<span class="sc">$</span><span class="fu">retirar</span>(x)<span class="sc">$</span>saldo</span>
-<span id="cb30-30"><a href="#cb30-30" tabindex="-1"></a>      }</span>
-<span id="cb30-31"><a href="#cb30-31" tabindex="-1"></a>  )                          </span>
-<span id="cb30-32"><a href="#cb30-32" tabindex="-1"></a>)</span>
-<span id="cb30-33"><a href="#cb30-33" tabindex="-1"></a></span>
-<span id="cb30-34"><a href="#cb30-34" tabindex="-1"></a>SubCuentaBanco2 <span class="ot">&lt;-</span> <span class="fu">R6Class</span>(<span class="st">&#39;SubCuentaBanco2&#39;</span>,</span>
-<span id="cb30-35"><a href="#cb30-35" tabindex="-1"></a>  <span class="at">inherit =</span> CuentaBanco,</span>
-<span id="cb30-36"><a href="#cb30-36" tabindex="-1"></a>  <span class="at">public =</span>  <span class="fu">list</span>(</span>
-<span id="cb30-37"><a href="#cb30-37" tabindex="-1"></a>    <span class="at">retirar =</span> <span class="cf">function</span>(x){</span>
-<span id="cb30-38"><a href="#cb30-38" tabindex="-1"></a>      <span class="cf">if</span>(super<span class="sc">$</span><span class="fu">retirar</span>(x)<span class="sc">&lt;</span><span class="dv">0</span>){</span>
-<span id="cb30-39"><a href="#cb30-39" tabindex="-1"></a>        self<span class="sc">$</span>saldo <span class="ot">&lt;-</span> super<span class="sc">$</span><span class="fu">retirar</span>(x) <span class="sc">-</span> <span class="dv">1</span>  </span>
-<span id="cb30-40"><a href="#cb30-40" tabindex="-1"></a>      }</span>
-<span id="cb30-41"><a href="#cb30-41" tabindex="-1"></a>      <span class="cf">else</span>{self<span class="sc">$</span>saldo <span class="ot">&lt;-</span> super<span class="sc">$</span><span class="fu">retirar</span>(x)}</span>
-<span id="cb30-42"><a href="#cb30-42" tabindex="-1"></a>      }</span>
-<span id="cb30-43"><a href="#cb30-43" tabindex="-1"></a>  )                          </span>
-<span id="cb30-44"><a href="#cb30-44" tabindex="-1"></a>)</span></code></pre></div>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a>Fab<span class="ot">&lt;-</span>CuentaBanco<span class="sc">$</span><span class="fu">new</span>(<span class="dv">100</span>)</span>
-<span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a>Fab<span class="sc">$</span><span class="fu">depositar</span>(<span class="dv">100</span>)</span>
-<span id="cb31-3"><a href="#cb31-3" tabindex="-1"></a>Fab<span class="sc">$</span>saldo</span></code></pre></div>
-<pre><code>## NULL</code></pre>
+<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a>  <span class="at">private =</span> <span class="fu">list</span>(</span>
+<span id="cb30-3"><a href="#cb30-3" tabindex="-1"></a>    <span class="at">saldo =</span> <span class="dv">0</span></span>
+<span id="cb30-4"><a href="#cb30-4" tabindex="-1"></a>  ),</span>
+<span id="cb30-5"><a href="#cb30-5" tabindex="-1"></a>  <span class="at">active =</span> <span class="fu">list</span>(</span>
+<span id="cb30-6"><a href="#cb30-6" tabindex="-1"></a>    <span class="at">.saldo =</span> <span class="cf">function</span>(value){</span>
+<span id="cb30-7"><a href="#cb30-7" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">missing</span>(value)) {</span>
+<span id="cb30-8"><a href="#cb30-8" tabindex="-1"></a>        private<span class="sc">$</span>saldo</span>
+<span id="cb30-9"><a href="#cb30-9" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb30-10"><a href="#cb30-10" tabindex="-1"></a>        <span class="fu">stop</span>(<span class="st">&quot;`$saldo` solo se puede leer NO modificar&quot;</span>, <span class="at">call. =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb30-11"><a href="#cb30-11" tabindex="-1"></a>      }</span>
+<span id="cb30-12"><a href="#cb30-12" tabindex="-1"></a>    }</span>
+<span id="cb30-13"><a href="#cb30-13" tabindex="-1"></a>  ),</span>
+<span id="cb30-14"><a href="#cb30-14" tabindex="-1"></a>  <span class="at">public =</span> <span class="fu">list</span>(</span>
+<span id="cb30-15"><a href="#cb30-15" tabindex="-1"></a>    <span class="at">initialize =</span> <span class="cf">function</span>(<span class="at">x=</span><span class="dv">0</span>){</span>
+<span id="cb30-16"><a href="#cb30-16" tabindex="-1"></a>      private<span class="sc">$</span>saldo <span class="ot">&lt;-</span> x</span>
+<span id="cb30-17"><a href="#cb30-17" tabindex="-1"></a>    },</span>
+<span id="cb30-18"><a href="#cb30-18" tabindex="-1"></a>    <span class="at">depositar =</span> <span class="cf">function</span>(x){</span>
+<span id="cb30-19"><a href="#cb30-19" tabindex="-1"></a>      private<span class="sc">$</span>saldo <span class="ot">&lt;-</span> private<span class="sc">$</span>saldo <span class="sc">+</span> x</span>
+<span id="cb30-20"><a href="#cb30-20" tabindex="-1"></a>      <span class="fu">invisible</span>(self)</span>
+<span id="cb30-21"><a href="#cb30-21" tabindex="-1"></a>    },</span>
+<span id="cb30-22"><a href="#cb30-22" tabindex="-1"></a>    <span class="at">retirar =</span> <span class="cf">function</span>(x){</span>
+<span id="cb30-23"><a href="#cb30-23" tabindex="-1"></a>      private<span class="sc">$</span>saldo <span class="ot">=</span> private<span class="sc">$</span>saldo <span class="sc">-</span> x</span>
+<span id="cb30-24"><a href="#cb30-24" tabindex="-1"></a>      <span class="fu">invisible</span>(self)</span>
+<span id="cb30-25"><a href="#cb30-25" tabindex="-1"></a>    },</span>
+<span id="cb30-26"><a href="#cb30-26" tabindex="-1"></a>    <span class="at">print =</span> <span class="cf">function</span>(...){</span>
+<span id="cb30-27"><a href="#cb30-27" tabindex="-1"></a>      <span class="fu">cat</span>(<span class="st">&quot;Cuenta: </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb30-28"><a href="#cb30-28" tabindex="-1"></a>      <span class="fu">cat</span>(<span class="st">&quot;  Saldo: &quot;</span>, private<span class="sc">$</span>saldo, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb30-29"><a href="#cb30-29" tabindex="-1"></a>    }</span>
+<span id="cb30-30"><a href="#cb30-30" tabindex="-1"></a>  )</span>
+<span id="cb30-31"><a href="#cb30-31" tabindex="-1"></a>)</span>
+<span id="cb30-32"><a href="#cb30-32" tabindex="-1"></a></span>
+<span id="cb30-33"><a href="#cb30-33" tabindex="-1"></a>SubCuentaBanco1 <span class="ot">&lt;-</span> <span class="fu">R6Class</span>(<span class="st">&#39;SubCuentaBanco1&#39;</span>,</span>
+<span id="cb30-34"><a href="#cb30-34" tabindex="-1"></a>  <span class="at">inherit =</span> CuentaBanco,</span>
+<span id="cb30-35"><a href="#cb30-35" tabindex="-1"></a>  <span class="at">public =</span>  <span class="fu">list</span>(</span>
+<span id="cb30-36"><a href="#cb30-36" tabindex="-1"></a>    <span class="at">retirar =</span> <span class="cf">function</span>(x){</span>
+<span id="cb30-37"><a href="#cb30-37" tabindex="-1"></a>      <span class="fu">stopifnot</span>(<span class="st">&quot;Existe sobregiro&quot;</span><span class="ot">=</span> super<span class="sc">$</span>.saldo<span class="sc">-</span>x<span class="sc">&gt;=</span><span class="dv">0</span>)</span>
+<span id="cb30-38"><a href="#cb30-38" tabindex="-1"></a>      private<span class="sc">$</span>saldo<span class="ot">&lt;-</span>super<span class="sc">$</span><span class="fu">retirar</span>(x)<span class="sc">$</span>.saldo</span>
+<span id="cb30-39"><a href="#cb30-39" tabindex="-1"></a>      }</span>
+<span id="cb30-40"><a href="#cb30-40" tabindex="-1"></a>  )                          </span>
+<span id="cb30-41"><a href="#cb30-41" tabindex="-1"></a>)</span>
+<span id="cb30-42"><a href="#cb30-42" tabindex="-1"></a></span>
+<span id="cb30-43"><a href="#cb30-43" tabindex="-1"></a>SubCuentaBanco2 <span class="ot">&lt;-</span> <span class="fu">R6Class</span>(<span class="st">&#39;SubCuentaBanco2&#39;</span>,</span>
+<span id="cb30-44"><a href="#cb30-44" tabindex="-1"></a>  <span class="at">inherit =</span> CuentaBanco,</span>
+<span id="cb30-45"><a href="#cb30-45" tabindex="-1"></a>  <span class="at">public =</span>  <span class="fu">list</span>(</span>
+<span id="cb30-46"><a href="#cb30-46" tabindex="-1"></a>    <span class="at">retirar =</span> <span class="cf">function</span>(x){</span>
+<span id="cb30-47"><a href="#cb30-47" tabindex="-1"></a>      <span class="cf">if</span>(super<span class="sc">$</span>.saldo<span class="sc">-</span>x<span class="sc">&lt;</span><span class="dv">0</span>){</span>
+<span id="cb30-48"><a href="#cb30-48" tabindex="-1"></a>        private<span class="sc">$</span>saldo <span class="ot">&lt;-</span> super<span class="sc">$</span><span class="fu">retirar</span>(x)<span class="sc">$</span>.saldo <span class="sc">-</span> <span class="dv">1</span> <span class="co">#Cargo extra 1  </span></span>
+<span id="cb30-49"><a href="#cb30-49" tabindex="-1"></a>      }</span>
+<span id="cb30-50"><a href="#cb30-50" tabindex="-1"></a>      <span class="cf">else</span>{private<span class="sc">$</span>saldo <span class="ot">&lt;-</span> super<span class="sc">$</span><span class="fu">retirar</span>(x)<span class="sc">$</span>.saldo}</span>
+<span id="cb30-51"><a href="#cb30-51" tabindex="-1"></a>      }</span>
+<span id="cb30-52"><a href="#cb30-52" tabindex="-1"></a>  )                          </span>
+<span id="cb30-53"><a href="#cb30-53" tabindex="-1"></a>)</span>
+<span id="cb30-54"><a href="#cb30-54" tabindex="-1"></a></span>
+<span id="cb30-55"><a href="#cb30-55" tabindex="-1"></a>Fab <span class="ot">&lt;-</span> CuentaBanco<span class="sc">$</span><span class="fu">new</span>(<span class="dv">100</span>)</span>
+<span id="cb30-56"><a href="#cb30-56" tabindex="-1"></a>Fab</span>
+<span id="cb30-57"><a href="#cb30-57" tabindex="-1"></a><span class="do">## Cuenta: </span></span>
+<span id="cb30-58"><a href="#cb30-58" tabindex="-1"></a><span class="do">##   Saldo: 100</span></span>
+<span id="cb30-59"><a href="#cb30-59" tabindex="-1"></a></span>
+<span id="cb30-60"><a href="#cb30-60" tabindex="-1"></a>Fab<span class="sc">$</span><span class="fu">retirar</span>(<span class="dv">50</span>)</span>
+<span id="cb30-61"><a href="#cb30-61" tabindex="-1"></a>Fab</span>
+<span id="cb30-62"><a href="#cb30-62" tabindex="-1"></a><span class="do">## Cuenta: </span></span>
+<span id="cb30-63"><a href="#cb30-63" tabindex="-1"></a><span class="do">##   Saldo: 50</span></span>
+<span id="cb30-64"><a href="#cb30-64" tabindex="-1"></a></span>
+<span id="cb30-65"><a href="#cb30-65" tabindex="-1"></a>Fab<span class="sc">$</span><span class="fu">depositar</span>(<span class="dv">10</span>)</span>
+<span id="cb30-66"><a href="#cb30-66" tabindex="-1"></a>Fab</span>
+<span id="cb30-67"><a href="#cb30-67" tabindex="-1"></a><span class="do">## Cuenta: </span></span>
+<span id="cb30-68"><a href="#cb30-68" tabindex="-1"></a><span class="do">##   Saldo: 60</span></span>
+<span id="cb30-69"><a href="#cb30-69" tabindex="-1"></a></span>
+<span id="cb30-70"><a href="#cb30-70" tabindex="-1"></a>Fab2<span class="ot">&lt;-</span>SubCuentaBanco1<span class="sc">$</span><span class="fu">new</span>(<span class="dv">100</span>)</span>
+<span id="cb30-71"><a href="#cb30-71" tabindex="-1"></a>Fab2</span>
+<span id="cb30-72"><a href="#cb30-72" tabindex="-1"></a><span class="do">## Cuenta: </span></span>
+<span id="cb30-73"><a href="#cb30-73" tabindex="-1"></a><span class="do">##   Saldo: 100</span></span>
+<span id="cb30-74"><a href="#cb30-74" tabindex="-1"></a></span>
+<span id="cb30-75"><a href="#cb30-75" tabindex="-1"></a>Fab2<span class="sc">$</span><span class="fu">retirar</span>(<span class="dv">150</span>)</span>
+<span id="cb30-76"><a href="#cb30-76" tabindex="-1"></a><span class="do">## Error in Fab2$retirar(150): Existe sobregiro</span></span>
+<span id="cb30-77"><a href="#cb30-77" tabindex="-1"></a>Fab2</span>
+<span id="cb30-78"><a href="#cb30-78" tabindex="-1"></a><span class="do">## Cuenta: </span></span>
+<span id="cb30-79"><a href="#cb30-79" tabindex="-1"></a><span class="do">##   Saldo: 100</span></span>
+<span id="cb30-80"><a href="#cb30-80" tabindex="-1"></a></span>
+<span id="cb30-81"><a href="#cb30-81" tabindex="-1"></a>Fab3 <span class="ot">&lt;-</span> SubCuentaBanco2<span class="sc">$</span><span class="fu">new</span>(<span class="dv">100</span>)</span>
+<span id="cb30-82"><a href="#cb30-82" tabindex="-1"></a>Fab3</span>
+<span id="cb30-83"><a href="#cb30-83" tabindex="-1"></a><span class="do">## Cuenta: </span></span>
+<span id="cb30-84"><a href="#cb30-84" tabindex="-1"></a><span class="do">##   Saldo: 100</span></span>
+<span id="cb30-85"><a href="#cb30-85" tabindex="-1"></a></span>
+<span id="cb30-86"><a href="#cb30-86" tabindex="-1"></a>Fab3<span class="sc">$</span><span class="fu">retirar</span>(<span class="dv">150</span>)</span>
+<span id="cb30-87"><a href="#cb30-87" tabindex="-1"></a>Fab3</span>
+<span id="cb30-88"><a href="#cb30-88" tabindex="-1"></a><span class="do">## Cuenta: </span></span>
+<span id="cb30-89"><a href="#cb30-89" tabindex="-1"></a><span class="do">##   Saldo: -51</span></span></code></pre></div>
+<ol start="2" style="list-style-type: decimal">
+<li>Create an R6 class that represents a shuffled deck of cards. You
+should be able to draw cards from the deck with <code>$draw(n)</code>,
+and return all cards to the deck and reshuffle with
+<code>$reshuffle()</code>. Use the following code to make a vector of
+cards.</li>
+</ol>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a><span class="fu">library</span>(R6)</span>
+<span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a>cartas <span class="ot">&lt;-</span> <span class="fu">R6Class</span>(<span class="st">&#39;cartas&#39;</span>,</span>
+<span id="cb31-3"><a href="#cb31-3" tabindex="-1"></a>  <span class="at">private =</span> <span class="fu">list</span>(</span>
+<span id="cb31-4"><a href="#cb31-4" tabindex="-1"></a>    <span class="at">suit =</span> <span class="fu">c</span>(<span class="st">&quot;♠&quot;</span>, <span class="st">&quot;♥&quot;</span>, <span class="st">&quot;♦&quot;</span>, <span class="st">&quot;♣&quot;</span>),</span>
+<span id="cb31-5"><a href="#cb31-5" tabindex="-1"></a>    <span class="at">val =</span> <span class="fu">c</span>(<span class="st">&quot;A&quot;</span>, <span class="fu">c</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">10</span>), <span class="st">&quot;J&quot;</span>, <span class="st">&quot;Q&quot;</span>, <span class="st">&quot;K&quot;</span>)</span>
+<span id="cb31-6"><a href="#cb31-6" tabindex="-1"></a>  ),                </span>
+<span id="cb31-7"><a href="#cb31-7" tabindex="-1"></a>  <span class="at">public =</span> <span class="fu">list</span>(</span>
+<span id="cb31-8"><a href="#cb31-8" tabindex="-1"></a>    <span class="at">cards =</span> <span class="fu">c</span>(<span class="fu">paste0</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;A&quot;</span>, <span class="fu">c</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">10</span>), <span class="st">&quot;J&quot;</span>, <span class="st">&quot;Q&quot;</span>, <span class="st">&quot;K&quot;</span>), <span class="dv">4</span>),</span>
+<span id="cb31-9"><a href="#cb31-9" tabindex="-1"></a>                     <span class="fu">c</span>(<span class="st">&quot;♠&quot;</span>, <span class="st">&quot;♥&quot;</span>, <span class="st">&quot;♦&quot;</span>, <span class="st">&quot;♣&quot;</span>))),</span>
+<span id="cb31-10"><a href="#cb31-10" tabindex="-1"></a>    <span class="at">drawn =</span> <span class="cf">function</span>(n){</span>
+<span id="cb31-11"><a href="#cb31-11" tabindex="-1"></a>      self<span class="sc">$</span>cards <span class="ot">&lt;-</span> self<span class="sc">$</span>cards[<span class="sc">-</span>n]</span>
+<span id="cb31-12"><a href="#cb31-12" tabindex="-1"></a>      <span class="fu">invisible</span>(self)</span>
+<span id="cb31-13"><a href="#cb31-13" tabindex="-1"></a>    },</span>
+<span id="cb31-14"><a href="#cb31-14" tabindex="-1"></a>    <span class="at">reshuffle=</span><span class="cf">function</span>(){</span>
+<span id="cb31-15"><a href="#cb31-15" tabindex="-1"></a>      copy <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="fu">rep</span>(private<span class="sc">$</span>val, <span class="dv">4</span>), private<span class="sc">$</span>suit)</span>
+<span id="cb31-16"><a href="#cb31-16" tabindex="-1"></a>      x<span class="ot">&lt;-</span><span class="fu">sample</span>(<span class="dv">52</span>)</span>
+<span id="cb31-17"><a href="#cb31-17" tabindex="-1"></a>      <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">52</span>) {</span>
+<span id="cb31-18"><a href="#cb31-18" tabindex="-1"></a>        self<span class="sc">$</span>cards[i]<span class="ot">&lt;-</span>copy[x[i]]</span>
+<span id="cb31-19"><a href="#cb31-19" tabindex="-1"></a>      }</span>
+<span id="cb31-20"><a href="#cb31-20" tabindex="-1"></a>      <span class="fu">invisible</span>(self)</span>
+<span id="cb31-21"><a href="#cb31-21" tabindex="-1"></a>    }</span>
+<span id="cb31-22"><a href="#cb31-22" tabindex="-1"></a>  ),</span>
+<span id="cb31-23"><a href="#cb31-23" tabindex="-1"></a>  <span class="at">active=</span><span class="fu">list</span>(</span>
+<span id="cb31-24"><a href="#cb31-24" tabindex="-1"></a>    <span class="at">.cartas=</span><span class="cf">function</span>(value){</span>
+<span id="cb31-25"><a href="#cb31-25" tabindex="-1"></a>      <span class="cf">if</span>(<span class="fu">missing</span>(value)){</span>
+<span id="cb31-26"><a href="#cb31-26" tabindex="-1"></a>        self<span class="sc">$</span>cards</span>
+<span id="cb31-27"><a href="#cb31-27" tabindex="-1"></a>      }</span>
+<span id="cb31-28"><a href="#cb31-28" tabindex="-1"></a>      <span class="cf">else</span>{<span class="fu">stop</span>(<span class="st">&quot;`Cartas` solo se puede leer NO modificar&quot;</span>, </span>
+<span id="cb31-29"><a href="#cb31-29" tabindex="-1"></a>                <span class="at">call. =</span> <span class="cn">FALSE</span>)}</span>
+<span id="cb31-30"><a href="#cb31-30" tabindex="-1"></a>    }</span>
+<span id="cb31-31"><a href="#cb31-31" tabindex="-1"></a>  )</span>
+<span id="cb31-32"><a href="#cb31-32" tabindex="-1"></a>)</span>
+<span id="cb31-33"><a href="#cb31-33" tabindex="-1"></a></span>
+<span id="cb31-34"><a href="#cb31-34" tabindex="-1"></a>mazo<span class="ot">&lt;-</span>cartas<span class="sc">$</span><span class="fu">new</span>()</span>
+<span id="cb31-35"><a href="#cb31-35" tabindex="-1"></a>mazo<span class="sc">$</span>.cartas</span>
+<span id="cb31-36"><a href="#cb31-36" tabindex="-1"></a><span class="do">##  [1] &quot;A♠&quot;  &quot;2♥&quot;  &quot;3♦&quot;  &quot;4♣&quot;  &quot;5♠&quot;  &quot;6♥&quot;  &quot;7♦&quot;  &quot;8♣&quot;  &quot;9♠&quot;  &quot;10♥&quot; &quot;J♦&quot;  &quot;Q♣&quot; </span></span>
+<span id="cb31-37"><a href="#cb31-37" tabindex="-1"></a><span class="do">## [13] &quot;K♠&quot;  &quot;A♥&quot;  &quot;2♦&quot;  &quot;3♣&quot;  &quot;4♠&quot;  &quot;5♥&quot;  &quot;6♦&quot;  &quot;7♣&quot;  &quot;8♠&quot;  &quot;9♥&quot;  &quot;10♦&quot; &quot;J♣&quot; </span></span>
+<span id="cb31-38"><a href="#cb31-38" tabindex="-1"></a><span class="do">## [25] &quot;Q♠&quot;  &quot;K♥&quot;  &quot;A♦&quot;  &quot;2♣&quot;  &quot;3♠&quot;  &quot;4♥&quot;  &quot;5♦&quot;  &quot;6♣&quot;  &quot;7♠&quot;  &quot;8♥&quot;  &quot;9♦&quot;  &quot;10♣&quot;</span></span>
+<span id="cb31-39"><a href="#cb31-39" tabindex="-1"></a><span class="do">## [37] &quot;J♠&quot;  &quot;Q♥&quot;  &quot;K♦&quot;  &quot;A♣&quot;  &quot;2♠&quot;  &quot;3♥&quot;  &quot;4♦&quot;  &quot;5♣&quot;  &quot;6♠&quot;  &quot;7♥&quot;  &quot;8♦&quot;  &quot;9♣&quot; </span></span>
+<span id="cb31-40"><a href="#cb31-40" tabindex="-1"></a><span class="do">## [49] &quot;10♠&quot; &quot;J♥&quot;  &quot;Q♦&quot;  &quot;K♣&quot;</span></span>
+<span id="cb31-41"><a href="#cb31-41" tabindex="-1"></a>mazo<span class="sc">$</span><span class="fu">drawn</span>(<span class="dv">1</span>)</span>
+<span id="cb31-42"><a href="#cb31-42" tabindex="-1"></a>mazo<span class="sc">$</span>.cartas</span>
+<span id="cb31-43"><a href="#cb31-43" tabindex="-1"></a><span class="do">##  [1] &quot;2♥&quot;  &quot;3♦&quot;  &quot;4♣&quot;  &quot;5♠&quot;  &quot;6♥&quot;  &quot;7♦&quot;  &quot;8♣&quot;  &quot;9♠&quot;  &quot;10♥&quot; &quot;J♦&quot;  &quot;Q♣&quot;  &quot;K♠&quot; </span></span>
+<span id="cb31-44"><a href="#cb31-44" tabindex="-1"></a><span class="do">## [13] &quot;A♥&quot;  &quot;2♦&quot;  &quot;3♣&quot;  &quot;4♠&quot;  &quot;5♥&quot;  &quot;6♦&quot;  &quot;7♣&quot;  &quot;8♠&quot;  &quot;9♥&quot;  &quot;10♦&quot; &quot;J♣&quot;  &quot;Q♠&quot; </span></span>
+<span id="cb31-45"><a href="#cb31-45" tabindex="-1"></a><span class="do">## [25] &quot;K♥&quot;  &quot;A♦&quot;  &quot;2♣&quot;  &quot;3♠&quot;  &quot;4♥&quot;  &quot;5♦&quot;  &quot;6♣&quot;  &quot;7♠&quot;  &quot;8♥&quot;  &quot;9♦&quot;  &quot;10♣&quot; &quot;J♠&quot; </span></span>
+<span id="cb31-46"><a href="#cb31-46" tabindex="-1"></a><span class="do">## [37] &quot;Q♥&quot;  &quot;K♦&quot;  &quot;A♣&quot;  &quot;2♠&quot;  &quot;3♥&quot;  &quot;4♦&quot;  &quot;5♣&quot;  &quot;6♠&quot;  &quot;7♥&quot;  &quot;8♦&quot;  &quot;9♣&quot;  &quot;10♠&quot;</span></span>
+<span id="cb31-47"><a href="#cb31-47" tabindex="-1"></a><span class="do">## [49] &quot;J♥&quot;  &quot;Q♦&quot;  &quot;K♣&quot;</span></span>
+<span id="cb31-48"><a href="#cb31-48" tabindex="-1"></a>mazo<span class="sc">$</span><span class="fu">reshuffle</span>()</span>
+<span id="cb31-49"><a href="#cb31-49" tabindex="-1"></a>mazo<span class="sc">$</span>.cartas</span>
+<span id="cb31-50"><a href="#cb31-50" tabindex="-1"></a><span class="do">##  [1] &quot;4♥&quot;  &quot;Q♠&quot;  &quot;4♣&quot;  &quot;3♦&quot;  &quot;5♠&quot;  &quot;J♣&quot;  &quot;A♦&quot;  &quot;K♣&quot;  &quot;3♣&quot;  &quot;10♥&quot; &quot;9♠&quot;  &quot;8♣&quot; </span></span>
+<span id="cb31-51"><a href="#cb31-51" tabindex="-1"></a><span class="do">## [13] &quot;10♦&quot; &quot;5♦&quot;  &quot;K♦&quot;  &quot;5♥&quot;  &quot;8♠&quot;  &quot;Q♦&quot;  &quot;5♣&quot;  &quot;9♦&quot;  &quot;7♣&quot;  &quot;4♦&quot;  &quot;6♠&quot;  &quot;10♠&quot;</span></span>
+<span id="cb31-52"><a href="#cb31-52" tabindex="-1"></a><span class="do">## [25] &quot;3♠&quot;  &quot;K♥&quot;  &quot;J♥&quot;  &quot;Q♣&quot;  &quot;9♣&quot;  &quot;J♦&quot;  &quot;4♠&quot;  &quot;2♠&quot;  &quot;6♣&quot;  &quot;2♦&quot;  &quot;J♠&quot;  &quot;6♥&quot; </span></span>
+<span id="cb31-53"><a href="#cb31-53" tabindex="-1"></a><span class="do">## [37] &quot;7♠&quot;  &quot;A♠&quot;  &quot;7♦&quot;  &quot;Q♥&quot;  &quot;8♦&quot;  &quot;K♠&quot;  &quot;A♣&quot;  &quot;2♥&quot;  &quot;6♦&quot;  &quot;A♥&quot;  &quot;10♣&quot; &quot;7♥&quot; </span></span>
+<span id="cb31-54"><a href="#cb31-54" tabindex="-1"></a><span class="do">## [49] &quot;3♥&quot;  &quot;2♣&quot;  &quot;8♥&quot;  &quot;9♥&quot;</span></span></code></pre></div>
+<ol start="3" style="list-style-type: decimal">
+<li>Create an R6 class that allows you to get and set the current time
+zone. You can access the current time zone with
+<code>Sys.timezone()</code> and set it with
+<code>Sys.setenv(TZ = &quot;newtimezone&quot;)</code>. When setting the time zone,
+make sure the new time zone is in the list provided by
+<code>OlsonNames()</code>.</li>
+</ol>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a>ZonaHoraria <span class="ot">&lt;-</span> <span class="fu">R6Class</span>(<span class="st">&#39;ZonaHoraria&#39;</span>,</span>
+<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a>  <span class="at">public =</span> <span class="fu">list</span>(</span>
+<span id="cb32-3"><a href="#cb32-3" tabindex="-1"></a>    <span class="at">zona =</span> <span class="fu">Sys.timezone</span>(),</span>
+<span id="cb32-4"><a href="#cb32-4" tabindex="-1"></a>  <span class="at">cambiar_zona=</span><span class="cf">function</span>(name){</span>
+<span id="cb32-5"><a href="#cb32-5" tabindex="-1"></a>    <span class="fu">stopifnot</span>(<span class="st">&quot;No existe esa zona horaria&quot;</span> <span class="ot">=</span> name <span class="sc">%in%</span> <span class="fu">OlsonNames</span>()) </span>
+<span id="cb32-6"><a href="#cb32-6" tabindex="-1"></a>    self<span class="sc">$</span>zona<span class="ot">=</span><span class="fu">Sys.setenv</span>(<span class="at">TZ =</span> name)</span>
+<span id="cb32-7"><a href="#cb32-7" tabindex="-1"></a>  })</span>
+<span id="cb32-8"><a href="#cb32-8" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a>zona <span class="ot">&lt;-</span> ZonaHoraria<span class="sc">$</span><span class="fu">new</span>()</span>
+<span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a>zona<span class="sc">$</span><span class="fu">cambiar_zona</span>(<span class="st">&#39;America/Guayaquil&#39;</span>)</span>
+<span id="cb33-3"><a href="#cb33-3" tabindex="-1"></a>zona</span>
+<span id="cb33-4"><a href="#cb33-4" tabindex="-1"></a><span class="do">## &lt;ZonaHoraria&gt;</span></span>
+<span id="cb33-5"><a href="#cb33-5" tabindex="-1"></a><span class="do">##   Public:</span></span>
+<span id="cb33-6"><a href="#cb33-6" tabindex="-1"></a><span class="do">##     cambiar_zona: function (name) </span></span>
+<span id="cb33-7"><a href="#cb33-7" tabindex="-1"></a><span class="do">##     clone: function (deep = FALSE) </span></span>
+<span id="cb33-8"><a href="#cb33-8" tabindex="-1"></a><span class="do">##     zona: TRUE</span></span>
+<span id="cb33-9"><a href="#cb33-9" tabindex="-1"></a><span class="fu">Sys.timezone</span>()</span>
+<span id="cb33-10"><a href="#cb33-10" tabindex="-1"></a><span class="do">## [1] &quot;America/Guayaquil&quot;</span></span></code></pre></div>
+<ol start="5" style="list-style-type: decimal">
+<li>Create an R6 class that manages the current working directory. It
+should have <code>$get()</code> and <code>$set()</code> methods.</li>
+</ol>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a>Directorio <span class="ot">&lt;-</span> <span class="fu">R6Class</span>(<span class="st">&#39;Directorio&#39;</span>,</span>
+<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a>  <span class="at">public =</span> <span class="fu">list</span>(</span>
+<span id="cb34-3"><a href="#cb34-3" tabindex="-1"></a>    <span class="at">get=</span><span class="cf">function</span>(){</span>
+<span id="cb34-4"><a href="#cb34-4" tabindex="-1"></a>      <span class="fu">getwd</span>()</span>
+<span id="cb34-5"><a href="#cb34-5" tabindex="-1"></a>    },</span>
+<span id="cb34-6"><a href="#cb34-6" tabindex="-1"></a>    <span class="at">set=</span><span class="cf">function</span>(path){</span>
+<span id="cb34-7"><a href="#cb34-7" tabindex="-1"></a>      <span class="fu">setwd</span>(path)</span>
+<span id="cb34-8"><a href="#cb34-8" tabindex="-1"></a>      <span class="fu">invisible</span>(self)</span>
+<span id="cb34-9"><a href="#cb34-9" tabindex="-1"></a>    }</span>
+<span id="cb34-10"><a href="#cb34-10" tabindex="-1"></a>  )</span>
+<span id="cb34-11"><a href="#cb34-11" tabindex="-1"></a>)</span>
+<span id="cb34-12"><a href="#cb34-12" tabindex="-1"></a>direct <span class="ot">&lt;-</span> Directorio<span class="sc">$</span><span class="fu">new</span>()</span>
+<span id="cb34-13"><a href="#cb34-13" tabindex="-1"></a>direct<span class="sc">$</span><span class="fu">get</span>()</span>
+<span id="cb34-14"><a href="#cb34-14" tabindex="-1"></a><span class="do">## [1] &quot;D:/OneDrive - Escuela Politécnica Nacional/PasantiasUDC/UDC/R6&quot;</span></span>
+<span id="cb34-15"><a href="#cb34-15" tabindex="-1"></a>direct<span class="sc">$</span><span class="fu">set</span>(<span class="st">&quot;C:/Users/Dell/OneDrive - Escuela Politécnica Nacional/Pasantías UDC&quot;</span>)</span>
+<span id="cb34-16"><a href="#cb34-16" tabindex="-1"></a><span class="do">## Error in setwd(path): no es posible cambiar el directorio de trabajo</span></span>
+<span id="cb34-17"><a href="#cb34-17" tabindex="-1"></a>direct<span class="sc">$</span><span class="fu">get</span>()</span>
+<span id="cb34-18"><a href="#cb34-18" tabindex="-1"></a><span class="do">## [1] &quot;D:/OneDrive - Escuela Politécnica Nacional/PasantiasUDC/UDC/R6&quot;</span></span></code></pre></div>
+<ol start="6" style="list-style-type: decimal">
+<li>Create a class with a write-only <code>$password</code> field. It
+should have <code>$check_password(password)</code> method that returns
+<code>TRUE</code> or <code>FALSE</code>, but there should be no way to
+view the complete password.</li>
+</ol>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a><span class="co"># install.packages(&quot;R6&quot;)</span></span>
+<span id="cb35-2"><a href="#cb35-2" tabindex="-1"></a><span class="fu">library</span>(R6)</span>
+<span id="cb35-3"><a href="#cb35-3" tabindex="-1"></a></span>
+<span id="cb35-4"><a href="#cb35-4" tabindex="-1"></a></span>
+<span id="cb35-5"><a href="#cb35-5" tabindex="-1"></a>Bank_writeonly <span class="ot">&lt;-</span> <span class="fu">R6Class</span>(<span class="st">&quot;Bank_writeonly&quot;</span>, </span>
+<span id="cb35-6"><a href="#cb35-6" tabindex="-1"></a>      <span class="at">private =</span> <span class="fu">list</span>(</span>
+<span id="cb35-7"><a href="#cb35-7" tabindex="-1"></a>            <span class="at">user =</span> <span class="cn">NULL</span>,</span>
+<span id="cb35-8"><a href="#cb35-8" tabindex="-1"></a>            <span class="at">password =</span> <span class="cn">NULL</span></span>
+<span id="cb35-9"><a href="#cb35-9" tabindex="-1"></a>      ),</span>
+<span id="cb35-10"><a href="#cb35-10" tabindex="-1"></a>      <span class="at">active =</span> <span class="fu">list</span>(</span>
+<span id="cb35-11"><a href="#cb35-11" tabindex="-1"></a>        <span class="at">.password =</span> <span class="cf">function</span>(x){</span>
+<span id="cb35-12"><a href="#cb35-12" tabindex="-1"></a>          <span class="cf">if</span>(<span class="fu">missing</span>(x)){</span>
+<span id="cb35-13"><a href="#cb35-13" tabindex="-1"></a>            <span class="fu">stop</span>(<span class="st">&quot;`$.password` solo permite cambiar tu contraseña, NO verla&quot;</span>,</span>
+<span id="cb35-14"><a href="#cb35-14" tabindex="-1"></a>                 <span class="at">call. =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb35-15"><a href="#cb35-15" tabindex="-1"></a>          } <span class="cf">else</span>{</span>
+<span id="cb35-16"><a href="#cb35-16" tabindex="-1"></a>            private<span class="sc">$</span>password <span class="ot">&lt;-</span> x</span>
+<span id="cb35-17"><a href="#cb35-17" tabindex="-1"></a>            <span class="fu">cat</span>(<span class="st">&quot;Contraseña cambiada con éxito&quot;</span>)</span>
+<span id="cb35-18"><a href="#cb35-18" tabindex="-1"></a>          }</span>
+<span id="cb35-19"><a href="#cb35-19" tabindex="-1"></a>        }</span>
+<span id="cb35-20"><a href="#cb35-20" tabindex="-1"></a>      ),</span>
+<span id="cb35-21"><a href="#cb35-21" tabindex="-1"></a>      <span class="at">public =</span> <span class="fu">list</span>(</span>
+<span id="cb35-22"><a href="#cb35-22" tabindex="-1"></a>            <span class="at">initialize =</span> <span class="cf">function</span>(.user, .password){</span>
+<span id="cb35-23"><a href="#cb35-23" tabindex="-1"></a>              private<span class="sc">$</span>password <span class="ot">&lt;-</span> .password</span>
+<span id="cb35-24"><a href="#cb35-24" tabindex="-1"></a>              private<span class="sc">$</span>user <span class="ot">&lt;-</span> .user</span>
+<span id="cb35-25"><a href="#cb35-25" tabindex="-1"></a>              },</span>
+<span id="cb35-26"><a href="#cb35-26" tabindex="-1"></a>            <span class="at">check_password =</span> <span class="cf">function</span>(p){</span>
+<span id="cb35-27"><a href="#cb35-27" tabindex="-1"></a>              <span class="cf">if</span>(private<span class="sc">$</span>password <span class="sc">==</span> p){ </span>
+<span id="cb35-28"><a href="#cb35-28" tabindex="-1"></a>                <span class="fu">cat</span>(<span class="st">&quot;Tu contraseña SI coincide con la ingresada&quot;</span>, <span class="at">call. =</span> <span class="cn">FALSE</span>)}</span>
+<span id="cb35-29"><a href="#cb35-29" tabindex="-1"></a>              <span class="cf">else</span>{</span>
+<span id="cb35-30"><a href="#cb35-30" tabindex="-1"></a>                <span class="fu">stop</span>(<span class="st">&quot;Tu contraseña NO coincide con la ingresada&quot;</span>)}</span>
+<span id="cb35-31"><a href="#cb35-31" tabindex="-1"></a>              },</span>
+<span id="cb35-32"><a href="#cb35-32" tabindex="-1"></a>            <span class="at">print =</span> <span class="cf">function</span>(...){</span>
+<span id="cb35-33"><a href="#cb35-33" tabindex="-1"></a>              <span class="fu">cat</span>(<span class="st">&quot;Bienvenido al Banco </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb35-34"><a href="#cb35-34" tabindex="-1"></a>              <span class="fu">cat</span>(<span class="st">&quot;Tu cuenta se ha creado con el nombre de usuario:&quot;</span>, private<span class="sc">$</span>user)</span>
+<span id="cb35-35"><a href="#cb35-35" tabindex="-1"></a>            }</span>
+<span id="cb35-36"><a href="#cb35-36" tabindex="-1"></a>      )</span>
+<span id="cb35-37"><a href="#cb35-37" tabindex="-1"></a>      </span>
+<span id="cb35-38"><a href="#cb35-38" tabindex="-1"></a>)</span>
+<span id="cb35-39"><a href="#cb35-39" tabindex="-1"></a></span>
+<span id="cb35-40"><a href="#cb35-40" tabindex="-1"></a><span class="co"># Prueba</span></span>
+<span id="cb35-41"><a href="#cb35-41" tabindex="-1"></a></span>
+<span id="cb35-42"><a href="#cb35-42" tabindex="-1"></a>Cuenta_Andrea <span class="ot">&lt;-</span> Bank_writeonly<span class="sc">$</span><span class="fu">new</span>(<span class="st">&quot;AndreaBC&quot;</span>, <span class="st">&quot;prueba123&quot;</span>)</span>
+<span id="cb35-43"><a href="#cb35-43" tabindex="-1"></a><span class="co"># Print</span></span>
+<span id="cb35-44"><a href="#cb35-44" tabindex="-1"></a>Cuenta_Andrea</span>
+<span id="cb35-45"><a href="#cb35-45" tabindex="-1"></a><span class="do">## Bienvenido al Banco </span></span>
+<span id="cb35-46"><a href="#cb35-46" tabindex="-1"></a><span class="do">## Tu cuenta se ha creado con el nombre de usuario: AndreaBC</span></span>
+<span id="cb35-47"><a href="#cb35-47" tabindex="-1"></a><span class="co"># Funcion Check_password</span></span>
+<span id="cb35-48"><a href="#cb35-48" tabindex="-1"></a>Cuenta_Andrea<span class="sc">$</span><span class="fu">check_password</span>(<span class="st">&quot;Nomeacuerdomicontraseña&quot;</span>)</span>
+<span id="cb35-49"><a href="#cb35-49" tabindex="-1"></a><span class="do">## Error in Cuenta_Andrea$check_password(&quot;Nomeacuerdomicontraseña&quot;): Tu contraseña NO coincide con la ingresada</span></span>
+<span id="cb35-50"><a href="#cb35-50" tabindex="-1"></a>Cuenta_Andrea<span class="sc">$</span><span class="fu">check_password</span>(<span class="st">&quot;prueba123&quot;</span>)</span>
+<span id="cb35-51"><a href="#cb35-51" tabindex="-1"></a><span class="do">## Tu contraseña SI coincide con la ingresada FALSE</span></span>
+<span id="cb35-52"><a href="#cb35-52" tabindex="-1"></a><span class="co"># .password</span></span>
+<span id="cb35-53"><a href="#cb35-53" tabindex="-1"></a>Cuenta_Andrea<span class="sc">$</span>.password</span>
+<span id="cb35-54"><a href="#cb35-54" tabindex="-1"></a><span class="do">## Error: `$.password` solo permite cambiar tu contraseña, NO verla</span></span>
+<span id="cb35-55"><a href="#cb35-55" tabindex="-1"></a>Cuenta_Andrea<span class="sc">$</span>.password <span class="ot">&lt;-</span> <span class="st">&quot;NuevaContraseña&quot;</span></span>
+<span id="cb35-56"><a href="#cb35-56" tabindex="-1"></a><span class="do">## Contraseña cambiada con éxito</span></span></code></pre></div>
+<ol start="7" style="list-style-type: decimal">
+<li>Extend the Rando class with another active binding that allows you
+to access the previous random <code>value.</code> Ensure that active
+binding is the only way to access the value.</li>
+</ol>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a>Rando <span class="ot">&lt;-</span> R6<span class="sc">::</span><span class="fu">R6Class</span>(<span class="st">&quot;Rando&quot;</span>, </span>
+<span id="cb36-2"><a href="#cb36-2" tabindex="-1"></a>    <span class="at">private =</span> <span class="fu">list</span>(<span class="at">prev =</span> <span class="cn">NULL</span>),</span>
+<span id="cb36-3"><a href="#cb36-3" tabindex="-1"></a>    <span class="at">active =</span> <span class="fu">list</span>(</span>
+<span id="cb36-4"><a href="#cb36-4" tabindex="-1"></a>      <span class="at">random =</span> <span class="cf">function</span>(value) {</span>
+<span id="cb36-5"><a href="#cb36-5" tabindex="-1"></a>        <span class="cf">if</span> (<span class="fu">missing</span>(value)) {</span>
+<span id="cb36-6"><a href="#cb36-6" tabindex="-1"></a>          private<span class="sc">$</span>prev <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">1</span>)</span>
+<span id="cb36-7"><a href="#cb36-7" tabindex="-1"></a>          private<span class="sc">$</span>prev</span>
+<span id="cb36-8"><a href="#cb36-8" tabindex="-1"></a>        } <span class="cf">else</span> {</span>
+<span id="cb36-9"><a href="#cb36-9" tabindex="-1"></a>          <span class="fu">stop</span>(<span class="st">&quot;Can&#39;t set `$random`&quot;</span>, <span class="at">call. =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb36-10"><a href="#cb36-10" tabindex="-1"></a>        }</span>
+<span id="cb36-11"><a href="#cb36-11" tabindex="-1"></a>      },</span>
+<span id="cb36-12"><a href="#cb36-12" tabindex="-1"></a>      <span class="at">previous =</span> <span class="cf">function</span>(value) {</span>
+<span id="cb36-13"><a href="#cb36-13" tabindex="-1"></a>        <span class="cf">if</span> (<span class="fu">missing</span>(value)) {</span>
+<span id="cb36-14"><a href="#cb36-14" tabindex="-1"></a>          private<span class="sc">$</span>prev</span>
+<span id="cb36-15"><a href="#cb36-15" tabindex="-1"></a>        } <span class="cf">else</span> {</span>
+<span id="cb36-16"><a href="#cb36-16" tabindex="-1"></a>          <span class="fu">stop</span>(<span class="st">&quot;Can&#39;t set `$random`&quot;</span>, <span class="at">call. =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb36-17"><a href="#cb36-17" tabindex="-1"></a>        }</span>
+<span id="cb36-18"><a href="#cb36-18" tabindex="-1"></a>      }</span>
+<span id="cb36-19"><a href="#cb36-19" tabindex="-1"></a>    )</span>
+<span id="cb36-20"><a href="#cb36-20" tabindex="-1"></a>)</span>
+<span id="cb36-21"><a href="#cb36-21" tabindex="-1"></a>x <span class="ot">&lt;-</span> Rando<span class="sc">$</span><span class="fu">new</span>()</span>
+<span id="cb36-22"><a href="#cb36-22" tabindex="-1"></a>x<span class="sc">$</span>random</span>
+<span id="cb36-23"><a href="#cb36-23" tabindex="-1"></a><span class="do">## [1] 0.01797551</span></span>
+<span id="cb36-24"><a href="#cb36-24" tabindex="-1"></a>x<span class="sc">$</span>random</span>
+<span id="cb36-25"><a href="#cb36-25" tabindex="-1"></a><span class="do">## [1] 0.2578863</span></span>
+<span id="cb36-26"><a href="#cb36-26" tabindex="-1"></a>x<span class="sc">$</span>previous</span>
+<span id="cb36-27"><a href="#cb36-27" tabindex="-1"></a><span class="do">## [1] 0.2578863</span></span></code></pre></div>
 </div>
-<div id="bibliografía" class="section level2">
-<h2>Bibliografía</h2>
+<div id="bibliografía" class="section level1">
+<h1>Bibliografía</h1>
 <ul>
 <li>Wickham, H. (2019). Advanced r. chapman and hall/CRC.</li>
 <li>Chang W (2022). R6: Encapsulated Classes with Reference Semantics.
 <a href="https://r6.r-lib.org" class="uri">https://r6.r-lib.org</a>, <a href="https://github.com/r-lib/R6/" class="uri">https://github.com/r-lib/R6/</a>.</li>
 </ul>
->>>>>>> a76da9852a92590ff082431d1789c7472aa84623
-</div>
 </div>
 </div>
 
