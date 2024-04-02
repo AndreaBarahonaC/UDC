@@ -28,7 +28,7 @@ Puesto 3: Andrea
 3. 14.3 Controlling access, 14.4 Reference semantics, 14.5  Why R6
 
 
-```{r message=FALSE, warning=FALSE, include=FALSE}
+```{r collapse=TRUE, collapse=TRUE, message=FALSE, warning=FALSE, include=FALSE}
 library(sloop)
 library(R6)
 ```
@@ -39,7 +39,7 @@ Para crear las clases y sus métodos se utiliza: `R6::R6Class()`
 
 Por ejemplo:
 
-```{r}
+```{r collapse=TRUE}
 SumaAcum <- R6Class("SumaAcum",list(
   suma = 0,
   sumar = function(x=1){
@@ -57,14 +57,14 @@ En el ejemplo se muestra los argumentos que deben ir en la función `R6Class()`:
 
 Para crear un nuevo objeto se utiliza el método `$new()`:
 
-```{r}
+```{r collapse=TRUE}
 x <- SumaAcum$new()
 x
 ```
 
 Además, se accede a los campos y se llama a los métodos mediante `$`:
 
-```{r}
+```{r collapse=TRUE}
 x$sumar(2)
 x$suma
 x$sumar(4)
@@ -77,7 +77,7 @@ x$suma
 
 Debido a como se crean los métodos podemos realizar un encadenamiento, por ejemplo:
 
-```{r}
+```{r collapse=TRUE}
 y <- SumaAcum$new()
 y$sumar(5)$sumar(10)
 y$suma
@@ -88,7 +88,7 @@ Este encadenamiento está relacionados con los **pipe** y se revisará más adel
 
 El método `$initialize()` modifica el comportamiento de `$new()`, por ejemplo:
 
-```{r}
+```{r collapse=TRUE}
 Persona <- R6Class("Persona",list(
   nombre = NULL,
   edad = NA,
@@ -102,13 +102,13 @@ Persona <- R6Class("Persona",list(
 ```
 De esta forma se asegura que el nombre sea un solo string y que la edad sea un solo número. Creemos por ejemplo:
 
-```{r, error=TRUE}
+```{r collapse=TRUE,, error=TRUE}
 Andrea <- Persona$new("Andrea", 'veintidos')
 ```
 
 Por lo tanto no se crea, debido a que `'veintidos'` no es un número, y si se creará cuando lo creemos de esta forma:
 
-```{r}
+```{r collapse=TRUE}
 Andrea <- Persona$new("Andrea", 22)
 ```
 
@@ -117,7 +117,7 @@ En caso de tener requisitos más complejos se puede utilizar `$validate()`
 El método `$print()` permite modificar el comportamiento de la impresión por defecto, por ejemplo:
 
 
-```{r}
+```{r collapse=TRUE}
 Persona <- R6Class("Persona", list(
   nombre = NULL,
   edad = NA,
@@ -138,7 +138,7 @@ Andrea2
 ```
 Ahora vemos que el objeto creado anteriormente no tiene relación con este nuevo, pues cada método está vinculado a un objeto individual. Vemos que:
 
-```{r}
+```{r collapse=TRUE}
 Andrea
 Andrea2
 ```
@@ -149,7 +149,7 @@ No imprimen lo mismo.
 
 Para evitar crear nuevas clases, se puede modificar los campos o métodos de una ya existente. Se utiliza `$set()` para agregar nuevos elementos. Por ejemplo:
 
-```{r}
+```{r collapse=TRUE}
 SumAcum <- R6Class("SumAcum")
 SumAcum$set("public", "suma", 0)
 SumAcum$set("public", "sumar", function(x=1){
@@ -167,7 +167,7 @@ De esta forma se crea este objeto igual al que se creó en la primera sección. 
 
 Se puede heredar los comportamientos de una clase existente a otra utilizando `inherit`, para ello veamos el ejemplo:
 
-```{r}
+```{r collapse=TRUE}
 SumAcumMsg <- R6Class("SumAcumMsg",
   inherit = SumAcum,
   public = list(
@@ -181,7 +181,7 @@ SumAcumMsg <- R6Class("SumAcumMsg",
 
 Al agregar `$sumar()` se cambia la implementación de la clase que hereda (Super clase) y se modifica con la que se implementa en el código. Vemos que se puede acceder al método de la Super clase mediante `super$`, y cualquier método que no se modifique utilizará los métodos de la Super Clase.
 
-```{r}
+```{r collapse=TRUE}
 x2 <- SumAcumMsg$new()
 x2$sumar(5)$sumar(3)$suma
 ```
@@ -190,13 +190,13 @@ x2$sumar(5)$sumar(3)$suma
 
 Para determinar la clase y todas las que hereda podemos utilizar `class()`:
 
-```{r}
+```{r collapse=TRUE}
 class(x2)
 ```
 
 Podemos ver que métodos y campos contiene utilizando `name()`:
 
-```{r}
+```{r collapse=TRUE}
 names(Andrea2)
 ```
 
@@ -223,7 +223,7 @@ Para poner esto en práctica, escribamos los campos `$edad` y `$nombre` como arg
 
 Una vez definidos de esta forma, solo podremos establecer `$edad` y `$nombre` durante la creación del objeto, y no tendremos acceso a estos valores fuera de la clase.
 
-```{r}
+```{r collapse=TRUE}
 Persona <- R6Class("Persona", 
   public = list(
     initialize = function(nombre, edad = NA) {
@@ -244,11 +244,7 @@ Persona <- R6Class("Persona",
 
 Andrea3 <- Persona$new("Andrea")
 Andrea3
-#> Persona: 
-#>   Nombre: Andrea
-#>   Edad:  NA
 Andrea3$nombre
-#> NULL
 ```
 
 Esta distinción entre campos públicos y privados es importante cuando se crea redes complejas de clases, ya que será fundamental tener claro a los campos que otros podrán acceder y cuales no.
@@ -263,7 +259,7 @@ Los campos activos están implementados usando **enlaces activos**, que son func
 
 Por ejemplo, creemos un campo activo llamado `random` que nos devuelva un valor diferente cada que accedemos a el:
 
-```{r}
+```{r collapse=TRUE}
 Ran <- R6::R6Class("Ran", active = list(
   random = function(value) {
     if (missing(value)) {
@@ -275,15 +271,13 @@ Ran <- R6::R6Class("Ran", active = list(
 ))
 x <- Ran$new()
 x$random
-#> [1] 0.0808
 x$random
-#> [1] 0.834
 x$random
 ```
 
 Los campos activos son usandos particularmente junto con el argumento de campos privamos, ya que esto hace posible implementar componentes similares a los campos pero con controles adicionales. Por ejemplo, podemos usar esto para crear un campo solo de lectura para `edad`, y para asegurarnos que `nombre` sea un vector de un solo caracter.
 
-```{r, error=TRUE}
+```{r collapse=TRUE,, error=TRUE}
 Persona <- R6Class("Person", 
   
   private = list(
@@ -321,37 +315,30 @@ Persona <- R6Class("Person",
 
 Andrea4 <- Persona$new("Andrea", edad = 22)
 Andrea4$nombre
-#> [1] "Andrea"
 Andrea4$nombre <- 10
-#> Error in (function (value) : is.character(value) is not TRUE
 Andrea4$edad <- 20
-#> Error: `$edad` is read only
 ```
 
 # Semántica de referencia
 
 Una de las grandes diferencias entre R6 y la mayoría de los demás objetos es que tienen una semántica de referencia. La principal consecuencia de la semántica de referencia es que los objetos no se copian cuando se modifican:
 
-```{r}
+```{r collapse=TRUE}
 y1 <- SumaAcum$new() 
 y2 <- y1
 
 y1$sumar(10)
 c(y1 = y1$suma, y2 = y2$suma)
-#> y1 y2 
-#> 10 10
 ```
 
 En cambio, si queremos copiar, necesitamos expecificarlo con el método `$clone()`:
 
-```{r}
+```{r collapse=TRUE}
 y1 <- SumaAcum$new() 
 y2 <- y1$clone()
 
 y1$sumar(10)
 c(y1 = y1$suma, y2 = y2$suma)
-#> y1 y2 
-#> 10  0
 ```
 
 (`$clone()` no clona recursivamente objetos R6 anidados. Si quieres eso, necesitarás usar `$clone(deep = TRUE)`.)
@@ -370,7 +357,7 @@ Estas están descritas con mayor detalle a continuación.
 
 Generalmente, las semanticas de referencias hacen el código más difícil de entender. Tomemos el siguiente ejemplo sencillo:
 
-```{r,eval=FALSE}
+```{r collapse=TRUE,,eval=FALSE}
 x <- list(a = 1)
 y <- list(b = 2)
 
@@ -381,7 +368,7 @@ Para la gran mayoría de funciones, sabes que la línea final solo modifica `z`.
 
 Ahora, tomemos un ejemplo similar que utiliza una clase de referencia de `Lista` imaginaria:
 
-```{r, eval=FALSE}
+```{r collapse=TRUE,, eval=FALSE}
 x <- Lista$new(a = 1)
 y <- Lista$new(b = 2)
 
@@ -396,7 +383,7 @@ La semántica de referencia, permite pensar en el momento en que un objeto R6 es
 
 Por ejemplo, en el caso de objetos de tipo factor en R, cuando se modifican los niveles de un factor, se crea un nuevo objeto factor y el objeto original se deja para que lo recolecte el recolector de basura.
 
-```{r}
+```{r collapse=TRUE}
 x <- factor(c("a", "b", "c"))
 levels(x) <- c("c", "b", "a")
 ```
@@ -404,7 +391,7 @@ levels(x) <- c("c", "b", "a")
 
 Debido a que los objetos R6 no se copian al modificarlos, solo se eliminan una vez, tiene sentido pensar en el método `$finalize()` como un complemento al método `$initialize()`. Los finalizadores generalmente tienen un papel similar a `on.exit()`, limpiando cualquier recurso creado por el inicializador.
 
-```{r}
+```{r collapse=TRUE}
 ArchivoTemporal <- R6Class("ArchivoTemporal", list(
   ruta = NULL,
   initialize = function() {
@@ -426,7 +413,7 @@ Esto significa que el finalizador puede ser llamado efectivamente en cualquier p
 
 Finalmente, veamos cómo se utiliza esta clase `ArchivoTemporal` creando una instancia, luego eliminando explícitamente la instancia con `rm()`, lo que provoca que el finalizador se ejecute para limpiar el archivo temporal.
 
-```{r}
+```{r collapse=TRUE}
 at <- ArchivoTemporal$new()
 rm(at)
 ```
@@ -443,7 +430,7 @@ Por ejemplo, creemos una clase llamada `DatabaseTemporal` que tiene un campo `ar
 
 Por ejemplo, dado el siguiente código, queremos crear una base de datos temporal cada vez que llamamos a DatabaseTemporal$new(), pero el código actual siempre usa la misma ruta.
 
-```{r}
+```{r collapse=TRUE}
 DatabaseTemporal <- R6Class("DatabaseTemporal", list(
   con = NULL,
   file = ArchivoTemporal$new(),
@@ -469,7 +456,7 @@ El problema es que, cuando se usa una instancia de clase como valor predetermina
 Para solucionar este problema, se debe crear una nueva instancia de `ArchivoTemporal` dentro del método `initialize()`, de modo que cada instancia de `DatabaseTemporal` tenga su propia instancia única de `ArchivoTemporal`.
 
 
-```{r}
+```{r collapse=TRUE}
 DatabaseTemporal <- R6Class("DatabaseTemporal", list(
   con = NULL,
   archivo = NULL,
