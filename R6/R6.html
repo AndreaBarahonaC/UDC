@@ -14,27 +14,7 @@
     
     <title>R6</title>
 
-<<<<<<< HEAD
-<head>
-
-<meta charset="utf-8" />
-<meta name="generator" content="pandoc" />
-<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
-
-
-<meta name="author" content="Miguel Flores" />
-<meta name="author" content="Andrea Barahona" />
-<meta name="author" content="Fabián Encarnación" />
-<meta name="author" content="Dario Quishpe" />
-
-<meta name="date" content="2024-04-02" />
-
-<title>R6</title>
-
-<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
-=======
         <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
->>>>>>> 5c8259c4cb6152b1d3d60f382c076533ea630be9
 // be compatible with the behavior of Pandoc < 2.8).
 document.addEventListener('DOMContentLoaded', function(e) {
   var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
@@ -1277,40 +1257,7 @@ margin-left: 0 !important;
     
 </head>
 
-<<<<<<< HEAD
-<body>
-
-
-<div class="container-fluid main-container">
-
-
-<!-- setup 3col/9col grid for toc_float and main content  -->
-<div class="row">
-<div class="col-xs-12 col-sm-4 col-md-3">
-<div id="TOC" class="tocify">
-</div>
-</div>
-
-<div class="toc-content col-xs-12 col-sm-8 col-md-9">
-
-
-
-
-<div id="header">
-
-
-
-<h1 class="title toc-ignore">R6</h1>
-<h4 class="author">Miguel Flores</h4>
-<h4 class="author">Andrea Barahona</h4>
-<h4 class="author">Fabián Encarnación</h4>
-<h4 class="author">Dario Quishpe</h4>
-<h4 class="date">2024-04-02</h4>
-
-</div>
-=======
 <body class="preload">
->>>>>>> 5c8259c4cb6152b1d3d60f382c076533ea630be9
 
    	
          <!-- readthedown start -->   
@@ -1627,47 +1574,6 @@ significa que el valor se está recuperando, o de lo contrario se está
 modificando.</p>
 <p>Por ejemplo, creemos un campo activo llamado <code>random</code> que
 nos devuelva un valor diferente cada que accedemos a el:</p>
-<<<<<<< HEAD
-<<<<<<< HEAD
-<pre class="r"><code>Ran &lt;- R6::R6Class(&quot;Ran&quot;, active = list(
-  random = function(value) {
-    if (missing(value)) {
-      runif(1)  
-    } else {
-      stop(&quot;Can&#39;t set `$random`&quot;, call. = FALSE)
-    }
-  }
-))
-x &lt;- Ran$new()
-x$random</code></pre>
-<pre><code>## [1] 0.8384529</code></pre>
-<pre class="r"><code>#&gt; [1] 0.0808
-x$random</code></pre>
-<pre><code>## [1] 0.5920323</code></pre>
-<pre class="r"><code>#&gt; [1] 0.834
-x$random</code></pre>
-<pre><code>## [1] 0.3691864</code></pre>
-=======
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a>Ran <span class="ot">&lt;-</span> R6<span class="sc">::</span><span class="fu">R6Class</span>(<span class="st">&quot;Ran&quot;</span>, <span class="at">active =</span> <span class="fu">list</span>(</span>
-<span id="cb36-2"><a href="#cb36-2" tabindex="-1"></a>  <span class="at">random =</span> <span class="cf">function</span>(value) {</span>
-<span id="cb36-3"><a href="#cb36-3" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">missing</span>(value)) {</span>
-<span id="cb36-4"><a href="#cb36-4" tabindex="-1"></a>      <span class="fu">runif</span>(<span class="dv">1</span>)  </span>
-<span id="cb36-5"><a href="#cb36-5" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
-<span id="cb36-6"><a href="#cb36-6" tabindex="-1"></a>      <span class="fu">stop</span>(<span class="st">&quot;Can&#39;t set `$random`&quot;</span>, <span class="at">call. =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb36-7"><a href="#cb36-7" tabindex="-1"></a>    }</span>
-<span id="cb36-8"><a href="#cb36-8" tabindex="-1"></a>  }</span>
-<span id="cb36-9"><a href="#cb36-9" tabindex="-1"></a>))</span>
-<span id="cb36-10"><a href="#cb36-10" tabindex="-1"></a>x <span class="ot">&lt;-</span> Ran<span class="sc">$</span><span class="fu">new</span>()</span>
-<span id="cb36-11"><a href="#cb36-11" tabindex="-1"></a>x<span class="sc">$</span>random</span></code></pre></div>
-<pre><code>## [1] 0.2094254</code></pre>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" tabindex="-1"></a><span class="co">#&gt; [1] 0.0808</span></span>
-<span id="cb38-2"><a href="#cb38-2" tabindex="-1"></a>x<span class="sc">$</span>random</span></code></pre></div>
-<pre><code>## [1] 0.1314377</code></pre>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" tabindex="-1"></a><span class="co">#&gt; [1] 0.834</span></span>
-<span id="cb40-2"><a href="#cb40-2" tabindex="-1"></a>x<span class="sc">$</span>random</span></code></pre></div>
-<pre><code>## [1] 0.9461454</code></pre>
->>>>>>> 5c8259c4cb6152b1d3d60f382c076533ea630be9
-=======
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>Ran <span class="ot">&lt;-</span> R6<span class="sc">::</span><span class="fu">R6Class</span>(<span class="st">&quot;Ran&quot;</span>, <span class="at">active =</span> <span class="fu">list</span>(</span>
 <span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>  <span class="at">random =</span> <span class="cf">function</span>(value) {</span>
 <span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">missing</span>(value)) {</span>
@@ -1679,12 +1585,11 @@ x$random</code></pre>
 <span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a>))</span>
 <span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a>x <span class="ot">&lt;-</span> Ran<span class="sc">$</span><span class="fu">new</span>()</span>
 <span id="cb16-11"><a href="#cb16-11" tabindex="-1"></a>x<span class="sc">$</span>random</span>
-<span id="cb16-12"><a href="#cb16-12" tabindex="-1"></a><span class="do">## [1] 0.4295624</span></span>
+<span id="cb16-12"><a href="#cb16-12" tabindex="-1"></a><span class="do">## [1] 0.448484</span></span>
 <span id="cb16-13"><a href="#cb16-13" tabindex="-1"></a>x<span class="sc">$</span>random</span>
-<span id="cb16-14"><a href="#cb16-14" tabindex="-1"></a><span class="do">## [1] 0.4597607</span></span>
+<span id="cb16-14"><a href="#cb16-14" tabindex="-1"></a><span class="do">## [1] 0.9649184</span></span>
 <span id="cb16-15"><a href="#cb16-15" tabindex="-1"></a>x<span class="sc">$</span>random</span>
-<span id="cb16-16"><a href="#cb16-16" tabindex="-1"></a><span class="do">## [1] 0.335289</span></span></code></pre></div>
->>>>>>> d31ef0cc81bee068d420dcb421b515397cb5f909
+<span id="cb16-16"><a href="#cb16-16" tabindex="-1"></a><span class="do">## [1] 0.7910077</span></span></code></pre></div>
 <p>Los campos activos son usandos particularmente junto con el argumento
 de campos privamos, ya que esto hace posible implementar componentes
 similares a los campos pero con controles adicionales. Por ejemplo,
