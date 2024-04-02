@@ -1285,7 +1285,6 @@ margin-left: 0 !important;
       después de la creación</a></li>
       <li><a href="#herencia" id="toc-herencia">Herencia</a></li>
       <li><a href="#introspección" id="toc-introspección">Introspección</a></li>
-      <li><a href="#ejemplos-adicionales" id="toc-ejemplos-adicionales">Ejemplos adicionales</a></li>
       </ul></li>
       <li><a href="#controles-de-acceso" id="toc-controles-de-acceso">Controles de Acceso</a>
       <ul>
@@ -1299,8 +1298,11 @@ margin-left: 0 !important;
       <li><a href="#finalización" id="toc-finalización">Finalización</a></li>
       <li><a href="#campos-r6" id="toc-campos-r6">Campos R6</a></li>
       </ul></li>
-      <li><a href="#por-qué-r6" id="toc-por-qué-r6">¿ Por qué R6
-      ?</a></li>
+      <li><a href="#por-qué-r6" id="toc-por-qué-r6">¿ Por qué R6 ?</a>
+      <ul>
+      <li><a href="#ejemplos-adicionales" id="toc-ejemplos-adicionales">Ejemplos adicionales</a></li>
+      <li><a href="#bibliografía" id="toc-bibliografía">Bibliografía</a></li>
+      </ul></li>
       </ul>
     </div>
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
@@ -1514,9 +1516,6 @@ utilizará los métodos de la Super Clase.</p>
 <span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="do">## [1] &quot;.__enclos_env__&quot; &quot;edad&quot;            &quot;nombre&quot;          &quot;clone&quot;          </span></span>
 <span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="do">## [5] &quot;print&quot;           &quot;initialize&quot;</span></span></code></pre></div>
 </div>
-<div id="ejemplos-adicionales" class="section level2">
-<h2>Ejemplos adicionales</h2>
-</div>
 </div>
 <div id="controles-de-acceso" class="section level1">
 <h1>Controles de Acceso</h1>
@@ -1605,11 +1604,11 @@ nos devuelva un valor diferente cada que accedemos a el:</p>
 <span id="cb19-9"><a href="#cb19-9" tabindex="-1"></a>))</span>
 <span id="cb19-10"><a href="#cb19-10" tabindex="-1"></a>x <span class="ot">&lt;-</span> Ran<span class="sc">$</span><span class="fu">new</span>()</span>
 <span id="cb19-11"><a href="#cb19-11" tabindex="-1"></a>x<span class="sc">$</span>random</span>
-<span id="cb19-12"><a href="#cb19-12" tabindex="-1"></a><span class="do">## [1] 0.1298837</span></span>
+<span id="cb19-12"><a href="#cb19-12" tabindex="-1"></a><span class="do">## [1] 0.6469968</span></span>
 <span id="cb19-13"><a href="#cb19-13" tabindex="-1"></a>x<span class="sc">$</span>random</span>
-<span id="cb19-14"><a href="#cb19-14" tabindex="-1"></a><span class="do">## [1] 0.9754335</span></span>
+<span id="cb19-14"><a href="#cb19-14" tabindex="-1"></a><span class="do">## [1] 0.3830538</span></span>
 <span id="cb19-15"><a href="#cb19-15" tabindex="-1"></a>x<span class="sc">$</span>random</span>
-<span id="cb19-16"><a href="#cb19-16" tabindex="-1"></a><span class="do">## [1] 0.2129988</span></span></code></pre></div>
+<span id="cb19-16"><a href="#cb19-16" tabindex="-1"></a><span class="do">## [1] 0.5399097</span></span></code></pre></div>
 <p>Los campos activos son usandos particularmente junto con el argumento
 de campos privamos, ya que esto hace posible implementar componentes
 similares a los campos pero con controles adicionales. Por ejemplo,
@@ -1874,6 +1873,71 @@ de errores en RC solo se puede aprovechar si se requiere una versión más
 reciente de R. Esto puede dificultar la compatibilidad entre paquetes
 que necesitan funcionar en diferentes versiones de R.</p></li>
 </ol>
+<div id="ejemplos-adicionales" class="section level2">
+<h2>Ejemplos adicionales</h2>
+<ol style="list-style-type: decimal">
+<li>Create a bank account R6 class that stores a balance and allows you
+to deposit and withdraw money. Create a subclass that throws an error if
+you attempt to go into overdraft. Create another subclass that allows
+you to go into overdraft, but charges you a fee.</li>
+</ol>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a>CuentaBanco <span class="ot">&lt;-</span> <span class="fu">R6Class</span>(<span class="st">&quot;CuentaBanco&quot;</span>,</span>
+<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a>  <span class="at">public =</span> <span class="fu">list</span>(</span>
+<span id="cb30-3"><a href="#cb30-3" tabindex="-1"></a>    <span class="at">initialize =</span> <span class="cf">function</span>(<span class="at">x=</span><span class="dv">0</span>){</span>
+<span id="cb30-4"><a href="#cb30-4" tabindex="-1"></a>      private<span class="sc">$</span>saldo <span class="ot">&lt;-</span> x</span>
+<span id="cb30-5"><a href="#cb30-5" tabindex="-1"></a>    },</span>
+<span id="cb30-6"><a href="#cb30-6" tabindex="-1"></a>    <span class="at">depositar =</span> <span class="cf">function</span>(x){</span>
+<span id="cb30-7"><a href="#cb30-7" tabindex="-1"></a>      private<span class="sc">$</span>saldo <span class="ot">&lt;-</span> private<span class="sc">$</span>saldo <span class="sc">+</span> x</span>
+<span id="cb30-8"><a href="#cb30-8" tabindex="-1"></a>      <span class="fu">invisible</span>(self)</span>
+<span id="cb30-9"><a href="#cb30-9" tabindex="-1"></a>    },</span>
+<span id="cb30-10"><a href="#cb30-10" tabindex="-1"></a>    <span class="at">retirar =</span> <span class="cf">function</span>(x){</span>
+<span id="cb30-11"><a href="#cb30-11" tabindex="-1"></a>      private<span class="sc">$</span>saldo <span class="ot">=</span> private<span class="sc">$</span>saldo <span class="sc">-</span> x</span>
+<span id="cb30-12"><a href="#cb30-12" tabindex="-1"></a>      <span class="fu">invisible</span>(self)</span>
+<span id="cb30-13"><a href="#cb30-13" tabindex="-1"></a>    },</span>
+<span id="cb30-14"><a href="#cb30-14" tabindex="-1"></a>    <span class="at">print =</span> <span class="cf">function</span>(...){</span>
+<span id="cb30-15"><a href="#cb30-15" tabindex="-1"></a>      <span class="fu">cat</span>(<span class="st">&quot;Cuenta: </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb30-16"><a href="#cb30-16" tabindex="-1"></a>      <span class="fu">cat</span>(<span class="st">&quot;  Saldo: &quot;</span>, private<span class="sc">$</span>saldo, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb30-17"><a href="#cb30-17" tabindex="-1"></a>    }</span>
+<span id="cb30-18"><a href="#cb30-18" tabindex="-1"></a>  ),</span>
+<span id="cb30-19"><a href="#cb30-19" tabindex="-1"></a>  <span class="at">private =</span> <span class="fu">list</span>(</span>
+<span id="cb30-20"><a href="#cb30-20" tabindex="-1"></a>    <span class="at">saldo =</span> <span class="dv">0</span></span>
+<span id="cb30-21"><a href="#cb30-21" tabindex="-1"></a>  )</span>
+<span id="cb30-22"><a href="#cb30-22" tabindex="-1"></a>)</span>
+<span id="cb30-23"><a href="#cb30-23" tabindex="-1"></a></span>
+<span id="cb30-24"><a href="#cb30-24" tabindex="-1"></a>SubCuentaBanco1 <span class="ot">&lt;-</span> <span class="fu">R6Class</span>(<span class="st">&#39;SubCuentaBanco1&#39;</span>,</span>
+<span id="cb30-25"><a href="#cb30-25" tabindex="-1"></a>  <span class="at">inherit =</span> CuentaBanco,</span>
+<span id="cb30-26"><a href="#cb30-26" tabindex="-1"></a>  <span class="at">public =</span>  <span class="fu">list</span>(</span>
+<span id="cb30-27"><a href="#cb30-27" tabindex="-1"></a>    <span class="at">retirar =</span> <span class="cf">function</span>(x){</span>
+<span id="cb30-28"><a href="#cb30-28" tabindex="-1"></a>      <span class="fu">stopifnot</span>(<span class="st">&quot;Existe sobregiro&quot;</span><span class="ot">=</span> super<span class="sc">$</span><span class="fu">retirar</span>(x)<span class="sc">&lt;</span><span class="dv">0</span>)</span>
+<span id="cb30-29"><a href="#cb30-29" tabindex="-1"></a>      self<span class="sc">$</span>saldo<span class="ot">&lt;-</span>super<span class="sc">$</span><span class="fu">retirar</span>(x)<span class="sc">$</span>saldo</span>
+<span id="cb30-30"><a href="#cb30-30" tabindex="-1"></a>      }</span>
+<span id="cb30-31"><a href="#cb30-31" tabindex="-1"></a>  )                          </span>
+<span id="cb30-32"><a href="#cb30-32" tabindex="-1"></a>)</span>
+<span id="cb30-33"><a href="#cb30-33" tabindex="-1"></a></span>
+<span id="cb30-34"><a href="#cb30-34" tabindex="-1"></a>SubCuentaBanco2 <span class="ot">&lt;-</span> <span class="fu">R6Class</span>(<span class="st">&#39;SubCuentaBanco2&#39;</span>,</span>
+<span id="cb30-35"><a href="#cb30-35" tabindex="-1"></a>  <span class="at">inherit =</span> CuentaBanco,</span>
+<span id="cb30-36"><a href="#cb30-36" tabindex="-1"></a>  <span class="at">public =</span>  <span class="fu">list</span>(</span>
+<span id="cb30-37"><a href="#cb30-37" tabindex="-1"></a>    <span class="at">retirar =</span> <span class="cf">function</span>(x){</span>
+<span id="cb30-38"><a href="#cb30-38" tabindex="-1"></a>      <span class="cf">if</span>(super<span class="sc">$</span><span class="fu">retirar</span>(x)<span class="sc">&lt;</span><span class="dv">0</span>){</span>
+<span id="cb30-39"><a href="#cb30-39" tabindex="-1"></a>        self<span class="sc">$</span>saldo <span class="ot">&lt;-</span> super<span class="sc">$</span><span class="fu">retirar</span>(x) <span class="sc">-</span> <span class="dv">1</span>  </span>
+<span id="cb30-40"><a href="#cb30-40" tabindex="-1"></a>      }</span>
+<span id="cb30-41"><a href="#cb30-41" tabindex="-1"></a>      <span class="cf">else</span>{self<span class="sc">$</span>saldo <span class="ot">&lt;-</span> super<span class="sc">$</span><span class="fu">retirar</span>(x)}</span>
+<span id="cb30-42"><a href="#cb30-42" tabindex="-1"></a>      }</span>
+<span id="cb30-43"><a href="#cb30-43" tabindex="-1"></a>  )                          </span>
+<span id="cb30-44"><a href="#cb30-44" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a>Fab<span class="ot">&lt;-</span>CuentaBanco<span class="sc">$</span><span class="fu">new</span>(<span class="dv">100</span>)</span>
+<span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a>Fab<span class="sc">$</span><span class="fu">depositar</span>(<span class="dv">100</span>)</span>
+<span id="cb31-3"><a href="#cb31-3" tabindex="-1"></a>Fab<span class="sc">$</span>saldo</span></code></pre></div>
+<pre><code>## NULL</code></pre>
+</div>
+<div id="bibliografía" class="section level2">
+<h2>Bibliografía</h2>
+<ul>
+<li>Wickham, H. (2019). Advanced r. chapman and hall/CRC.</li>
+<li>Chang W (2022). R6: Encapsulated Classes with Reference Semantics.
+<a href="https://r6.r-lib.org" class="uri">https://r6.r-lib.org</a>, <a href="https://github.com/r-lib/R6/" class="uri">https://github.com/r-lib/R6/</a>.</li>
+</ul>
+</div>
 </div>
 </div>
 

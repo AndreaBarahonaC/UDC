@@ -512,7 +512,78 @@ Este texto explica por qué el autor prefiere utilizar R6 en lugar de Reference 
 
 ## Ejemplos adicionales
 
+1. Create a bank account R6 class that stores a balance and allows you to deposit and withdraw money. Create a subclass that throws an error if you attempt to go into overdraft. Create another subclass that allows you to go into overdraft, but charges you a fee.
 
+```{r}
+CuentaBanco <- R6Class("CuentaBanco",
+  private = list(
+    saldo = 0
+  ),
+  active = list(
+    .saldo = function(value){
+      if (missing(value)) {
+        private$saldo
+      } else {
+        stop("`$saldo` solo se puede leer NO modificar", call. = FALSE)
+      }
+    }
+  ),
+  public = list(
+    initialize = function(x=0){
+      private$saldo <- x
+    },
+    depositar = function(x){
+      private$saldo <- private$saldo + x
+      invisible(self)
+    },
+    retirar = function(x){
+      private$saldo = private$saldo - x
+      invisible(self)
+    },
+    print = function(...){
+      cat("Cuenta: \n")
+      cat("  Saldo: ", private$saldo, "\n", sep = "")
+    }
+  )
+)
+
+SubCuentaBanco1 <- R6Class('SubCuentaBanco1',
+  inherit = CuentaBanco,
+  public =  list(
+    retirar = function(x){
+      stopifnot("Existe sobregiro"= super$.saldo-x>=0)
+      private$saldo<-super$retirar(x)$.saldo
+      }
+  )                          
+)
+
+SubCuentaBanco2 <- R6Class('SubCuentaBanco2',
+  inherit = CuentaBanco,
+  public =  list(
+    retirar = function(x){
+      if(super$.saldo-x<0){
+        private$saldo <- super$retirar(x)$.saldo - 1  
+      }
+      else{private$saldo <- super$retirar(x)$.saldo}
+      }
+  )                          
+)
+```
+```{r}
+Fab<-CuentaBanco$new(100)
+Fab2<-SubCuentaBanco1$new(100)
+Fab2$retirar(50)
+Fab3<-SubCuentaBanco2$new(100)
+Fab3$retirar(50)
+```
+
+
+
+
+## Bibliografía
+
+* Wickham, H. (2019). Advanced r. chapman and hall/CRC.
+* Chang W (2022). R6: Encapsulated Classes with Reference Semantics. https://r6.r-lib.org, https://github.com/r-lib/R6/.
 
 
 
