@@ -6,14 +6,8 @@ author:
   - Fabián Encarnación
   - Dario Quishpe
 date: "`r Sys.Date()`"
-output: 
-  html_document:
-    theme: journal
-    toc: True
-    toc_depth: 5
-    toc_float:  
-      collapsed: true     
-      smooth_scroll: true
+output:
+  rmdformats::readthedown
 ---
 
 Link:
