@@ -1,0 +1,11 @@
+---
+title: "qualityTools"
+author: 
+  - Miguel Flores
+  - Andrea Barahona
+  - Fabián Encarnación
+  - Dario Quishpe
+date: "`r Sys.Date()`"
+output: 
+  rmdformats::readthedown
+---

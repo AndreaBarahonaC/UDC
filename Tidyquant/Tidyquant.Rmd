@@ -12,5 +12,11 @@ output:
 
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 library(tidyquant)
+tq_get_options()
+aapl_stock_prices <- tq_get("AAPL")
+mult_stocks <- tq_get(c("FB", "AMZN"),
+                      get  = "stock.prices",
+                      from = "2016-01-01",
+                      to   = "2017-01-01")
 ```
 
