@@ -1,0 +1,23 @@
+---
+title: "qualityTools"
+author: 
+  - Miguel Flores
+  - Andrea Barahona
+  - Fabián Encarnación
+  - Dario Quishpe
+date: "`r Sys.Date()`"
+output: 
+  rmdformats::readthedown
+---
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+library(qualityTools)
+```
+
+```{r}
+example(paretoChart)
+defects = LETTERS[runif(80, 1, 10)]
+paretoChart(defects)
+```
+
+
