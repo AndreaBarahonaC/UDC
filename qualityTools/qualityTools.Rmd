@@ -9,3 +9,11 @@ date: "`r Sys.Date()`"
 output: 
   rmdformats::readthedown
 ---
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+library(qualityTools)
+example(paretoChart)
+defects = LETTERS[runif(80, 1, 10)]
+paretoChart(defects)
+```
+
