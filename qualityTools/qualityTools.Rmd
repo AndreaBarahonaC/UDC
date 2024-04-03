@@ -12,8 +12,12 @@ output:
 
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 library(qualityTools)
+```
+
+```{r}
 example(paretoChart)
 defects = LETTERS[runif(80, 1, 10)]
 paretoChart(defects)
 ```
+
 
