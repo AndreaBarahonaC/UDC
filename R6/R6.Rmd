@@ -10,22 +10,14 @@ output:
   rmdformats::readthedown
 ---
 
-Link:
-https://adv-r.hadley.nz/oo.html (principal)
-https://r6.r-lib.org/articles/Introduction.html#basics (complementario)
-(Leer todo y redactar solo la parte que les toca)
-Puesto 1: Dario
-Puesto 2: Fabian
-Puesto 3: Andrea
-1. Object-oriented programming - Introduction, 12 Base Types, 14 R6, 14.1 Introduction
-2. 14.2 Classes and methods
-3. 14.3 Controlling access, 14.4 Reference semantics, 14.5  Why R6
 
 
 ```{r collapse=TRUE, collapse=TRUE, message=FALSE, warning=FALSE, include=FALSE}
 library(sloop)
 library(R6)
 ```
+<img src='graficasr6/logo.svg' align="right" width="120" />
+
 # Programación orientada a objetos (POO)
 ## Introducción
 
@@ -53,7 +45,7 @@ La principal razón para utilizar la POO es el polimorfismo. El polimorfismo sig
 
 Para ejemplificar esta idea, el polimorfismo es lo que permite a summary() producir diferentes salidas para diferentes entradas:
 
-```{r}
+```{r, collapse=TRUE}
 #Utilizamos el dataframe diamonds
 diamonds <- ggplot2::diamonds
 #carat: variable cuantitativa
@@ -67,12 +59,11 @@ Esto no implica que  summary() contenga una serie if-else para cada caso.
 Los sistemas de  POO llaman clase a lo que define que es un objeto y  los métodos describen lo que ese objeto puede hacer. La clase define los campos, los datos que posee cada instancia de esa clase. Las clases se organizan en una jerarquía de forma que si un método no existe para una clase, se utiliza el método de su padre, y se dice que el hijo hereda el comportamiento. Por ejemplo, en R, un factor ordenado hereda de un factor regular, y un modelo lineal generalizado hereda de un modelo lineal. El proceso de encontrar el método correcto dada una clase se denomina despacho del método.
 
 
-
+<center>
 ![](graficasR6/clasesherencia.jpg)
 
-
-
 ![](graficasR6/ejemploherencia.jpg)
+</center>
 
 
 ### Paradigmas
@@ -109,7 +100,7 @@ Los términos que se usan para diferenciar los dos tipos de objeto son: **objeto
 
 Para diferenciar entre un objeto base y uno OO, se utiliza is.object() o sloop::otype()
 
-```{r}
+```{r, collapse=TRUE}
 
 #EJEMPLO 1
 # UN OBJETO BASE:
@@ -130,9 +121,11 @@ sloop::otype(mtcars)
 ```
 Para diferenciarlos también se puede tomar en cuenta que solo los objetos OO tienen el atributo "**class**"
 
-```{r}
+```{r, collapse=TRUE}
 #Objeto base
 attr(1:10, "class")
+
+
 #Objeto OO
 attr(mtcars, "class")
 
@@ -141,9 +134,11 @@ attr(mtcars, "class")
 por otro lado cada objeto tiene un **base type**:
 
 
-```{r}
+```{r, collapse=TRUE}
 #Objeto Base
 typeof(1:10)
+
+
 #Objeto OO
 typeof(mtcars)
 
@@ -165,12 +160,17 @@ En total, hay 25 tipos de bases **base type** diferentes.Estos tipos son más im
 | raw (RAWSXP)      | Tipo de datos binarios          |
 
 
-```{r}
+```{r, collapse=TRUE}
 #EJEMPLOS
+
 #NULL
 typeof(NULL)
+
+
 #integer
 typeof(1L)
+
+
 #COMPLEX
 typeof(1i)
 
@@ -185,20 +185,19 @@ typeof(1i)
 | builtin (BUILTINSXP)| Funciones primitivas de R           |
 
 
-```{r}
+```{r, collapse=TRUE}
 #Ejemplos
 
-typeof(mean)
-#closure
-typeof(`[`)
-#special
-typeof(sum)    
-#builtin
+typeof(mean) #closure
+
+typeof(`[`) #special
+
+typeof(sum) #builtin
 
 ```
 **Para Entornos :**  environment (ENVSXP).
 
-```{r}
+```{r, collapse=TRUE}
 #Ejemplos
 typeof(globalenv())
 ```
@@ -212,17 +211,20 @@ typeof(globalenv())
 | pairlist (LISTSXP)    | Utilizado para los argumentos de funciones        |
 
 
-```{r}
+```{r, collapse=TRUE}
 #Ejemplos
+
 # "symbol"
 typeof(quote(a))
+
 #"language"
 typeof(quote(a + 1))
+
 #"pairlist"
 typeof(formals(mean))
 
 ```
-Los tipos restantes son esotéricos y raramente vistos en R. Son importantes principalmente para el código C :externalptr (EXTPTRSXP), weakref (WEAKREFSXP), bytecode (BCODESXP), promise (PROMSXP), ... (DOTSXP), and any (ANYSXP).
+Los tipos restantes son esotéricos y raramente vistos en R. Son importantes principalmente para el código C: externalptr (EXTPTRSXP), weakref (WEAKREFSXP), bytecode (BCODESXP), promise (PROMSXP), ... (DOTSXP), and any (ANYSXP).
 
 
 Ahora hay que tener cuidado al momento de referirnos  sobre los tipos númericos : **numeric type** , pues el tipo **numeric** en R suele utilizarce para referirse a 3 cosas ligeramentes distintas :
@@ -235,31 +237,32 @@ Ahora hay que tener cuidado al momento de referirnos  sobre los tipos númericos
   * En los sistemas S3 y S4, numeric se utiliza como una abreviatura para el tipo integer o double, y se utiliza cuando se seleccionan métodos:
 
 
-```{r}
+```{r, collapse=TRUE}
 
 #EJEMPLOS
 
 #"double" "numeric"
 sloop::s3_class(1)
+
 #"integer" "numeric"
 sloop::s3_class(1L)
 
 ```
 
   * `is.numeric()` comprueba so  los objetos se comportan como números . Por ejemplo, los factores tienen tipo "entero" pero no se comportan como números (es decir, no tiene sentido tomar la media del factor).
-```{r}
+```{r, collapse=TRUE}
 
 #Factor es tipo entero 
 typeof(factor("x"))
+
+
 # Pero NO SE COMPORTAN COMO ENTERO 
 is.numeric(factor("x"))
 ```
 
 
 
-# R6
-
-# Introducción
+# Introducción a R6
 
 El sistema POO R6  se lo puede empezar analizando mediante sus dos propiedades especiales :
 
