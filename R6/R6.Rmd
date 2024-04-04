@@ -10,13 +10,13 @@ output:
   rmdformats::readthedown
 ---
 
-
+<div><img src='graficasr6/logo.svg' width="120" align="right"></div>
 
 ```{r collapse=TRUE, collapse=TRUE, message=FALSE, warning=FALSE, include=FALSE}
 library(sloop)
 library(R6)
 ```
-<img src='graficasr6/logo.svg' align="right" width="120" />
+
 
 # Programación orientada a objetos (POO)
 ## Introducción
