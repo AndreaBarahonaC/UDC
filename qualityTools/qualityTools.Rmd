@@ -31,14 +31,16 @@ El método `facDesign` diseña un modelo de *k* factores y 2 combinaciones por f
 Supondremos un ejemplo de un proceso que tiene 5 factores A, B, C, D y E, de los cuales tres se consideran relevantes para el rendimiento del proceso (A, B y C).
 
 
-```{r}
+```{r eval=FALSE}
 set.seed(1)
 dfac <- facDesign(k = 3, centerCube = 4)
 names(dfac) <- c('A', 'B', 'C')
 lows(df) <- c(80,120,1)
-showClass("facDesign")
-
+highs(fdo) <- c(120,140,2)
+summary(dfac)
 ```
+![](graficos/dfac.png){width=260}
+
 
 
 El proceso de simula con el método `simProc`, vemos entonces:
