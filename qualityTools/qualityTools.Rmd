@@ -62,12 +62,12 @@ Para el análisis del diseño se puede usar los métodos `effectPlot`, `interact
 ```{r eval=FALSE}
 effectPlot(dfac, classic = TRUE)
 ```
-![](graficos/effectplot.png){width=260}
+![](graficos/effectplot.png){width=500}
 
 ```{r eval=FALSE}
 interactionPlot(dfac)
 ```
-![](graficos/interactionplot.png){width=260}
+![](graficos/interactionplot.png){width=500}
 
 Se puede usar el método de R `lm`, vemos a continuación:
 
@@ -75,7 +75,7 @@ Se puede usar el método de R `lm`, vemos a continuación:
 m1 <- lm(rend ~ A*B*C, data=dfac)
 summary(m1)
 ```
-![](graficos/lmdfac.png){width=260}
+![](graficos/lmdfac.png){width=600}
 
 Se puede que ver que A, B y AB son significativos. 
 
@@ -87,7 +87,7 @@ paretoPlot(dfac)
 normalPlot(dfac)
 ```
 
-![](graficos/dfac2plots.png){width=260}
+![](graficos/dfac2plots.png){width=700}
 
 La relación entre el factor A y el B se puede visualizar mediante una representación 3D mediante `wirePlot` y `contourPlot`
 
@@ -96,7 +96,10 @@ par(mfrow=c(1,2))
 wirePlot(A,B,rend,data=dfac)
 contourPlot(A,B,rend,data=dfac)
 ```
-![](graficos/dfac3d.png){width=260}
+![](graficos/dfac3d.png){width=700}
+
+## Diseños factoriales fraccionarios $2^{k-p}$
+
 
 
 
