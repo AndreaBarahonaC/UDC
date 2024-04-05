@@ -22,7 +22,7 @@ Puesto 3: Dario
 library(qualityTools)
 ```
 
-# qualityTools en MEJORAR
+# Fase 4: Mejorar
 
 ## Diseños factoriales $2^{k}$
 
@@ -34,7 +34,7 @@ Supondremos un ejemplo de un proceso que tiene 5 factores A, B, C, D y E, de los
 ```{r eval=FALSE}
 set.seed(1)
 dfac <- facDesign(k = 3, centerCube = 4)
-names(dfac) <- c('A', 'B', 'C')
+names(dfac) <- c('Facto 1', 'Factor 2', 'Factor 3')
 lows(df) <- c(80,120,1)
 highs(fdo) <- c(120,140,2)
 summary(dfac)
@@ -42,5 +42,64 @@ summary(dfac)
 ![](graficos/dfac.png){width=260}
 
 
+El proceso se simula con el método `simProc`:
 
-El proceso de simula con el método `simProc`, vemos entonces:
+```{r}
+#Primeros valores
+rend <- simProc(x1=120,x2=140,x3=2)
+#valores completos
+rend = c(simProc(120,140,1),simProc(80,140,1),simProc(120,140,2),simProc(120,120,1),simProc(90,130,1.5),simProc(90,130,1.5),simProc(80,120,2),simProc(90,130,1.5),simProc(90,130,1.5),simProc(120,120,2),simProc(80,140,2),simProc(80,120,1))
+```
+
+Se asigna el rendimiento al diseño factorial:
+
+```{r eval=FALSE}
+response(dfac) <- rend
+```
+
+Para el análisis del diseño se puede usar los métodos `effectPlot`, `interactionPlot`, `lm`, `wirePlot`, `contourPlot`.
+
+```{r eval=FALSE}
+effectPlot(dfac, classic = TRUE)
+```
+![](graficos/effectplot.png){width=260}
+
+```{r eval=FALSE}
+interactionPlot(dfac)
+```
+![](graficos/interactionplot.png){width=260}
+
+Se puede usar el método de R `lm`, vemos a continuación:
+
+```{r eval=FALSE}
+m1 <- lm(rend ~ A*B*C, data=dfac)
+summary(m1)
+```
+![](graficos/lmdfac.png){width=260}
+
+Se puede que ver que A, B y AB son significativos. 
+
+También se puede obtener dos gráficas mediante `paretoPlot` y `normalPlot` del mismo paquete qualityTools.
+
+```{r eval=FALSE}
+par(mfrow=c(1,2))
+paretoPlot(dfac)
+normalPlot(dfac)
+```
+
+![](graficos/dfac2plots.png){width=260}
+
+La relación entre el factor A y el B se puede visualizar mediante una representación 3D mediante `wirePlot` y `contourPlot`
+
+```{r eval=FALSE}
+par(mfrow=c(1,2))
+wirePlot(A,B,rend,data=dfac)
+contourPlot(A,B,rend,data=dfac)
+```
+![](graficos/dfac3d.png){width=260}
+
+
+
+
+
+
