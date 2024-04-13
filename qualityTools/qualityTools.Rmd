@@ -158,6 +158,166 @@ contourPlot(A,B,rend,data=dfac)
 
 ## Diseños factoriales fraccionarios $2^{k-p}$
 
+# Diseños de superficies de respuesta
+
+Se debe tener en cuenta que  no todas las relaciones son lineales por lo cual  para detectar y modelizar las relaciones no lineales se necesitan más de dos combinaciones por factor. Para averiguar si un diseño de superficie de respuesta es necesario (es decir, un diseño con más de dos combinaciones por factor) se puede
+comparar el valor esperado de la(s) variable(s) de respuesta con la(s) observada(s) utilizando
+puntos centrales . Cuanto mayor sea la diferencia entre los valores
+esperados, más improbable será que  esta diferencia sea el resultado de ruido aleatorio.
+Bajo el contexto del ejercicio desarrollado en la sección de diseño factorial $2^{k}$ utilizamos el método **steepAscent** de qualityTools para pasar a una mejor región del proceso. El centro de la
+nueva región de proceso está definido por 144 y 165 en valores reales la cual  es el inicio del nuevo diseño.
+
+```{r}
+#Semilla
+set.seed(1234)
+fdo2 <- facDesign(k = 2, centerCube = 3)
+names(fdo2) <- c("Factor1", "Factor2")
+lows(fdo2) <- c(13, 4, 155)
+highs(fdo2) <- c(15, 5, 175)
+  
+```
+![](graficos/dario.jpg){width=700}
+
+
+el rendimiento se obtiene utilizando el `simProc` y se asigna al nuevo diseño con la
+ayuda del método genérico de `response` del paquete **qualityTools**
+
+```{r}
+rendimiento=c(simProc(134,175),simProc(144.5,165.5),simProc(155,155),simProc(144.5,165.5),simProc(155,175),simProc(144.5,165.5),simProc(134,155))
+response(fdo2)=rendimiento
+```
+Si se observan los gráficos de residuos, se apreciará una diferencia sustancial entre los valores esperados
+y los valores observados (podría realizarse una prueba de falta de ajuste para verificarlo).
+Para llegar a un modelo que describa la relación hay que añadir más puntos
+que se denominan la **starportion** del diseño de la superficie de respuesta.
+La adición de la **starportion** se realiza fácilmente utilizando el método `starDesign` del paquete **qualityTools**
+Por defecto, el valor de alfa se elige de forma que ambos criterios, ortogonalidad y
+rotatabilidad se cumplan . Se llama al método starDesign en el objeto de diseño factorial
+factorial `fdo2`. La llamada a `rsdo` le mostrará el diseño de superficie de respuesta resultante.Debe tener una porción cúbica que conste de 4 runs, 3 puntos centrales en la porción cúbica, 4
+axiales y 3 puntos centrales en la porción de estrella (**starportion**).
+
+```{r}
+rsdo= starDesign( data =fdo2 )
+rsdo
+```
+| StandOrd | RunOrder | Block | A     | B     | rendimiento |
+|----------|----------|-------|-------|-------|------------ |
+| 3        | 3        | 1     | 1     | -1.000| 3769        |
+| 7        | 7        | 2     | 1     | 0.000 | 7953        |
+| 2        | 2        | 3     | 1     | -1.000| 7935        |
+| 6        | 6        | 4     | 1     | 0.000 | 7865        |
+| 4        | 4        | 5     | 1     | 1.000 | NA          |
+| 5        | 5        | 6     | 1     | 0.000 | NA          |
+| 1        | 1        | 7     | 1     | -1.000| NA          |
+| 8        | 8        | 8     | 2     | -1.414| NA          |
+| 9        | 9        | 9     | 2     | 1.000 | NA          |
+| 10       | 10       | 10    | 2     | 0.000 | NA          |
+| 11       | 11       | 11    | 2     | 0.000 | NA          |
+| 12       | 12       | 12    | 2     | 0.000 | NA          |
+| 13       | 13       | 13    | 2     | 0.000 | NA          |
+| 14       | 14       | 14    | 2     | 0.000 | NA          |
+
+
+
+Utilizando el método estrella del paquete **qualityTools** se pueden ensamblar fácilmente diseños
+secuencialmente. Esta estrategia secuencial ahorra recursos pues, en comparación con empezar con
+diseño de superficie de respuesta desde el principio, la parte en estrella sólo se ejecuta si es realmente necesaria. Los rendimientos del proceso siguen estando dados por el método `simProc`.
+
+```{r}
+
+yield2 <- c(
+  yield,
+  simProc(130, 165),
+  simProc(155, 165),
+  simProc(144, 155),
+  simProc(144, 179),
+  simProc(144, 165),
+  simProc(144, 165),
+  simProc(144, 165)
+)
+
+response(rsdo) <- yield2
+
+```
+
+Se ajusta un modelo cuadrático completo utilizando el método **lm**
+
+```{r}
+lm.3 <- lm(yield2 ~ A*B + I(A^2) + I(B^2), data = rsdo)
+
+```
+La superficie de respuesta puede visualizarse utilizando `wirePlot` y `contourPlot`.
+
+```{r}
+par(mfrow = c(1, 2))
+wirePlot(A, B, yield2, form = "yield2 ~ A*B + I(A^2) + I(B^2)", data = rsdo, theta = -70)
+contourPlot(A, B, yield2, form = "yield2 ~ A*B + I(A^2) + I(B^2)", data = rsdo)
+
+```
+
+![](graficos/dario1.jpg){width=700}
+![](graficos/dario2.jpg){width=700}
+
+Se compara los resultados de los diseños factorial y de superficie de respuesta con el proceso simulado.
+
+
+Se pueden crear diseños de superficie de respuesta utilizando el método `rsmDesign`. Por ejemplo un diseño con alfa = 1.633, 0 puntos centrales en la parte del cubo y 6 puntos centrales en la parte de la estrella con:
+
+```{r}
+fdo <- rsmDesign(k = 3, alpha = 1.633, cc = 0, cs = 6)
+
+```
+y el diseño se puede poner en orden estándar utilizando el método `randomize` con el argumento `so=TRUE` (es decir, orden estándar). `cc` significa centerCube y `cs` para centerStar.
+
+
+```{r}
+
+fdo <- randomizeDesign(fdo, so = TRUE)
+
+```
+
+
+Los diseños de superficie de respuesta también pueden elegirse a partir de una tabla utilizando el método `rsmChoose`.
+
+```{r}
+rsdo <- rsmDesign()
+```
+
+#Montaje secuencial de diseños de superficie de respuesta
+
+El ensamblaje secuencial es una característica  importante de los diseños de superficie de respuesta. En función de de las características del diseño factorial (fraccional) puede aumentarse una porción de estrella utilizando el método `starDesign`. Una porción en estrella consta de recorridos axiales
+y puntos centrales opcionales (`cs`) en la parte axial a diferencia de los puntos centrales (`cc`) en la parteparte cúbica.
+
+```{r}
+fdo3 <- facDesign(k = 6)
+rsdo <- starDesign(alpha = "orthogonal", data = fdo3)
+```
+
+En caso de que no se entregue ningún diseño factorial (fraccional)  al método `starDesign`, se devuelve una lista con `data.frames` que pueden asignarse al diseño factorial (fraccional) existente utilizando los métodos `star`, `centerStar` y `centerCube`.
+
+
+![](graficos/dario3.jpg){width=700}
+
+# Aleatorización
+
+La aleatorización se consigue utilizando el método `randomize`.
+Es necesario suministrar una semilla aleatoria (random.seed) que es útil para tener el mismo orden de ejecución en cualquier máquina.
+
+```{r}
+randomize(fdo, random.seed = 123)
+
+```
+El método `randomize`  se puede utilizar para obtener un diseño en orden estándar con la ayuda del argumento `so`.
+
+```{r}
+randomizeDesign(fdo, so = TRUE)
+
+```
+#Bloqueo
+
+El bloqueo es otra característica relevante y puede conseguirse mediante el método de `blocking`. Bloquear un diseño a posteriori no siempre tiene éxito.
+Sin embargo, no es problemático durante el montaje secuencial.
+
 
 
 # Bibliografía 
