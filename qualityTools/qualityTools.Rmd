@@ -158,6 +158,7 @@ contourPlot(A,B,rend,data=dfac)
 
 ## Diseños factoriales fraccionarios $2^{k-p}$
 
+
 # Diseños de superficies de respuesta
 
 Se debe tener en cuenta que  no todas las relaciones son lineales por lo cual  para detectar y modelizar las relaciones no lineales se necesitan más de dos combinaciones por factor. Para averiguar si un diseño de superficie de respuesta es necesario (es decir, un diseño con más de dos combinaciones por factor) se puede
