@@ -66,9 +66,7 @@ Además de este uso, los diagramas de Pareto también se utilizan para visualiza
 
 La recopilación de datos implica el uso de sistemas de medición a menudo denominados calibres. Para hacer una declaración sobre la calidad, el sistema de medición utilizado debe ser validado, y por lo tanto la variación para repetidas mediciones de la misma unidad debe ser tolerable, y por supuesto, debe depender del número de categorías distintivas qque necesita para poder identificar y caracterizar el producto. 
 
-Esta cantidad tolerable de variación para un sistema de medición se relaciona directamente al rango de tolerancia de las características de un producto. 
-
-La capacidad de un sistema de mediciones es crucial para evitar cualquier conclusión basada en datosy está directamente relacionada con los costos que implican los errores tipo I y tipo II.
+Esta cantidad tolerable de variación para un sistema de medición se relaciona directamente al rango de tolerancia de las características de un producto.  La capacidad de un sistema de mediciones es crucial para cualquier conclusión basada en datos y está directamente relacionada con los costos que implican los errores tipo I y tipo II.
 
 ## Capacidad de calibre - MSA Tipo I
 
