@@ -158,6 +158,8 @@ contourPlot(A,B,rend,data=dfac)
 
 ## Diseños factoriales fraccionarios $2^{k-p}$
 
+Este diseño tiene $k$ factores y se prueba en $2k-p$ ejecuciones, por ejemplo para un diseño 25-1 se prueban cinco factores en 24 ejecuciones. 
+
 
 # Diseños de superficies de respuesta
 
