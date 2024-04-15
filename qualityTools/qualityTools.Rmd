@@ -88,7 +88,7 @@ Supondremos un ejemplo de un proceso que tiene 5 factores A, B, C, D y E, de los
 
 
 ```{r eval=FALSE}
-set.seed(1)
+set.seed(1234)
 dfac <- facDesign(k = 3, centerCube = 4)
 names(dfac) <- c('Facto 1', 'Factor 2', 'Factor 3')
 lows(df) <- c(80,120,1)
@@ -156,12 +156,62 @@ contourPlot(A,B,rend,data=dfac)
 
 ## Diseños factoriales fraccionarios $2^{k-p}$
 
-Este diseño tiene $k$ factores y se prueba en $2k-p$ ejecuciones, por ejemplo para un diseño 25-1 se prueban cinco factores en 24 ejecuciones. 
+Este diseño tiene $k$ factores y se prueba en $2k-p$ ejecuciones, por ejemplo para un diseño $2^{5-1}$ se prueban cinco factores en 24 ejecuciones. 
 
-Para realizar esto se utiliza el método `fracDesign` 
+Para realizar esto se utiliza el método `fracDesign`, vamos a realizar el ejemplo de un diseño $2^{3-1}$, para ello se debe utilizar el argumento `gen='C=AB'`, lo cual quiere decir que el efecto de C es equivalente al de AB:
+
+```{r eval=FALSE}
+dfacfrac <- fracDesign(k=3,gen='C=AB',centerCube = 4)
+```
+
+Se puede obtener información específica del diseño mediante `summary`:
+
+```{r eval=FALSE}
+summary(dfacfrac)
+```
+![](graficos/fracdfac.png){width=270}
+
+Vemos que en el modelo se muestra que `I=ABC` y por lo tanto se cumplen las siguientes reglas:
+
+\begin{align}
+I\times A&=A\\
+A\times A&=I\\
+A\times B&=B\times A
+\end{align}
+
+Para encontrar todos los efectos equivalentes se puede usar los comandos:
+
+```{r eval=FALSE}
+aliasTable(dfacfrac)
+```
+![](graficos/aliastabledf.png){width=130}
+
+```{r eval=FALSE}
+confounds(dfacfrac)
+```
+![](graficos/confoundsdf.png){width=270}
+
+Estos diseños se pueden generar asignando los generadores apropiados, el cual se puede elegir entre tabla predefinidas usando el método `fracChoose` y seleccionando el diseño deseado:
+
+```{r eval=FALSE}
+fracChoose()
+```
+![](graficos/dfchoose.png){width=700}
+
+## Diseños replicados y puntos centrales
+
+Se puede crear un diseño replicado con puntos centrales adicionales usando `replicates` y `centerCube`:
+
+```{r eval=FALSE}
+dfac1 <- facDesign(k = 3, centerCube = 2, replicates = 2)
+```
+## Respuestas múltiples
 
 
-# Diseños de superficies de respuesta
+
+## Pasar a un entorno de proceso con un mayor rendimiento esperado
+
+## Diseños de superficies de respuesta
 
 Se debe tener en cuenta que  no todas las relaciones son lineales por lo cual  para detectar y modelizar las relaciones no lineales se necesitan más de dos combinaciones por factor. Para averiguar si un diseño de superficie de respuesta es necesario (es decir, un diseño con más de dos combinaciones por factor) se puede
 comparar el valor esperado de la(s) variable(s) de respuesta con la(s) observada(s) utilizando
@@ -286,7 +336,7 @@ Los diseños de superficie de respuesta también pueden elegirse a partir de una
 rsdo <- rsmDesign()
 ```
 
-#Montaje secuencial de diseños de superficie de respuesta
+### Montaje secuencial de diseños de superficie de respuesta
 
 El ensamblaje secuencial es una característica  importante de los diseños de superficie de respuesta. En función de de las características del diseño factorial (fraccional) puede aumentarse una porción de estrella utilizando el método `starDesign`. Una porción en estrella consta de recorridos axiales
 y puntos centrales opcionales (`cs`) en la parte axial a diferencia de los puntos centrales (`cc`) en la parteparte cúbica.
@@ -301,7 +351,7 @@ En caso de que no se entregue ningún diseño factorial (fraccional)  al método
 
 ![](graficos/dario3.jpg){width=700}
 
-# Aleatorización
+### Aleatorización
 
 La aleatorización se consigue utilizando el método `randomize`.
 Es necesario suministrar una semilla aleatoria (random.seed) que es útil para tener el mismo orden de ejecución en cualquier máquina.
@@ -316,7 +366,7 @@ El método `randomize`  se puede utilizar para obtener un diseño en orden está
 randomizeDesign(fdo, so = TRUE)
 
 ```
-#Bloqueo
+### Bloqueo
 
 El bloqueo es otra característica relevante y puede conseguirse mediante el método de `blocking`. Bloquear un diseño a posteriori no siempre tiene éxito.
 Sin embargo, no es problemático durante el montaje secuencial.
