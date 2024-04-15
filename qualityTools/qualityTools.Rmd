@@ -70,7 +70,279 @@ Esta cantidad tolerable de variación para un sistema de medición se relaciona 
 
 ## Capacidad de calibre - MSA Tipo I
 
+Supongamos que un ingeniero quiere comprobar la capacidad de un dispositivo de medición óptico. Una unidad con característica conocida ($x_m = 10.033mm$) se mide repetidamente $n=25$ veces. De los valores de medición se obtiene la media $\bar{x_g}$ y la desviación estándar $s_g$.
+
+Basicamente el cálculo de un índice de capacidad comprende dos pasos: primero se calcula una fracción del ancho de toletancia (es decir, $USL - LSL$), la fracción típicamente se relaciona a $0.2$. En un segundo paso esta fracción se relaciona con una medida de la dispersión del proceso (es decir, el rango en el que el $95,5\%$, o el $99.73\%$ de las características de un proceso son esperados).
+
+Para valores de medición distribuidos normalmentem esto se relaciona con $k = 2 \sigma_g$ y $k = 3 \sigma_g$ calculados a partir de llos valores de medición; y para datos que no están distribuidos normalmente, se pueden tomar los cuantiles correspondientes. Si no hay sesgo, este cálculo representa el índice de capacidad $c_g$ y refleja la verdadera capacidad del dispositivo de medición.
+
+$$
+\begin{aligned}
+c_g &= \frac{0.2 \cdot (USL - LSL)}{6 \cdot s_g} \\
+    &= \frac{0.2 \cdot (USL - LSL)}{X_{0.99865} - X_{0.00135}}  
+\end{aligned}
+$$
+
+Sin embargo, si hay un sesgom se tiene en cuenta al restarlo del numerador, en este caso, $c_g$ refleja solo la capacidad potencial (es decir, la capacidad si se corrige el sesgo), y $c_{gk}$  es un estimador de la capacidad real. El sesgo se calcula como la diferencia entre la característica conocida $x_m$ y la media de los valoes de medición $x_g$.
+
+$$
+c_{gk} = \frac{0.1 \cdot (USL - LSL) - |x_m - x_g|}{3 \cdot s_g}
+$$
+
+Determinar si el sesgo se debe al azar o no, se puede hacer con la ayuda de una prueba t que tiene la forma general siguiente:
+
+$$
+t = \frac{diferencia de medias}{error estandar de la diferencia} = \frac{Dif}{s_{Dif}/\sqrt{n}}
+$$
+
+Además del sesgo y la desviación estándar, es importante comprobar el diagrama de ejecución de los valores de medición. Usando el paquete QualityTools, todo esto se logra fácilmente usando el método `cg`, su resultado se muestra a continuación:
+
+```{r, error=TRUE, message=FALSE, warning=FALSE, fig.align='center', fig.height=6.5, fig.width=8}
+library(qualityTools)
+
+x <- c ( 9.991, 10.013, 10.001, 10.007, 10.010, 10.013, 10.008, 10.017, 10.005, 10.005, 10.002,
+        10.017, 10.005, 10.002, 9.996, 10.011, 10.009 , 10.006, 10.008, 10.003, 10.002, 10.006, 
+        10.010, 9.992, 10.013)
+
+cg(x, target = 10.003, tolerance = c(9.903, 10.103))
+```
+
 ## Repetibilidad y reproducibidad del calibre - MSA Tipo II
+
+Un procedimineto común aplicado en la industria es realizar un análisis *Gage R&R* para evaluar la repetibilidad y reproducibilidad de un sistema de medición ('R&R' significa repetibilidad y reproducibilidad).
+
+La repetibilidad se refiere a la precisión de un sistema de medición, es decir, a la desviación estándar de mediciones posteriores de la misma unidad. miestras que reproducibilidad es la parte de la varianza general que modela el efecto de diferentes, por ejemplo, operadores que realizan mediciones en la misma unidad y  una posible interacción entre diferentes operadores y piezas medidas dentro de este "Gage R&R", el modelo general está dado por:
+
+$$
+\sigma^2_{total} = \sigma^2_{Piezas} + \sigma^2_{Operadores}  + \sigma^2_{Piezas \times Operador} + \sigma^2_{Error} 
+$$
+
+Donde:
+
+* $\sigma^2_{Piezas}$: modela la variación entre diferentes unidades de un mismo proceso, por lo tanto, $\sigma$ es una estimación de la variabilidad inherente del proceso.
+
+* $\sigma^2_{Operador}  + \sigma^2_{Piezas \times Operador} $: modela la reproducibilidad.
+
+* $\sigma^2_{Error}$: modela la repetibilidad.
+
+Ahora, supongamos que 3 operadores elegidos al azar midieron 10 unidades elegidas al azar. Cada operador midió cada unidad dos veces en un orden elegido al azar y las unidades no puedes distingirse entre si.
+
+El *Diseño R&R del Calibre* correspondiente se puede crear utilizando el método `gageRRDesign` del paquete QualityTools, y las medidas se asignan a este diseño utilizando el método de respuesta, dados por `gageRR` y `plot`.
+
+```{r, include=FALSE}
+# Funcion gageRR Corregida
+
+gageRR_abc <- function (gdo, method = "crossed", sigma = 6, alpha = 0.25, DM = NULL, 
+          HM = NULL, tolerance = NULL, dig = 3, ...) 
+{
+  if (method %in% c("crossed", "nested")) 
+    method = method
+  else method = gdo@method
+  yName = names(gdo)[5]
+  aName = names(gdo)[3]
+  bName = names(gdo)[4]
+  if (method == "crossed") 
+    abName = paste(aName, ":", bName, sep = "")
+  if (method == "nested") 
+    abName = paste(bName, "(", aName, ")", sep = "")
+  bTobName = paste(bName, "to", bName, sep = " ")
+  a = gdo@X[, aName]
+  b = gdo@X[, bName]
+  y = gdo@X[, yName]
+  nestedFormula = as.formula(paste(yName, "~", aName, "/", 
+                                   bName))
+  crossedFormula = as.formula(paste(yName, "~", aName, "*", 
+                                    bName))
+  reducedFormula = as.formula(paste(yName, "~", aName, "+", 
+                                    bName))
+  if (!is.null(tolerance)) 
+    tolerance(gdo) = tolerance
+  if (anyNA(y) || !is.numeric(y)) 
+    stop("Measurements need to be numeric")
+  if (method == "nested") {
+    numA <- nlevels(a[, drop = T])
+    numB <- nlevels(b[, drop = T])
+    numMPP <- length(y)/((numB) * numA)
+    gdo@numO = numA
+    gdo@numP = numB
+    gdo@numM = numMPP
+    fit = aov(nestedFormula, data = gdo)
+    meanSq <- anova(fit)[, 3]
+    gdo@ANOVA = fit
+    gdo@method = "nested"
+    MSa = meanSq[1]
+    MSab = meanSq[2]
+    MSe = meanSq[3]
+    Cerror = MSe
+    Cb = (MSab - MSe)/numMPP
+    Ca = (MSa - MSab)/(numB * numMPP)
+    if (Ca <= 0) 
+      Ca = 0
+    if (Cb <= 0) 
+      Cb = 0
+    Cab = 0
+    totalRR = Ca + Cab + Cerror
+    repeatability = Cerror
+    reproducibility = Ca
+    bTob = Cb
+    totalVar = Cb + Ca + Cab + Cerror
+    estimates = list(Cb = Cb, Ca = Ca, Cab = Cab, Cerror = Cerror)
+    varcomp = list(totalRR = totalRR, repeatability = repeatability, 
+                   reproducibility = reproducibility, bTob = bTob, totalVar = totalVar)
+    gdo@Estimates = estimates
+    gdo@Varcomp = varcomp
+  }
+  if (method == "crossed") {
+    numA <- nlevels(a[, drop = T])
+    numB <- nlevels(b[, drop = T])
+    numMPP <- length(a)/(numA * numB)
+    gdo@numO = numA
+    gdo@numP = numB
+    gdo@numM = numMPP
+    fit = aov(crossedFormula, data = gdo)
+    model <- anova(fit)
+    gdo@ANOVA = fit
+    gdo@method = "crossed"
+    MSb = MSa = MSab = MSe = 0
+    if (bName %in% row.names(model)) 
+      MSb = model[bName, "Mean Sq"]
+    else warning(paste("missing factor", bName, "in model"))
+    if (aName %in% row.names(model)) 
+      MSa = model[aName, "Mean Sq"]
+    else warning(paste("missing factor", aName, "in model"))
+    if (abName %in% row.names(model)) 
+      MSab = model[abName, "Mean Sq"]
+    else warning(paste("missing interaction", abName, "in model"))
+    if ("Residuals" %in% row.names(model)) 
+      MSe = model["Residuals", "Mean Sq"]
+    else warning("missing Residuals in model")
+    Cb = Ca = Cab = Cerror = 0
+    Cb = (MSb - MSab)/(numA * numMPP)
+    Ca = (MSa - MSab)/(numB * numMPP)
+    Cab = (MSab - MSe)/(numMPP)
+    Cerror = (MSe)
+    gdo@RedANOVA = gdo@ANOVA
+    if ((Cab < 0) || (model[abName, "Pr(>F)"] >= alpha)) {
+      redFit <- aov(reducedFormula, data = gdo)
+      model <- anova(redFit)
+      MSb = MSa = MSab = MSe = 0
+      if (bName %in% row.names(model)) 
+        MSb = model[bName, "Mean Sq"]
+      else warning(paste("missing factor", bName, "in model"))
+      if (aName %in% row.names(model)) 
+        MSa = model[aName, "Mean Sq"]
+      else warning(paste("missing factor", aName, "in model"))
+      if ("Residuals" %in% row.names(model)) 
+        MSe = model["Residuals", "Mean Sq"]
+      else warning("missing Residuals in model")
+      Cb = Ca = Cab = Cerror = 0
+      Cb = (MSb - MSe)/(numA * numMPP)
+      Ca = (MSa - MSe)/(numB * numMPP)
+      Cab = 0
+      Cerror = (MSe)
+      gdo@RedANOVA = redFit
+    }
+    gdo@method = "crossed"
+    Ca = max(0, Ca)
+    Cb = max(0, Cb)
+    Cab = max(0, Cab)
+    totalRR = Ca + Cab + Cerror
+    repeatability = Cerror
+    reproducibility = Ca + Cab
+    bTob = max(0, Cb)
+    totalVar = Cb + Ca + Cab + Cerror
+    estimates = list(Cb = Cb, Ca = Ca, Cab = Cab, Cerror = Cerror)
+    varcomp = list(totalRR = totalRR, repeatability = repeatability, 
+                   reproducibility = reproducibility, a = Ca, a_b = Cab, 
+                   bTob = bTob, totalVar = totalVar)
+    gdo@Estimates = estimates
+    gdo@Varcomp = varcomp
+  }
+  cat("\n")
+  cat(paste("AnOVa Table - ", gdo@method, "Design\n"))
+  print(summary(gdo@ANOVA))
+  cat("\n")
+  cat("----------\n")
+  if (!identical(gdo@RedANOVA, gdo@ANOVA) && gdo@method == 
+      "crossed") {
+    cat(paste("AnOVa Table Without Interaction - ", gdo@method, 
+              "Design\n"))
+    print(summary(gdo@RedANOVA))
+    cat("\n")
+    cat("----------\n")
+  }
+  Source = names(gdo@Varcomp)
+  Source[Source == "repeatability"] = " repeatability"
+  Source[Source == "reproducibility"] = " reproducibility"
+  Source[Source == "a_b"] = paste("  ", abName)
+  Source[Source == "a"] = paste("  ", aName)
+  Source[Source == "bTob"] = bTobName
+  VarComp = round(as.numeric(gdo@Varcomp[c(1:length(gdo@Varcomp))]), 
+                  3)
+  Contribution = round(as.numeric(gdo@Varcomp[c(1:length(gdo@Varcomp))])/as.numeric(gdo@Varcomp[length(gdo@Varcomp)]), 
+                       3)
+  VarComp = t(data.frame(gdo@Varcomp))
+  VarCompContrib = VarComp/gdo@Varcomp$totalVar
+  Stdev = sqrt(VarComp)
+  StudyVar = Stdev * gdo@Sigma
+  StudyVarContrib = StudyVar/StudyVar["totalVar", ]
+  SNR = 1
+  ptRatio = NULL
+  temp = NULL
+  if ((length(gdo@GageTolerance) > 0) && (gdo@GageTolerance > 
+                                          0)) {
+    ptRatio = StudyVar/gdo@GageTolerance
+    temp = data.frame(VarComp, VarCompContrib, Stdev, StudyVar, 
+                      StudyVarContrib, ptRatio)
+    names(temp)[6] = c("P/T Ratio")
+    row.names(temp) = c(Source)
+  }
+  else {
+    temp = data.frame(VarComp, VarCompContrib, Stdev, StudyVar, 
+                      StudyVarContrib)
+    row.names(temp) = c(Source)
+  }
+  cat("\n")
+  cat("Gage R&R\n")
+  tempout = temp
+  print(format(tempout, digits = dig))
+  cat("\n")
+  cat("---\n")
+  cat(" * Contrib equals Contribution in %\n")
+  SNRTemp = sqrt(2) * (temp[bTobName, "Stdev"]/temp["totalRR", 
+                                                    "Stdev"])
+  if (SNRTemp > 1) 
+    SNR = SNRTemp
+  cat(paste(" **Number of Distinct Categories (truncated signal-to-noise-ratio) =", 
+            floor(SNR), "\n"))
+  cat("\n")
+  invisible(gdo)
+}
+
+
+```
+
+
+```{r}
+library(qualityTools)
+
+# Crear un diseño R&R de Calibre
+dis <- gageRRDesign(Operators = 3, Parts = 10, Measurements = 2, randomize = FALSE)
+
+# Establecemos las respuestas de medición
+response(dis) <-  c(23, 22, 22, 22, 22, 25, 23, 22, 23, 22, 20, 22, 22, 22, 24, 25, 27, 28, 23, 24, 23, 24, 24, 22, 22, 22, 24, 23, 22, 24, 20, 20, 25, 24, 22, 24, 21, 20, 21, 22, 21, 22, 21, 21, 24, 27,  25, 27, 23, 22, 25, 23, 23, 22, 22, 23, 25, 21, 24, 23)
+
+# Realizamos Gage R&R
+gdo <- gageRR_abc(dis)
+```
+
+
+```{r, fig.align='center', fig.width=7, fig.height=8}
+# Visualización de Gage R&R
+plot(gdo)
+```
+
+El diagrama de barras ofrece una representación visual de los componentes de la varianza. `totalRR` representa la repetibilidad y reproducibilidad totales. El $48\%$ de la variación se debe al $35\%$ de *repitibilidad*, es decir, variación del propio calibre, y al $13\%$ de reproducibilidad, es decir, efecto del operador y la interación entre el operador y la pieza.
 
 ### Relación con la terminología de los sistemas de medición
 
