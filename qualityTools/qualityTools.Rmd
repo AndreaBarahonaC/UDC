@@ -469,6 +469,13 @@ Para el análisis del diseño se puede usar los métodos `effectPlot`, `interact
 ```{r eval=FALSE}
 effectPlot(dfac, classic = TRUE)
 ```
+<div style="text-align:center">
+  <img src="graficos/effectplot.png" width="500">
+</div>
+
+
+diferencia 
+
 ![](graficos/effectplot.png){width=500}
 
 ```{r eval=FALSE}
