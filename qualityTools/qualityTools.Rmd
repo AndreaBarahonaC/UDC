@@ -479,9 +479,63 @@ dfac1 <- facDesign(k = 3, centerCube = 2, replicates = 2)
 ```
 ## Respuestas múltiples
 
+Se puede agregar vectores de respuesta al diseño con el método `response`. Por ejemplo, se crea una segunda respuesta `y2` que se llena con números aleatorios y se agrega al objeto creado.
 
+```{r eval=FALSE}
+set.seed(1234)
+y2 <- rnorm(12,mean=120)
+response(dfac) <- data.frame(yield,y2)
+```
+
+Se puede visualizar en 3D con los métodos `wirePlot` y `contourPlot` especificando con `form`:
+
+```{r eval=FALSE}
+par(mforw = c(1,2))
+wirePlot(A, B, yield, data = dfac, form = "yield~A+B+C+A*B")
+contourPlot(A, B, y2, data = fdo, form = "y2~A+B+C+A*B")
+```
+![](graficos/multidfac1.png){width=700}
+
+Se puede crear los gráficos con el tercer factor C en -1 y $C=1$, de la forma:
+
+```{r eval=FALSE}
+par(mfrow = c(1,2))
+wirePlot(A, B, y2, data = dfrac, factors = list(C=-1), form = "y2~A*B*C")
+wirePlot(A, B, y2, data = dfrac, factors = list(C=1), form = "y2∼A∗B∗C")
+```
+
+![](graficos/multidfac2.png){width=700}
+
+Si no se proporciona ninguna fórmula explícitamente, los métodos predeterminados son el ajuste completo o el que está almacenado en el objeto de diseño factorial. El almacenamiento del ajusto se puede realizar con el método `fits` y se utiliza cuando se trabaja con más de una respuesta. Además, se utiliza `lm` para analizar el diseño factorial fraccionario.
+
+```{r eval=FALSE}
+fits(fdo) <- lm(yield∼A+B, data = fdo)
+fits(fdo) <- lm(y2∼A∗B∗C, data = fdo)
+fits(fdo)
+```
+![](graficos/multidfaclm.png){width=500}
 
 ## Pasar a un entorno de proceso con un mayor rendimiento esperado
+
+Como el proceso puede ser modelado por una relación lineal se puede determinar un alto rendimiento fácilmente, esto se puede calcular gráficamente o utilizando el método `steepAscent`:
+
+```{r eval=FALSE}
+sao <- steepAscent(factors = c("A", "B"), response = "yield", data = dfac, steps = 20)
+```
+![](graficos/renddfac1.png){width=300}
+
+```{r eval=FALSE}
+sao
+```
+![](graficos/renddfac2.png){width=300}
+
+Como se estableció los valores reales anteriormente con los métodos `highs` y `lows` son mostrados como valores reales. Los valores de respuesta de `sao` pueden ser establecidos con el método `response` y graficados con `plot`
+
+```{r eval=FALSE}
+predicted <- simProc(sao[,5], sao[,6])
+responde(sao) <- predicted
+plot(sao, type='b', col=2)
+```
 
 ## Diseños de superficies de respuesta
 
