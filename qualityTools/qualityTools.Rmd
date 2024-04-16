@@ -474,10 +474,6 @@ effectPlot(dfac, classic = TRUE)
 </div>
 
 
-diferencia 
-
-![](graficos/effectplot.png){width=500}
-
 ```{r eval=FALSE}
 interactionPlot(dfac)
 ```
