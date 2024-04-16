@@ -420,7 +420,7 @@ pcr(weib, "weibull", usl = 20)
 
 Junto con la representación gráfica se presenta un Test de Anderson Darling y se devuelve la distribución 
 
-![](graficos/AndersonDarling.png){width=260}
+![](graficos/AndersonDarling.png)
 
 Los gráficos QQ-plot pueden obtenerse a partir del paquete QualityTools, de la siguiente forma:
 
