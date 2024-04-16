@@ -344,11 +344,98 @@ plot(gdo)
 
 El diagrama de barras ofrece una representación visual de los componentes de la varianza. `totalRR` representa la repetibilidad y reproducibilidad totales. El $48\%$ de la variación se debe al $35\%$ de *repitibilidad*, es decir, variación del propio calibre, y al $13\%$ de reproducibilidad, es decir, efecto del operador y la interación entre el operador y la pieza.
 
-### Relación con la terminología de los sistemas de medición
+Se puede ver en la tabla Anova que no existe interacción entre piezas y operadores. El $52\%$ de la variación (columna **VarCompContrib**) se debe a diferencias entre las partes tomadas del proceso (variación inherente), que se puede ver en el gráfico **Measurement by Part**. La variación de las mediciones tomadas por un operador es aproximadamente igual para los tres operadores (**Measurement by Operator**), aunque el operador C parece producir valores que la mayoría de las veces son mayores que los valores de los otros operadores (**Interaction Operator: Part**).
+
+Además de esta interpretación de los resultados, en la industria se utilizan valores críticos para **totalRR**, también denominado en la industria como "GRR". Sin embargo, un sistema de medición nunca debe juzgarse únicamente por sus valores críticos.
+
+| Contribución total RR | Capacidad      |
+|-----------------------|----------------|
+|        ≤ 0.1          | Adecuada       |
+|     < 0.1 y < 0.3     | Adecuada con limitaciones dependiendo de las circunstancias |
+|        ≥ 0.3          | No adecuada    |
+
+* **Verificación de interacción: ** El gráfico de interacción proporciona una verificación visual de posibles interacciones entre el Operador y la Pieza. Para cada operador se muestra el valor medio de la
+medición en función del número de pieza. Las líneas cruzadas indican que los operadores están asignando lecturas diferentes a idénticas dependiendo de la combinación de Operador y Pieza. 
+Diferentes lecturas significan, en el caso de una interacción entre Operador y Pieza, que en promedio a veces se asignan valores más pequeños o más grandes dependiendo de la combinación de Operador y Pieza. En este caso, las líneas prácticamente no se cruzan, pero el operador C parece asignar sistemáticamente lecturas mayores a las piezas que sus colegas.
+
+* **Operadores:** Para comprobar si hay un efecto dependiente del operador, las mediciones se trazan agrupadas por operadores en forma de diagramas de caja. Los diagramas de caja que difieren en tamaño o ubicación pueden indicar, por ejemplo, posibles procedimientos diferentes dentro del proceso de medición, que luego conducen a una diferencia sistemática en las lecturas. En nuestro ejemplo se podría discutir un posible efecto para el operador C que también está respaldado por el gráfico de interacción.
+
+* **Variación inherente del proceso:** Dentro de este gráfico las mediciones están agrupadas por operador. Gracias a las mediciones repetidas realizadas por diferentes operadores por pieza, se obtiene
+una idea del proceso. Una línea que conecta la media de las mediciones de cada parte proporciona una idea de la variación inherente del proceso. Cada pieza se mide el número de operadores multiplicado por el número de mediciones por pieza.
+
+* **Componentes de Variación:** Para comprender el resultado de un estudio de Gage R&R se debe hacer referencia a la fórmula presentada al inicio de esta sección. El componente de varianza `totalRR` (columna `VarComp`) representa la repetibilidad y reproducibilidad total. Dado que las varianzas simplemente se suman, se tiene que $1.664$ es la suma de $1.209$ (repetibilidad dada por $\sigma^2_{Error}$) y $0.455$ (reproducibilidad) que es la suma de Operador ($\sigma^2_{Operador}$) y Operador:Parte ($\sigma^2_{Partes \times Operador}$).
+
+Como no hay interacción, la reproducibilidad asciende a $0.455$. *Parte a Parte* asciende a $1.781$. Junto con el total de repetibilidad y reproducibilidad, esto da $\sigma^2_{Total} = 3.446$.
+
 
 # Fase 3: Analizar
 
-## Capacidad del proceso
+## Capacidad del Proceso
+
+Además de la capacidad de un sistema de medición, a menudo la capacidad de un proceso es de interés o necesidad que debe evaluarse, por ejemplo, como parte de una relación entre proveedor y cliente en la industria. 
+
+Los índices de capacidad del proceso básicamente indican cuánto del rango de tolerancia está siendo utilizado por la variación debida a causas comunes del proceso considerado. Utilizando estas técnicas, se puede determinar cuántas unidades (por ejemplo, productos) se espera que caigan fuera del rango de tolerancia, es decir, defectuoso con respecto a los requisitos determinados. También proporciona información sobre dónde centrar el proceso si el desplazamiento es posible y significativo en términos de costos.
+
+$$
+c_p = \frac{USL - LSL}{Q_{0.99865} - Q_{0.00135}}
+$$
+
+$$
+c_{pkL} = \frac{Q_{0.5} - LSL}{Q_{0.5} - Q_{0.00135}}
+$$
+$$
+c_{pkU} = \frac{USL - Q_{0.5}}{Q_{0.99865} - Q_{0.5}}
+$$
+* $c_p$: Es la capacidad potencial del proceso que podría lograrse si el proceso se pudiera centrar dentro de los límites de especificación.
+
+* $c_{pk}$: Es la capacidad real del proceso que incorpora la ubicación de la distribución (es decir, el centro) de la característica dentro de los límites de especificación.
+
+Para límites de especificación unilaterales, existen $c_{pkL}$ y $c_{pkU}$, siendo $c_{pk}$ igual al índice de capacidad más pequeño. Como se puede imaginar, además de la ubicación de la distribución de la característica, la forma de la distribución también es relevante. Evaluar el ajuste de una distribución específica para datos dados se puede hacer a través de gráficos de probabilidad (ppPlot) y gráficos de cuantiles-cuantiles (qqPlot), así como métodos de prueba formales como la Prueba de Anderson-Darling.
+
+
+Las capacidades del proceso pueden calcularse con el método **pcr** del paquete qualityTools. El método pcr traza un histograma de los datos, la distribución ajustada y devuelve los índices de capacidad junto con los parámetros estimados de la distribución, una Prueba de Anderson-Darling para la distribución especificada y el correspondiente QQ-Plot.
+
+```{r, include=FALSE, warning=FALSE, message=FALSE}
+library(qualityTools)
+```
+
+**Ejemplos:**
+
+1. Distribución Normal
+
+```{r, error=TRUE, fig.align='center', fig.height=6, collapse=TRUE, results = 'hide'}
+set.seed(1234)
+datos <- rnorm(20, mean = 20)
+pcr(datos, "normal", lsl = 17, usl = 23)
+```
+
+
+2. Distribución Weibull
+
+```{r,error=TRUE, fig.align='center', fig.height=6, collapse=TRUE, results = 'hide'}
+set.seed(1234)
+weib <- rweibull(20, shape = 2, scale = 8)
+pcr(weib, "weibull", usl = 20)
+```
+
+Junto con la representación gráfica se presenta un Test de Anderson Darling y se devuelve la distribución 
+
+![](graficos/AndersonDarling.png){width=260}
+
+Los gráficos QQ-plot pueden obtenerse a partir del paquete QualityTools, de la siguiente forma:
+
+```{r, fig.align='center', fig.height=4, results = 'hide'}
+par(mfrow = c(1,2))
+qqPlot(weib, "weibull"); qqPlot(datos, "normal")
+```
+
+Y los gráficos de probabilidad se pueden calcular con la función ppPlot del mismo paquete, de la siguiente manera:
+
+```{r, fig.align='center', fig.height=4, results = 'hide'}
+par(mfrow = c(1,2))
+ppPlot(weib, "weibull"); ppPlot(datos, "normal")
+```
+
 
 # Fase 4: Mejorar
 
