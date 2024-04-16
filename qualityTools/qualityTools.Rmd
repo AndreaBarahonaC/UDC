@@ -10,14 +10,6 @@ output:
   rmdformats::readthedown
 ---
 
-Link: https://cran.r-hub.io/web/packages/qualityTools/vignettes/qualityTools.pdf
-1. Cap 1 a Cap 4
-2. Cap 5.1 a 5.5
-3. Cap 5.6 hasta cap 7
-Puesto 1: Andrea
-Puesto 2: Fabian
-Puesto 3: Dario
-
 
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 library(qualityTools)
