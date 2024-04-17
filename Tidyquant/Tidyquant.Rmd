@@ -9,14 +9,12 @@ date: "`r Sys.Date()`"
 output: 
   rmdformats::readthedown
 ---
+Link:
+https://cran.r-project.org/web/packages/tidyquant/vignettes/TQ02-quant-integrations-in-tidyquant.html
+1: Descripcion General, Requisitos previos, 1. Compatibilidad de Funciones, todo hasta Ejemplo 1.
+2: Ejemplo 2 hasta ejemplo 4
+3: eJEMPLO 5 HASTA ejemplo 7
 
-```{r message=FALSE, warning=FALSE, include=FALSE}
-library(tidyquant)
-tq_get_options()
-aapl_stock_prices <- tq_get("AAPL")
-mult_stocks <- tq_get(c("FB", "AMZN"),
-                      get  = "stock.prices",
-                      from = "2016-01-01",
-                      to   = "2017-01-01")
-```
-
+1. Andrea 
+2. Fabian
+3. Dario
