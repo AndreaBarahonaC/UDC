@@ -23,8 +23,21 @@ https://cran.r-project.org/web/packages/tidyquant/vignettes/TQ02-quant-integrati
 library(tidyverse)
 library(tidyquant)
 ```
-## Ejemplo 2: utilice xts to period para cambiar la periodicidad de diaria a mensual
+
+# Descripción general
+# Requisitos previos
+# 1. Compatibilidad de funciones
+## Funcionalidad zoo
+## Funcionalidad xts
+## Funcionalidad quantmod
+## Funcionalidad TTR
+## Funcionalidad PerformanceAnalytics
+# 2. Poder cuantitativo en acción
+## Ejemplo 1: utilice quantmod periodReturn para convertir precios en rentabilidad
+## Ejemplo 2: utilice xts to.period para cambiar la periodicidad de diaria a mensual
 ## Ejemplo 3: utilice TTR runCor para visualizar correlaciones continuas de rendimientos
 ## Ejemplo 4: Utilice TTR MACD para visualizar la divergencia de convergencia de la media móvil
-
+## Ejemplo 5: utilice xts apply.quarterly para obtener el precio máximo y mínimo para cada trimestre
+## Ejemplo 6: utilice zoo rollapply para visualizar una regresión continua
+## Ejemplo 7: utilice return.clean y return.excess para limpiar y calcular el exceso de rendimiento
 
