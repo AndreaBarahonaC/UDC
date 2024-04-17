@@ -283,7 +283,7 @@ Los diseños de superficie de respuesta también pueden elegirse a partir de una
 rsdo <- rsmDesign()
 ```
 
-#Montaje secuencial de diseños de superficie de respuesta
+## Montaje secuencial de diseños de superficie de respuesta
 
 El ensamblaje secuencial es una característica  importante de los diseños de superficie de respuesta. En función de de las características del diseño factorial (fraccional) puede aumentarse una porción de estrella utilizando el método `starDesign`. Una porción en estrella consta de recorridos axiales
 y puntos centrales opcionales (`cs`) en la parte axial a diferencia de los puntos centrales (`cc`) en la parteparte cúbica.
@@ -298,7 +298,7 @@ En caso de que no se entregue ningún diseño factorial (fraccional)  al método
 
 ![](graficos/dario3.jpg){width=700}
 
-# Aleatorización
+## Aleatorización
 
 La aleatorización se consigue utilizando el método `randomize`.
 Es necesario suministrar una semilla aleatoria (random.seed) que es útil para tener el mismo orden de ejecución en cualquier máquina.
@@ -313,11 +313,91 @@ El método `randomize`  se puede utilizar para obtener un diseño en orden está
 randomizeDesign(fdo, so = TRUE)
 
 ```
-#Bloqueo
+## Bloqueo
 
 El bloqueo es otra característica relevante y puede conseguirse mediante el método de `blocking`. Bloquear un diseño a posteriori no siempre tiene éxito.
 Sin embargo, no es problemático durante el montaje secuencial.
 
+# Deseabilidades
+
+Muchos problemas requieren  optimización simultánea de más de una variable de respuesta. La optimización puede lograrse maximizando o minimizando el valor de la respuesta o tratando de situar la respuesta en un objetivo específico.En la  Optimización mediante el enfoque de las deseabilidades Derringer y Suich [1980], los valores (predichos) de las variables de respuesta se transforman en valores dentro del intervalo [0,1] utilizando tres métodos de deseabilidad diferentes
+para los tres criterios de optimización diferentes (es decir, minimizar, maximizar, objetivo). A cada valor de una variable de respuesta se le puede asignar una deseabilidad específica, optimizando más de una variable de respuesta. La media geométrica de las deseabilidades específicas caracteriza la deseabilidad global.
+
+\[\sqrt[n]{\prod^n_{i=1}d_i}\]
+
+ Para los valores previstos de las respuestas, cada combinación de factores tiene una correspondiente deseabilidad específica y se puede calcular una deseabilidad global. Supongamos que tenemos 
+tres respuestas. Para un ajuste específico de los factores, las respuestas tienen deseabilidades
+como $d1 = 0,7$ para $y1, d2 = 0,8$ para $y2$ y $d3 = 0,2$ para $y3$. La deseabilidad global 
+viene dada por la media geométrica.
+
+\[d_{all}=\sqrt[n]{d_1d_2\ldots d_n}\]
+\[=\sqrt[3]{d_1d_2\ldots d_n}\]
+\[=\sqrt[n]{0.7\cdot0.8\cdot0.2}\]
+
+
+Los métodos de deseabilidad pueden definirse mediante el método `desires`. La dirección de optimización de cada variable de respuesta se define mediante los argumentos `min`,`max` y `target` del método `desires`. El argumento `target` se establece con `max` para la maximización, `min` para la minimización y un valor específico para la optimización hacia un objetivo concreto. De esta constelación surgen tres ajustes:
+
+
+**target = max:** min es el valor mínimo aceptable. Si la variable de respuesta toma valores por debajo de min, la deseabilidad correspondiente será cero. Para valores iguales o mayores que min, la deseabilidad será mayor que cero.
+
+**target = min:** max es el valor máximo aceptable. Si la variable de respuesta toma valores por encima de max, la deseabilidad correspondiente será cero. Para valores iguales o menores que max, la deseabilidad será mayor que cero.
+
+**target = valor:** una variable de respuesta con un valor de valor se relaciona con la deseabilidad más alta alcanzable de 1. Los valores fuera de min o max llevan a una deseabilidad de cero, dentro de min y max a valores dentro de (0,1].
+
+
+
+```{r}
+#EJEMPLO:
+
+d1 <- desirability(y1, 120, 170, scale = c(1, 1), target = "max")
+d3 <- desirability(y3, 400, 600, target = 500)
+d1
+par(mfrow = c(1, 2))
+plot(d1, col = 2)
+plot(d3, col = 2)
+
+```
+
+# Utilización de deseabilidades junto con experimentos diseñados
+
+La metodología de la deseabilidad se apoya en los objetos de diseño factorial. El resultado
+del método de deseabilidad puede almacenarse en el objeto de diseño, de modo que la información que
+pertenece a cada uno se almacena en el mismo lugar (es decir, el propio diseño). 
+
+**Experimento**
+Los datos utilizados proceden de Derringer y Suich [1980]. Se definieron cuatro respuestas $y_1, y_2, y_3$ e $y_4$.
+Los factores utilizados en este experimento fueron la sílicio, el silano y el azufre con ajustes de factor alto de $1,7, 60, 2,8$ y factores bajos de $0,7, 40, 1,8$. Se desea maximizar $y_1$ e $y_2$
+ e $y_3$ e $y_4$ fijados en un objetivo específico.
+En primer lugar, se crea el diseño correspondiente y a  continuación, utilizamos el método `randomize` para obtener el orden estándar del diseño.
+
+```{r}
+ddo <- rsmDesign(k = 3, alpha = 1.633, cc = 0, cs = 6)
+ddo <- randomize(ddo, so = TRUE)
+
+# Opcional
+names(ddo) <- c("silica", "silan", "sulfur")
+
+# Opcional
+highs(ddo) <- c(1.7, 60, 2.8)
+
+# Opcional
+lows(ddo) <- c(0.7, 40, 1.8)
+
+#
+
+y1 <- c(102, 120, 117, 198, 103, 132, 132, 139, 102, 154, 96, 163, 116, 153, 133, 133, 140, 142, 145, 142)
+y2 <- c(900, 860, 800, 2294, 490, 1289, 1270, 1090, 770, 1690, 700, 1540, 2184, 1784, 1300, 1300, 1145, 1090, 1260, 1344)
+y3 <- c(470, 410, 570, 240, 640, 270, 410, 380, 590, 260, 520, 380, 520, 290, 380, 380, 430, 430, 390, 390)
+y4 <- c(67.5, 65, 77.5, 74.5, 62.5, 67, 78, 70, 76, 70, 63, 75, 65, 71, 70, 68.5, 68, 68, 69, 70)
+
+
+```
+El `data.frame` ordenado de estas 4 respuestas se asigna al objeto de diseño `ddo`.
+
+```{r}
+response(ddo) <- data.frame(y1, y2, y3, y4)[c(5, 2, 3, 8, 1, 6, 7, 4, 9:20), ]
+
+```
 
 
 # Bibliografía 
