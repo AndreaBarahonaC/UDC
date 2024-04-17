@@ -18,3 +18,13 @@ https://cran.r-project.org/web/packages/tidyquant/vignettes/TQ02-quant-integrati
 1. Andrea 
 2. Fabian
 3. Dario
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+library(tidyverse)
+library(tidyquant)
+```
+## Ejemplo 2: utilice xts to period para cambiar la periodicidad de diaria a mensual
+## Ejemplo 3: utilice TTR runCor para visualizar correlaciones continuas de rendimientos
+## Ejemplo 4: Utilice TTR MACD para visualizar la divergencia de convergencia de la media móvil
+
+
