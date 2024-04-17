@@ -33,8 +33,25 @@ library(tidyquant)
 ## Funcionalidad TTR
 ## Funcionalidad PerformanceAnalytics
 # 2. Poder cuantitativo en acción
+
+
+```{r}
+data("FANG")
+FANG
+```
+
 ## Ejemplo 1: utilice quantmod periodReturn para convertir precios en rentabilidad
 ## Ejemplo 2: utilice xts to.period para cambiar la periodicidad de diaria a mensual
+
+La función `xts::to.period` se utiliza para convertir la periodicidad de un nivel inferior a un nivel superior (ej: meses a años). Dado que se busca una estructura que tenga una escala de tiempo diferente a la de entrada, se debe hacer una transformación. Utilizamos `tq_transmute()`, pasamos las columnas "open", "high", "low", "close" y "volume", y usamos el periodo "months".
+
+```{r}
+FANG |>  group_by(symbol) |> tq_transmute(select = open:volume,
+                                mutate_fun = to.period,
+                                period = "months")
+```
+
+
 ## Ejemplo 3: utilice TTR runCor para visualizar correlaciones continuas de rendimientos
 ## Ejemplo 4: Utilice TTR MACD para visualizar la divergencia de convergencia de la media móvil
 ## Ejemplo 5: utilice xts apply.quarterly para obtener el precio máximo y mínimo para cada trimestre
