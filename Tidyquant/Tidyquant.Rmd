@@ -170,11 +170,11 @@ data("FANG")
 FANG
 ```
 
-## Ejemplo 1: utilizar quantmod periodReturn para convertir precios en rentabilidad
+## Ejemplo 1: utilizar quantmod::periodReturn para convertir precios en rentabilidad
 
 La funcioón `quantmod::periodReturn()` genera retornos por periodicidad, para ello, revisemos algunos casos:
 
-### Ejemplo 1A: Obtener y registrar las rentabilidades anuales
+### Ejemplo 1A: obtener y registrar las rentabilidades anuales
 
 Utilizamos la columna de precios de cierre ajustados (ajustada para divisiones de acciones, lo que puede hacer que parezca que una acción tiene un mal desempeño si se incluye una división).
 
@@ -206,7 +206,7 @@ FANG_annual_returns %>%
     scale_fill_tq()
 ```
 
-### Ejemplo 1B: Obtener devoluciones de registros diarios
+### Ejemplo 1B: obtener devoluciones de registros diarios
 
 Los retornos de registros diarios siguen un enfoque similar. Normalmente se usa una función de transmutación `tq_transmute` porque la función `periodReturn` acepta diferentes opciones de periodicidad, y cualquier cosa que no sea diaria hará estallar una mutación. 
 
@@ -238,7 +238,7 @@ FANG_daily_log_returns %>%
 ```
 
 
-## Ejemplo 2: utilice xts to.period para cambiar la periodicidad de diaria a mensual
+## Ejemplo 2: utilizar xts::to.period para cambiar la periodicidad de diaria a mensual
 
 La función `xts::to.period` se utiliza para convertir la periodicidad de un nivel inferior a un nivel superior (ej: meses a años). Dado que se busca una estructura que tenga una escala de tiempo diferente a la de entrada, se debe hacer una transformación. Utilizamos `tq_transmute()`, pasamos las columnas "open", "high", "low", "close" y "volume", y usamos el periodo "months".
 
@@ -277,7 +277,7 @@ FANG_mensual |> ggplot(aes(x = date, y = adjusted, color = symbol)) +
 ```
 Con esto se reduce la cantidad de puntos y el gráfico de la serie temporal se suaviza.
 
-## Ejemplo 3: utilice TTR runCor para visualizar correlaciones continuas de rendimientos
+## Ejemplo 3: utilizar TTR::runCor para visualizar correlaciones continuas de rendimientos
 
 Las correlaciones de rendimiento son una forma para analizar la medida en que un activo imita un índice de referencia. Utilizaremos los datos de `FANG` como los datos y la línea de base será el sector tecnológico "XLK", para ello se recupera los precios utilizando `tq_get`, y los rendimientos se calculan a partir de los precios ajustados del Ejemplo 1
 
@@ -317,7 +317,7 @@ FANG_corr |> ggplot(aes(x = date, y = corr_6, color = symbol))+
              theme_tq()+scale_color_tq()
 ```
 
-## Ejemplo 4: Utilice TTR MACD para visualizar la divergencia y convergencia de la media móvil
+## Ejemplo 4: utilizar TTR::MACD para visualizar la divergencia y convergencia de la media móvil
 
 La función `MACD` nos da la convergencia y divergencia de la media móvil, vemos que la salida tiene la misma periodicidad que la entrada y las funciones funcionan con las de OHLC, por lo que se puede utilizar `tq_mutate()`
 
@@ -351,8 +351,7 @@ FANG_macd %>%
     scale_color_tq()
 ```
 
-
-## Ejemplo 5: utilice xts apply.quarterly para obtener el precio máximo y mínimo para cada trimestre
-## Ejemplo 6: utilice zoo rollapply para visualizar una regresión continua
-## Ejemplo 7: utilice return.clean y return.excess para limpiar y calcular el exceso de rendimiento
+## Ejemplo 5: utilizar xts::apply.quarterly para obtener el precio máximo y mínimo para cada trimestre
+## Ejemplo 6: utilizar zoo::rollapply para visualizar una regresión continua
+## Ejemplo 7: utilizar return.clean y return.excess para limpiar y calcular el exceso de rendimiento
 
