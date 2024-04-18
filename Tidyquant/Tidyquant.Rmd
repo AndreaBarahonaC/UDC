@@ -352,6 +352,7 @@ FANG_macd %>%
 ```
 
 ## Ejemplo 5: utilizar xts::apply.quarterly para obtener el precio máximo y mínimo para cada trimestre
+
 ## Ejemplo 6: utilizar zoo::rollapply para visualizar una regresión continua
 ## Ejemplo 7: utilizar return.clean y return.excess para limpiar y calcular el exceso de rendimiento
 
