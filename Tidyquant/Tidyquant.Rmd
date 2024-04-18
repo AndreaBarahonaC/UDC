@@ -9,15 +9,6 @@ date: "`r Sys.Date()`"
 output: 
   rmdformats::readthedown
 ---
-Link:
-https://cran.r-project.org/web/packages/tidyquant/vignettes/TQ02-quant-integrations-in-tidyquant.html
-1: Descripcion General, Requisitos previos, 1. Compatibilidad de Funciones, todo hasta Ejemplo 1.
-2: Ejemplo 2 hasta ejemplo 4
-3: eJEMPLO 5 HASTA ejemplo 7
-
-1. Andrea 
-2. Fabian
-3. Dario
 
 ```{css, echo=FALSE}
 .scroll-100 {
@@ -326,7 +317,39 @@ FANG_corr |> ggplot(aes(x = date, y = corr_6, color = symbol))+
              theme_tq()+scale_color_tq()
 ```
 
-## Ejemplo 4: Utilice TTR MACD para visualizar la divergencia de convergencia de la media móvil
+## Ejemplo 4: Utilice TTR MACD para visualizar la divergencia y convergencia de la media móvil
+
+La función `MACD` nos da la convergencia y divergencia de la media móvil, vemos que la salida tiene la misma periodicidad que la entrada y las funciones funcionan con las de OHLC, por lo que se puede utilizar `tq_mutate()`
+
+```{r}
+FANG_macd <- FANG |> group_by(symbol) |> 
+                     tq_mutate(select = close,
+                               mutate_fun = MACD,
+                               nFast = 12,
+                               nSlow = 26,
+                               nSig = 9,
+                               maType = SMA) |> 
+                     mutate(diff = macd - signal) |> 
+                     select(-(open:volume))
+FANG_macd
+```
+
+Y se puede graficar los datos de la siguiente forma:
+
+```{r}
+FANG_macd %>%
+    filter(date >= as_date("2016-10-01")) %>%
+    ggplot(aes(x = date)) + 
+    geom_hline(yintercept = 0, color = palette_light()[[1]]) +
+    geom_line(aes(y = macd, col = symbol)) +
+    geom_line(aes(y = signal), color = "blue", linetype = 2) +
+    geom_bar(aes(y = diff), stat = "identity", color = palette_light()[[1]]) +
+    facet_wrap(~ symbol, ncol = 2, scale = "free_y") +
+    labs(title = "FANG: Convergencia y Divergencia de la Media Móvil",
+         y = "MACD", x = "", color = "") +
+    theme_tq() +
+    scale_color_tq()
+```
 
 
 ## Ejemplo 5: utilice xts apply.quarterly para obtener el precio máximo y mínimo para cada trimestre
