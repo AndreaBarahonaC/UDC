@@ -327,6 +327,8 @@ FANG_corr |> ggplot(aes(x = date, y = corr_6, color = symbol))+
 ```
 
 ## Ejemplo 4: Utilice TTR MACD para visualizar la divergencia de convergencia de la media móvil
+
+
 ## Ejemplo 5: utilice xts apply.quarterly para obtener el precio máximo y mínimo para cada trimestre
 ## Ejemplo 6: utilice zoo rollapply para visualizar una regresión continua
 ## Ejemplo 7: utilice return.clean y return.excess para limpiar y calcular el exceso de rendimiento
