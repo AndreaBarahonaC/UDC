@@ -51,8 +51,75 @@ FANG |>  group_by(symbol) |> tq_transmute(select = open:volume,
                                 period = "months")
 ```
 
+Podemos comparar la visualización gráfica agrupando y sin agrupas:
+
+**Sin agregración de periodicidad**
+
+```{r}
+FANG_diario <- FANG |> group_by(symbol) 
+FANG_diario |> ggplot(aes(x=date, y=adjusted, color = symbol))+
+               geom_line(linewidth = 1) +
+               labs(title = "Precio diario de acciones",
+                    x = "", y = "Precios ajustados", color = "")+
+               facet_wrap(~ symbol, ncol = 2, scales = "free_y")+
+               scale_y_continuous(labels = scales::dollar)+
+               theme_tq()+
+               scale_color_tq()
+```
+
+**Con agregación de periodicidad mensual**
+
+```{r}
+FANG_mensual <- FANG |>  group_by(symbol) |> tq_transmute(select = adjusted,
+                                mutate_fun = to.period,
+                                period = "months")
+FANG_mensual |> ggplot(aes(x = date, y = adjusted, color = symbol)) +
+                geom_line(linewidth = 1) + labs(title = "Monthly Stock Prices", x = "", y = "Adjusted Prices", color = "") +
+                facet_wrap(~ symbol, ncol = 2, scales = "free_y") + scale_y_continuous(labels = scales::dollar) +
+                theme_tq() + scale_color_tq()
+```
+Con esto se reduce la cantidad de puntos y el gráfico de la serie temporal se suaviza.
 
 ## Ejemplo 3: utilice TTR runCor para visualizar correlaciones continuas de rendimientos
+
+Las correlaciones de rendimiento son una forma para analizar la medida en que un activo imita un índice de referencia. Utilizaremos los datos de `FANG` como los datos y la línea de base será el sector tecnológico "XLK", para ello se recupera los precios utilizando `tq_get`, y los rendimientos se calculan a partir de los precios ajustados del Ejemplo 1
+
+```{r}
+#Rendimientos
+FANG_rend_mensual <- FANG |> group_by(symbol) |> 
+                     tq_transmute(select = adjusted,
+                                  mutate_fun = periodReturn,
+                                  period = "monthly")
+#Valor base de Rendimientos de referencia
+base_rend_mensual <- "XLK" |> tq_get(get = "stock.prices",
+                                            from = "2013-01-01",
+                                            to = "2016-12-31") |> 
+                              tq_transmute(select = adjusted,
+                                           mutate_fun = periodReturn,
+                                           period = "monthly")
+
+#Unir 
+rends <- left_join(FANG_rend_mensual, base_rend_mensual, by="date")
+rends
+```
+
+La función `runCor` se puede utilizar para evaluar correlaciones rodantes, además se puede incluir el ancho de la correlación que en este caso utilizaremos seis al estar en una escala mensual. Se utilizará `tq_transmute_xy` para realizar esto:
+
+```{r warning=FALSE}
+FANG_corr <- rends |> tq_transmute_xy(x = monthly.returns.x,
+                                   y = monthly.returns.y,
+                                   mutate_fun = runCor,
+                                   n = 6,
+                                   col_rename = "corr_6")
+#Grafico
+FANG_corr |> ggplot(aes(x = date, y = corr_6, color = symbol))+
+             geom_hline(yintercept = 0, color = palette_light()[[1]])+
+             geom_line(size = 1)+
+             labs(title = "FANG: Correlación 6 meses a XLK", x="", y="Correlation",color="")+
+             facet_wrap(~symbol,ncol=2)+
+             theme_tq()+scale_color_tq()
+```
+
 ## Ejemplo 4: Utilice TTR MACD para visualizar la divergencia de convergencia de la media móvil
 ## Ejemplo 5: utilice xts apply.quarterly para obtener el precio máximo y mínimo para cada trimestre
 ## Ejemplo 6: utilice zoo rollapply para visualizar una regresión continua
