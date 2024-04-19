@@ -418,13 +418,74 @@ rend_accion <- precios_accion %>%
 
 #GRAFICOS
 precios_accion %>%
-    ggplot(aes(x = "V", y = "MA")) +
+    ggplot(aes(x='V',y='MA')) +
     geom_point(color = palette_light()[[1]], alpha = 0.5) +
     geom_smooth(method = "lm") +
     labs(title = "Relación de rendimiento de las acciones ") +
     theme_tq()
 ```
 
+Se puede ver estadísticas de la relación a partir de la función `lm`:
+
+```{r}
+lm('MA'~'V',data = precios_accion) |> summary()
+```
+
+La estimación del coeficiente es 0.8134 por lo que se tiene una relación positiva, es decir que a medida que V crece, MA aumenta.
+
+Se puede utilizar la funcion `rollapply` para realizar una regresión móvil, es decir, mostrar como el modelo varía a lo largo del tiempo. Para ello se creará una función:
+
+```{r}
+regr_fun <- function(data){
+  coef(lm(MA~V,data=timetk::tk_tbl(data,silent=TRUE)))
+}
+```
+
+y se utilizará `tq_mutate()` para aplicar la función de regresión creada utilizando `rollapply` de la siguiente forma:
+
+```{r}
+precios_accion <- precios_accion |> tq_mutate(mutate_fun = rollapply,
+                                              width=90,
+                                              FUN=regr_fun,
+                                              by.column=FALSE,
+                                              col_rename = c("coef.0","coef.1"))
+precios_accion
+```
+
+Para visualizar el primer coeficiente, se puede agregar una linea horizontal utilizando el modelo de conjunto de datos completo, ya que así se puede ver en que momentos se desvía de la tendencia a largo plazo.
+
+```{r}
+precios_accion |> ggplot(aes(x=date,y=coef.1))+
+                  geom_line(size=1,color=palette_light()[[1]])+
+                  geom_hline(yintercept = 0.8134, size = 1, color = palette_light()[[2]])+
+                  labs(title = "MA ~ V: Visualizing Rolling Regression Coefficient", x = "")+
+                  theme_tq()
+```
+
+Para visualizar la rentabilidad de las acciones durante el período de tiempo:
+
+```{r}
+precios_accion |> tq_transmute(adjusted,
+                               periodReturn,
+                               period="daily",
+                               type="log",
+                               col_name="returns") |> 
+                   mutate(wealth.index = 100 * cumprod(1 + returns)) %>%
+                   ggplot(aes(x = date, y = wealth.index, color = symbol)) +
+                   geom_line(size = 1) +
+                   labs(title = "MA and V: Stock Prices") +
+                   theme_tq() + 
+                   scale_color_tq()
+```
 
 ## Ejemplo 7: utilizar return.clean y return.excess para limpiar y calcular el exceso de rendimiento
+
+En este ejemplo primero se calcula los rendimientos diarios utilizando `periodReturn`, luego se utiliza `Return.clean` para limpiar los valores atípico de los datos devueltos, en el que el parámetro `alpha` es el porcentaje de datos atípicos se va a limpiar. Por último, los rendimientos excedentes se calculan con la función `Return.excess` con el parámetro `Rf` que representa la tasa libre de riesgo.
+
+```{r}
+FANG %>% group_by(symbol) %>% tq_transmute(adjusted, periodReturn, period = "daily") %>%
+                              tq_transmute(daily.returns, Return.clean, alpha = 0.05) %>%
+                              tq_transmute(daily.returns, Return.excess, Rf = 0.03 / 252)
+```
+
 
