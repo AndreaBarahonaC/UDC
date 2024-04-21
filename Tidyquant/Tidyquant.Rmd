@@ -401,7 +401,7 @@ FANG_trim |> ggplot(aes(x=year.qtr,color=symbol))+
 
 En este ejemplo se analizará la relación entre dos activos similares: Mastercard y Visa, para mostrar la relación mediante regresión. Primero se verá la tendencia de los rendimientos, para ello utilizamos `tq_get()` para obtener los precios de las acciones, y `tq_transmute()` para transformar los precios en rendimientos.
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 precios_accion <- c("MA", "V") %>%
     tq_get(get  = "stock.prices",
            from = "2015-01-01",
@@ -417,8 +417,8 @@ rend_accion <- precios_accion %>%
     spread(key = symbol, value = returns)
 
 #GRAFICOS
-precios_accion %>%
-    ggplot(aes(x='V',y='MA')) +
+rend_accion %>%
+    ggplot(aes(x=V,y=MA)) +
     geom_point(color = palette_light()[[1]], alpha = 0.5) +
     geom_smooth(method = "lm") +
     labs(title = "Relación de rendimiento de las acciones ") +
@@ -428,7 +428,7 @@ precios_accion %>%
 Se puede ver estadísticas de la relación a partir de la función `lm`:
 
 ```{r}
-lm('MA'~'V',data = precios_accion) |> summary()
+lm(MA~V,data = rend_accion) |> summary()
 ```
 
 La estimación del coeficiente es 0.8134 por lo que se tiene una relación positiva, es decir que a medida que V crece, MA aumenta.
@@ -444,18 +444,18 @@ regr_fun <- function(data){
 y se utilizará `tq_mutate()` para aplicar la función de regresión creada utilizando `rollapply` de la siguiente forma:
 
 ```{r}
-precios_accion <- precios_accion |> tq_mutate(mutate_fun = rollapply,
+rend_accion <- rend_accion |> tq_mutate(mutate_fun = rollapply,
                                               width=90,
                                               FUN=regr_fun,
                                               by.column=FALSE,
                                               col_rename = c("coef.0","coef.1"))
-precios_accion
+rend_accion
 ```
 
 Para visualizar el primer coeficiente, se puede agregar una linea horizontal utilizando el modelo de conjunto de datos completo, ya que así se puede ver en que momentos se desvía de la tendencia a largo plazo.
 
-```{r}
-precios_accion |> ggplot(aes(x=date,y=coef.1))+
+```{r warning=FALSE}
+rend_accion |> ggplot(aes(x=date,y=coef.1))+
                   geom_line(size=1,color=palette_light()[[1]])+
                   geom_hline(yintercept = 0.8134, size = 1, color = palette_light()[[2]])+
                   labs(title = "MA ~ V: Visualizing Rolling Regression Coefficient", x = "")+
@@ -470,7 +470,7 @@ precios_accion |> tq_transmute(adjusted,
                                period="daily",
                                type="log",
                                col_name="returns") |> 
-                   mutate(wealth.index = 100 * cumprod(1 + returns)) %>%
+                   mutate(wealth.index = 100 * cumprod(1 + daily.returns)) %>%
                    ggplot(aes(x = date, y = wealth.index, color = symbol)) +
                    geom_line(size = 1) +
                    labs(title = "MA and V: Stock Prices") +
