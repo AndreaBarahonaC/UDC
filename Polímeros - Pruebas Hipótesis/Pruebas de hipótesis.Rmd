@@ -64,6 +64,7 @@ library(shiny)
 library(tidyverse)
 library(highcharter)
 library(kableExtra)
+library(car)
 base_final <- read_excel("Prop Mec Raquis PE.xlsx", 
                          sheet = '1', range = "B1:E58")
 base_final <- na.omit(base_final)
@@ -141,16 +142,112 @@ Es crucial aclarar algunos términos y sus respectivas codificaciones que se uti
 
 Este análisis detallado y sistemático permitirá una comprensión profunda de la relación entre los factores de interés y las características mecánicas de las probetas, lo que a su vez facilitará la selección de los factores óptimos para mejorar dichas características.
 
+## Ingreso de la información
+
+```{r echo=FALSE, warning=FALSE}
+
+fileInput('file_experimento', 'Seleccione el archivo .xlsx', accept = c(".xlsx"))
+div(tableOutput("carga_experimento"), style = "font-size:70%")
+tableOutput("archivo_experimento")
+output$archivo_experimento <- renderTable(input$file_experimento)
+carga_experimento_aux <- function(inFile){
+      if(is.null(inFile))
+            return(paste("Ingrese un archivo Valido"))
+      
+  file.rename(inFile$datapath, paste(inFile$datapath, ".xlsx", sep=""))
+      res <- read_excel(paste(inFile$datapath, ".xlsx", sep=""), 2)
+      
+      res_general <- read_excel(paste(inFile$datapath, ".xlsx", sep=""), 1)
+      res_general<-tidyr::fill(res_general,Temperatura)
+      res<-merge(res_general, res, by = c("Temperatura", "No. malla"))
+      base_final<-res
+      colnames(base_final)[colnames(base_final)]
+      colnames(base_final)[colnames(base_final) == "Módulo elástico (MPa)"] <- "Mod_elas"
+      colnames(base_final)[colnames(base_final) == "Resistencia a la tensión (MPa)"] <- "Resistencia"
+      colnames(base_final)[colnames(base_final) == "Elongación a la rotura (%)"] <- "Elongacion"
+      colnames(base_final)[colnames(base_final) == "Tenacidad (MPa)"] <- "Tenacidad"
+      return(base_final)
+}
+output$carga_experimento <- function(){
+  inFile <- input$file_experimento
+  res<-carga_experimento_aux(inFile)
+  res %>%
+            kbl(booktabs = TRUE) %>%
+            kable_styling(full_width = F, bootstrap_options = c("condensed"), font_size = 11) %>%
+            row_spec(0, background = "#33639f", color = "#ffffff") %>%
+            scroll_box(width = "500px", height = "350px")
+}
+
+
+```
+
+
+```{r eval=FALSE, include=FALSE}
+
+#prueba1<-read_excel(path = "Propiedades mecanicas Raquis-Vinil AcrilicaVAE.xlsx",1)
+#prueba2<-read_excel(path = "Propiedades mecanicas Raquis-Vinil AcrilicaVAE.xlsx",2)
+#prueba1<-tidyr::fill(prueba1,colnames(prueba1)[2])
+#
+#resp<-merge(prueba1, prueba2, by = c(colnames(prueba1)[2], colnames(prueba1)[3]))
+#colnames(resp)[colnames(resp) == "Módulo elástico (MPa)"] <- "Mod_elas"
+#colnames(resp)[colnames(resp) == "Resistencia a la tensión (MPa)"] <- "Resistencia"
+#colnames(resp)[colnames(resp) == "Elongación a la rotura (%)"] <- "Elongacion"
+#colnames(resp)[colnames(resp) == "Tenacidad (MPa)"] <- "Tenacidad"
+#modelo_modu <- aov(Mod_elas ~ as.numeric(resp[[1]]) * as.character(resp[[2]]) * as.character(resp[[3]]), data = resp)
+#nombres_predictores <- c(colnames(prueba1)[2], colnames(prueba1)[3], colnames(prueba1)[1])
+##modelo_modu <- aov(Mod_elas ~ resp[[1]] * resp[[2]] * resp[[3]], data = resp)
+#names(modelo_modu$terms) <- nombres_predictores
+#summary(modelo_modu)
+#formula <- as.formula(paste("Mod_elas ~", nombres_predictores[1], "*", nombres_predictores[2], "*", nombres_predictores[3]))
+#modelo_modu <- aov(formula, data = resp)
+```
+
+```{r eval=FALSE, include=FALSE}
+base_f<-reactive({
+  inFile<-input$file_experimento
+  tabla<-carga_experimento_aux(inFile)
+  tabla
+  })
+renderTable({base_f()})
+```
+
 # ANOVA
 
 ## Para módulo de elasticidad
 
-```{r,echo=FALSE}
+
+```{r}
+modelo1<-reactive({
+  inFile<-input$file_experimento
+  tabla<-carga_experimento_aux(inFile)
+  modelo_modu <- aov(Mod_elas ~ `Temperatura` * `No. malla` * `Formulación`, data = tabla)
+  imprimir<-summary(modelo_modu)
+  imprimir
+
+})
+renderPrint({modelo1()})
+```
+
+```{r}
 modelo_modu <- aov(Mod_elas ~ Cont_fibra * Tamiz * Formulacion, data = base_final)
 summary(modelo_modu)
+
 ```
 
 ## Para resistencia a la tensión
+
+```{r}
+modelo2<-reactive({
+  inFile<-input$file_experimento
+  tabla<-carga_experimento_aux(inFile)
+  modelo_resis <- aov(Resistencia ~ `Temperatura` * `No. malla` * `Formulación`, data = tabla)
+  imprimir<-summary(modelo_resis)
+  imprimir
+
+})
+renderPrint({modelo2()})
+```
+
 
 ```{r,echo=FALSE}
 modelo_resis <- aov(Resistencia ~ Cont_fibra * Tamiz * Formulacion, data = base_final)
@@ -159,12 +256,40 @@ summary(modelo_resis)
 
 ## Para elongación a la rotura
 
+```{r}
+modelo3<-reactive({
+  inFile<-input$file_experimento
+  tabla<-carga_experimento_aux(inFile)
+  modelo_elon <- aov(Elongacion ~ `Temperatura` * `No. malla` * `Formulación`, data = tabla)
+  imprimir<-summary(modelo_elon)
+  imprimir
+
+})
+renderPrint({modelo3()})
+```
+
+
 ```{r, echo=FALSE}
 modelo_elon <- aov(Elongacion ~ Cont_fibra * Tamiz * Formulacion, data = base_final)
 summary(modelo_elon)
 ```
 
 ## Para tenacidad
+
+
+
+```{r}
+modelo4<-reactive({
+  inFile<-input$file_experimento
+  tabla<-carga_experimento_aux(inFile)
+  modelo_tenac <- aov(Tenacidad ~ `Temperatura` * `No. malla` * `Formulación`, data = tabla)
+  imprimir<-summary(modelo_tenac)
+  imprimir
+
+})
+renderPrint({modelo4()})
+```
+
 
 ```{r, echo=FALSE}
 modelo_tenac <- aov(Tenacidad ~ Cont_fibra * Tamiz * Formulacion, data = base_final)
@@ -542,6 +667,10 @@ El Test de Bonferroni se basa en la creación de un umbral por encima del cual l
 Al aplicar este test en nuestro diseño experimental, lo que se busca es que fijado un factor se comparen las medias de las combinaciones de los factores restantes, por ejemplo, fijada la formulación, se compare el efecto de la malla y el tamiz en las respectivas características mecánicas que se están analizando en el estudio, lo cual, permitirá analizar de manera más detallada cual de los factores son los que tienen una mayor influencia en el desempeño de las probetas.
 
 A continuación, se muestran los resultados de aplicar el test de Bonferroni, en donde, para cada característica mecánica, se puede fijar uno o más factores y se mostrará una tabla con los resultados de p valor obtenios, así también una gráfica, en donde se muestra por encima de la linea que representa el nivel de significancia, en que combinaciones la difeerencia de sus medias no es estadísticamente significativa, dado un factor fijo.
+
+
+
+
 
 ## Para módulo de elasticidad
 
