@@ -202,8 +202,8 @@ observe({
 tabla1 <- reactive({
   inFile<-input$file_experimento
   tabla<-carga_experimento_aux(inFile)
-  modelo_modu <- aov(tabla[[input$prop]] ~ `Temperatura` * `No. malla`, data = tabla)
-  tabla1 <- LSD.test(modelo_modu,c("No. malla","Temperatura"),group = FALSE, p.adj = 'bon')$comparison
+  modelo_modu <- aov(tabla[[input$prop]] ~ `Temperatura` * `No malla`, data = tabla)
+  tabla1 <- LSD.test(modelo_modu,c("No. malla","Temperatura"),group = FALSE, adj = 'bon')$comparison
   if (input$test=='Duncan') {
     tabla1 <- duncan.test(modelo_modu,c("No. malla","Temperatura"),group = FALSE)$comparison
   }
@@ -214,7 +214,7 @@ tabla1 <- reactive({
     tabla1 <- HSD.test(modelo_modu,c("No. malla","Temperatura"),group = FALSE)$comparison
   }
   else{
-    tabla1 <- LSD.test(modelo_modu,c("No. malla","Temperatura"),group = FALSE, p.adj = 'bon')$comparison
+    tabla1 <- LSD.test(modelo_modu,c("No. malla","Temperatura"),group = FALSE, adj = 'bon')$comparison
   }
   tabla1<-rownames_to_column(tabla1,var='Combinaciones')
   tabla1<-tabla1 %>% select(-signif.)
@@ -231,7 +231,7 @@ tabla1 <- reactive({
   if(temp=='-'){
     temp<-c(unique(tabla$Temperatura))
   }
-  tabla1<-tabla1 %>% filter(`Malla 1`%in%tamiz,`Malla 2`%in%tamiz,`Temperatura 1`%in%temp,`Temperatura 2`%in%temp)
+  tabla1<-tabla1 %>% filter(`Malla 1`%in%tamiz,`Malla 2`%in%tamiz,`Temperatura 1`%in%tem,`Temperatura 2`%in%temp)
   if (input$difsig1=="Sí") {
     tabla1<-tabla1%>% filter(`Valor-p`<0.05)
   }
@@ -255,12 +255,12 @@ renderHighchart({
       text = "Valores p",
       style = list(fontWeight = "bold", fontSize = "25px"),
       align = "center"
-    ) %>% hc_tooltip(headerFormat = "<br>",             pointFormat = "Etiqueta: {point.Etiqueta}<br>Valor-p {series.Etiqueta}: {point.Valor-p}") %>%
+    ) %>% hc_tooltip(headerFormat = "<br>", pointFormat = "Etiqueta: {point.Etiqueta}<br>Valor-p {series.Etiqueta}: {point.Valor-p}") %>%
     hc_yAxis(
       gridLineColor = "transparent",
       min = 0,
       max = 1,
-      opposite = TRUE,
+      opposite = FALSE,
       alternateGridColor = "#FAFAFA",
       plotBands = list(list(
         from = 0.05,
